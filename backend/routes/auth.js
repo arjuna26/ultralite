@@ -1,10 +1,10 @@
-import { Router } from 'express';
-import { hash, compare } from 'bcrypt';
-import { sign } from 'jsonwebtoken';
-import { query } from '../config/database';
-import { authenticateToken, JWT_SECRET } from '../middleware/auth';
+const express = require('express');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const pool = require('../config/database');
+const { authenticateToken, JWT_SECRET } = require('../middleware/auth');
 
-const router = Router();
+const router = express.Router();
 
 // Register
 router.post('/register', async (req, res) => {
@@ -15,7 +15,7 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ error: 'Email and password required' });
     }
 
-    const userExists = await query(
+    const userExists = await pool.query(
       'SELECT id FROM users WHERE email = $1',
       [email]
     );
@@ -24,15 +24,15 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ error: 'Email already registered' });
     }
 
-    const passwordHash = await hash(password, 10);
+    const passwordHash = await bcrypt.hash(password, 10);
 
-    const result = await query(
+    const result = await pool.query(
       'INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email, created_at',
       [email, passwordHash]
     );
 
     const user = result.rows[0];
-    const token = sign({ userId: user.id }, JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '7d' });
 
     res.status(201).json({
       user: { id: user.id, email: user.email },
@@ -53,7 +53,7 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'Email and password required' });
     }
 
-    const result = await query(
+    const result = await pool.query(
       'SELECT id, email, password_hash FROM users WHERE email = $1',
       [email]
     );
@@ -63,13 +63,13 @@ router.post('/login', async (req, res) => {
     }
 
     const user = result.rows[0];
-    const validPassword = await compare(password, user.password_hash);
+    const validPassword = await bcrypt.compare(password, user.password_hash);
 
     if (!validPassword) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    const token = sign({ userId: user.id }, JWT_SECRET, { expiresIn: '7d' });
+    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '7d' });
 
     res.json({
       user: { id: user.id, email: user.email },
@@ -84,7 +84,7 @@ router.post('/login', async (req, res) => {
 // Get current user
 router.get('/me', authenticateToken, async (req, res) => {
   try {
-    const result = await query(
+    const result = await pool.query(
       'SELECT id, email, created_at FROM users WHERE id = $1',
       [req.user.userId]
     );
@@ -100,4 +100,4 @@ router.get('/me', authenticateToken, async (req, res) => {
   }
 });
 
-export default router;
+module.exports = router;

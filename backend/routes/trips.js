@@ -1,8 +1,8 @@
-import { Router } from 'express';
-import { query } from '../config/database';
-import { authenticateToken } from '../middleware/auth';
+const express = require('express');
+const pool = require('../config/database');
+const { authenticateToken } = require('../middleware/auth');
 
-const router = Router();
+const router = express.Router();
 
 // All routes require authentication
 router.use(authenticateToken);
@@ -10,7 +10,7 @@ router.use(authenticateToken);
 // Get all user's trips
 router.get('/', async (req, res) => {
   try {
-    const result = await query(
+    const result = await pool.query(
       'SELECT * FROM trips WHERE user_id = $1 ORDER BY start_date DESC NULLS LAST, created_at DESC',
       [req.user.userId]
     );
@@ -24,7 +24,7 @@ router.get('/', async (req, res) => {
 // Get single trip with bags and stats
 router.get('/:id', async (req, res) => {
   try {
-    const tripResult = await query(
+    const tripResult = await pool.query(
       'SELECT * FROM trips WHERE id = $1 AND user_id = $2',
       [req.params.id, req.user.userId]
     );
@@ -35,7 +35,7 @@ router.get('/:id', async (req, res) => {
 
     const trip = tripResult.rows[0];
 
-    const bagsResult = await query(
+    const bagsResult = await pool.query(
       `SELECT b.*, bw.total_weight_grams, bw.backpack_brand, bw.backpack_model, tb.role
        FROM trip_bags tb
        JOIN bags b ON tb.bag_id = b.id
@@ -46,7 +46,7 @@ router.get('/:id', async (req, res) => {
 
     trip.bags = bagsResult.rows;
 
-    const statsResult = await query(
+    const statsResult = await pool.query(
       'SELECT * FROM trip_stats WHERE trip_id = $1',
       [req.params.id]
     );
@@ -69,7 +69,7 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'Trip name required' });
     }
 
-    const result = await query(
+    const result = await pool.query(
       `INSERT INTO trips (user_id, name, location_text, start_date, end_date, notes)
        VALUES ($1, $2, $3, $4, $5, $6)
        RETURNING *`,
@@ -88,7 +88,7 @@ router.put('/:id', async (req, res) => {
   try {
     const { name, location_text, start_date, end_date, notes } = req.body;
 
-    const result = await query(
+    const result = await pool.query(
       `UPDATE trips
        SET name = COALESCE($1, name),
            location_text = COALESCE($2, location_text),
@@ -114,7 +114,7 @@ router.put('/:id', async (req, res) => {
 // Delete trip
 router.delete('/:id', async (req, res) => {
   try {
-    const result = await query(
+    const result = await pool.query(
       'DELETE FROM trips WHERE id = $1 AND user_id = $2 RETURNING id',
       [req.params.id, req.user.userId]
     );
@@ -135,12 +135,12 @@ router.post('/:id/bags', async (req, res) => {
   try {
     const { bag_id, role = 'primary' } = req.body;
 
-    const tripCheck = await query(
+    const tripCheck = await pool.query(
       'SELECT id FROM trips WHERE id = $1 AND user_id = $2',
       [req.params.id, req.user.userId]
     );
 
-    const bagCheck = await query(
+    const bagCheck = await pool.query(
       'SELECT id FROM bags WHERE id = $1 AND user_id = $2',
       [bag_id, req.user.userId]
     );
@@ -153,7 +153,7 @@ router.post('/:id/bags', async (req, res) => {
       return res.status(404).json({ error: 'Bag not found' });
     }
 
-    const result = await query(
+    const result = await pool.query(
       `INSERT INTO trip_bags (trip_id, bag_id, role)
        VALUES ($1, $2, $3)
        ON CONFLICT (trip_id, bag_id) DO UPDATE SET role = $3
@@ -171,7 +171,7 @@ router.post('/:id/bags', async (req, res) => {
 // Remove bag from trip
 router.delete('/:tripId/bags/:bagId', async (req, res) => {
   try {
-    const result = await query(
+    const result = await pool.query(
       `DELETE FROM trip_bags 
        WHERE trip_id = $1 AND bag_id = $2
        AND EXISTS (SELECT 1 FROM trips WHERE id = $1 AND user_id = $3)
@@ -195,7 +195,7 @@ router.put('/:id/stats', async (req, res) => {
   try {
     const { nights, miles, elevation_gain_ft, weather_notes, lessons_learned } = req.body;
 
-    const tripCheck = await query(
+    const tripCheck = await pool.query(
       'SELECT id FROM trips WHERE id = $1 AND user_id = $2',
       [req.params.id, req.user.userId]
     );
@@ -204,7 +204,7 @@ router.put('/:id/stats', async (req, res) => {
       return res.status(404).json({ error: 'Trip not found' });
     }
 
-    const result = await query(
+    const result = await pool.query(
       `INSERT INTO trip_stats (trip_id, nights, miles, elevation_gain_ft, weather_notes, lessons_learned)
        VALUES ($1, $2, $3, $4, $5, $6)
        ON CONFLICT (trip_id) DO UPDATE
@@ -224,4 +224,4 @@ router.put('/:id/stats', async (req, res) => {
   }
 });
 
-export default router;
+module.exports = router;

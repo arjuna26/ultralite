@@ -1,8 +1,8 @@
-import { Router } from 'express';
-import { query, connect } from '../config/database';
-import { authenticateToken } from '../middleware/auth';
+const express = require('express');
+const pool = require('../config/database');
+const { authenticateToken } = require('../middleware/auth');
 
-const router = Router();
+const router = express.Router();
 
 // All routes require authentication
 router.use(authenticateToken);
@@ -10,7 +10,7 @@ router.use(authenticateToken);
 // Get all user's bags
 router.get('/', async (req, res) => {
   try {
-    const result = await query(
+    const result = await pool.query(
       'SELECT * FROM bags_with_weight WHERE user_id = $1 ORDER BY created_at DESC',
       [req.user.userId]
     );
@@ -24,7 +24,7 @@ router.get('/', async (req, res) => {
 // Get single bag with all items
 router.get('/:id', async (req, res) => {
   try {
-    const bagResult = await query(
+    const bagResult = await pool.query(
       'SELECT * FROM bags_with_weight WHERE id = $1 AND user_id = $2',
       [req.params.id, req.user.userId]
     );
@@ -35,7 +35,7 @@ router.get('/:id', async (req, res) => {
 
     const bag = bagResult.rows[0];
 
-    const itemsResult = await query(
+    const itemsResult = await pool.query(
       'SELECT * FROM bag_contents WHERE bag_id = $1 ORDER BY category, brand, model',
       [req.params.id]
     );
@@ -57,7 +57,7 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'Name and backpack required' });
     }
 
-    const backpackCheck = await query(
+    const backpackCheck = await pool.query(
       "SELECT id FROM gear_items WHERE id = $1 AND category = 'backpack'",
       [backpack_gear_item_id]
     );
@@ -66,7 +66,7 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'Invalid backpack gear item' });
     }
 
-    const result = await query(
+    const result = await pool.query(
       `INSERT INTO bags (user_id, name, backpack_gear_item_id, description)
        VALUES ($1, $2, $3, $4)
        RETURNING *`,
@@ -85,7 +85,7 @@ router.put('/:id', async (req, res) => {
   try {
     const { name, backpack_gear_item_id, description } = req.body;
 
-    const result = await query(
+    const result = await pool.query(
       `UPDATE bags 
        SET name = COALESCE($1, name),
            backpack_gear_item_id = COALESCE($2, backpack_gear_item_id),
@@ -110,7 +110,7 @@ router.put('/:id', async (req, res) => {
 // Delete bag
 router.delete('/:id', async (req, res) => {
   try {
-    const result = await query(
+    const result = await pool.query(
       'DELETE FROM bags WHERE id = $1 AND user_id = $2 RETURNING id',
       [req.params.id, req.user.userId]
     );
@@ -128,7 +128,7 @@ router.delete('/:id', async (req, res) => {
 
 // Duplicate bag
 router.post('/:id/duplicate', async (req, res) => {
-  const client = await connect();
+  const client = await pool.connect();
   try {
     await client.query('BEGIN');
 
@@ -164,7 +164,7 @@ router.post('/:id/duplicate', async (req, res) => {
 
     await client.query('COMMIT');
 
-    const completeResult = await query(
+    const completeResult = await pool.query(
       'SELECT * FROM bags_with_weight WHERE id = $1',
       [newBag.id]
     );
@@ -184,7 +184,7 @@ router.post('/:id/items', async (req, res) => {
   try {
     const { gear_item_id, quantity = 1, override_weight_grams } = req.body;
 
-    const bagCheck = await query(
+    const bagCheck = await pool.query(
       'SELECT id FROM bags WHERE id = $1 AND user_id = $2',
       [req.params.id, req.user.userId]
     );
@@ -193,7 +193,7 @@ router.post('/:id/items', async (req, res) => {
       return res.status(404).json({ error: 'Bag not found' });
     }
 
-    const result = await query(
+    const result = await pool.query(
       `INSERT INTO bag_items (bag_id, gear_item_id, quantity, override_weight_grams)
        VALUES ($1, $2, $3, $4)
        ON CONFLICT (bag_id, gear_item_id) 
@@ -213,7 +213,7 @@ router.post('/:id/items', async (req, res) => {
 // Remove item from bag
 router.delete('/:bagId/items/:itemId', async (req, res) => {
   try {
-    const bagCheck = await query(
+    const bagCheck = await pool.query(
       'SELECT id FROM bags WHERE id = $1 AND user_id = $2',
       [req.params.bagId, req.user.userId]
     );
@@ -222,7 +222,7 @@ router.delete('/:bagId/items/:itemId', async (req, res) => {
       return res.status(404).json({ error: 'Bag not found' });
     }
 
-    const result = await query(
+    const result = await pool.query(
       'DELETE FROM bag_items WHERE bag_id = $1 AND gear_item_id = $2 RETURNING id',
       [req.params.bagId, req.params.itemId]
     );
@@ -238,4 +238,4 @@ router.delete('/:bagId/items/:itemId', async (req, res) => {
   }
 });
 
-export default router;
+module.exports = router;

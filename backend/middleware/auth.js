@@ -1,4 +1,4 @@
-import { verify } from 'jsonwebtoken';
+const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -10,7 +10,7 @@ const authenticateToken = (req, res, next) => {
     return res.status(401).json({ error: 'access token required' });
   }
 
-  verify(token, JWT_SECRET, (err, user) => {
+  jwt.verify(token, JWT_SECRET, (err, user) => {
     if (err) {
       return res.status(403).json({ error: 'invalid or expired token' });
     }
@@ -19,4 +19,4 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-export default { authenticateToken, JWT_SECRET };
+module.exports = { authenticateToken, JWT_SECRET };

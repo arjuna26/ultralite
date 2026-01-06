@@ -1,7 +1,7 @@
-import { Router } from 'express';
-import { query as _query } from '../config/database';
+const express = require('express');
+const pool = require('../config/database');
 
-const router = Router();
+const router = express.Router();
 
 // Get all gear (with optional search and category filter)
 router.get('/', async (req, res) => {
@@ -25,7 +25,7 @@ router.get('/', async (req, res) => {
 
     query += ' ORDER BY category, brand, model';
 
-    const result = await _query(query, params);
+    const result = await pool.query(query, params);
     res.json(result.rows);
   } catch (error) {
     console.error('Get gear error:', error);
@@ -36,7 +36,7 @@ router.get('/', async (req, res) => {
 // Get just backpacks
 router.get('/backpacks', async (req, res) => {
   try {
-    const result = await _query(
+    const result = await pool.query(
       "SELECT * FROM gear_items WHERE category = 'backpack' ORDER BY brand, model"
     );
     res.json(result.rows);
@@ -49,7 +49,7 @@ router.get('/backpacks', async (req, res) => {
 // Get single gear item
 router.get('/:id', async (req, res) => {
   try {
-    const result = await _query(
+    const result = await pool.query(
       'SELECT * FROM gear_items WHERE id = $1',
       [req.params.id]
     );
@@ -65,4 +65,4 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-export default router;
+module.exports = router;

@@ -1,7 +1,7 @@
-import { Pool } from 'pg';
+const { Pool } = require('pg');
 
 const pool = new Pool({
-  user: process.env.DB_USER || 'postgres',
+  user: process.env.DB_USER,
   host: process.env.DB_HOST || 'localhost',
   database: process.env.DB_NAME || 'ultralite',
   password: process.env.DB_PASSWORD || 'postgres',
@@ -18,4 +18,4 @@ pool.query('SELECT NOW()', (err, res) => {
   }
 });
 
-export default pool;
+module.exports = pool;
