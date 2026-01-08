@@ -1,0 +1,3 @@
+venv/
+scrape_*.py
+*.csv
