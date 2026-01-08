@@ -4,6 +4,15 @@ import { getBackpacks, createBag, getBag, addItemToBag, removeItemFromBag } from
 import GearSearch from '../components/GearSearch';
 import BagItemList from '../components/BagItemList';
 
+// Helper to categorize weight
+const getWeightCategory = (grams) => {
+  const kg = grams / 1000;
+  if (kg < 5) return { label: 'Ultralight', color: 'var(--color-primary-600)' };
+  if (kg < 9) return { label: 'Light', color: 'var(--color-success-600)' };
+  if (kg < 13) return { label: 'Standard', color: 'var(--color-warning-600)' };
+  return { label: 'Heavy', color: 'var(--color-accent-600)' };
+};
+
 export default function BagBuilder() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -83,103 +92,194 @@ export default function BagBuilder() {
   };
 
   if (isEdit && !bagData) {
-    return <div className="max-w-7xl mx-auto px-4 py-8">Loading...</div>;
+    return (
+      <div className="container py-8">
+        <div className="flex items-center justify-center py-20">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-8 h-8 rounded-lg animate-pulse" style={{ backgroundColor: 'var(--color-primary-200)' }}></div>
+            <span className="text-sm" style={{ color: 'var(--color-neutral-500)' }}>Loading bag...</span>
+          </div>
+        </div>
+      </div>
+    );
   }
 
+  const weightCategory = bagData ? getWeightCategory(bagData.total_weight_grams) : null;
+
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-8">
+    <div className="container py-8">
+      {/* Back Button & Title */}
+      <div className="mb-6">
         <button
           onClick={() => navigate('/bags')}
-          className="text-sm text-gray-600 hover:text-gray-900 mb-4"
+          className="btn btn-ghost btn-sm mb-4 -ml-2"
         >
-          ← Back to Bags
+          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          Back to Bags
         </button>
-        <h1 className="text-3xl font-bold text-gray-900">
+        <h1 className="text-heading text-2xl md:text-3xl">
           {isEdit ? 'Edit Bag' : 'Create New Bag'}
         </h1>
       </div>
 
       {!isEdit ? (
-        <form onSubmit={handleCreate} className="bg-white rounded-lg shadow p-6 mb-8">
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Bag Name *
-              </label>
-              <input
-                type="text"
-                value={bagName}
-                onChange={(e) => setBagName(e.target.value)}
-                placeholder="e.g., Glacier 3-Night Solo Pack"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Choose Your Backpack *
-              </label>
-              <select
-                value={selectedBackpack}
-                onChange={(e) => setSelectedBackpack(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              >
-                <option value="">Select a backpack...</option>
-                {backpacks.map((bp) => (
-                  <option key={bp.id} value={bp.id}>
-                    {bp.brand} {bp.model} ({bp.weight_grams}g)
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Description (optional)
-              </label>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Notes about this bag setup..."
-                rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
-            >
-              {loading ? 'Creating...' : 'Create Bag'}
-            </button>
-          </div>
-        </form>
-      ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div>
-            <div className="bg-white rounded-lg shadow p-6 mb-6">
-              <h2 className="text-xl font-semibold mb-2">{bagData.name}</h2>
-              <p className="text-sm text-gray-600 mb-4">
-                {bagData.backpack_brand} {bagData.backpack_model}
-              </p>
-              <div className="text-3xl font-bold text-blue-600">
-                {(bagData.total_weight_grams / 1000).toFixed(2)} kg
+        /* Create Form */
+        <div className="max-w-2xl">
+          <form onSubmit={handleCreate} className="card p-6 md:p-8">
+            <div className="space-y-6">
+              {/* Bag Name */}
+              <div>
+                <label className="label">
+                  Bag Name <span style={{ color: 'var(--color-accent-500)' }}>*</span>
+                </label>
+                <input
+                  type="text"
+                  value={bagName}
+                  onChange={(e) => setBagName(e.target.value)}
+                  placeholder="e.g., Glacier 3-Night Solo Pack"
+                  className="input"
+                  required
+                />
+                <p className="mt-1.5 text-xs" style={{ color: 'var(--color-neutral-500)' }}>
+                  Give your bag a descriptive name you'll remember
+                </p>
               </div>
-              <div className="text-sm text-gray-500">Total weight</div>
+
+              {/* Backpack Selection */}
+              <div>
+                <label className="label">
+                  Choose Your Backpack <span style={{ color: 'var(--color-accent-500)' }}>*</span>
+                </label>
+                <select
+                  value={selectedBackpack}
+                  onChange={(e) => setSelectedBackpack(e.target.value)}
+                  className="input"
+                  required
+                >
+                  <option value="">Select a backpack...</option>
+                  {backpacks.map((bp) => (
+                    <option key={bp.id} value={bp.id}>
+                      {bp.brand} {bp.model} ({bp.weight_grams}g)
+                    </option>
+                  ))}
+                </select>
+                <p className="mt-1.5 text-xs" style={{ color: 'var(--color-neutral-500)' }}>
+                  Your backpack weight is included in the total
+                </p>
+              </div>
+
+              {/* Description */}
+              <div>
+                <label className="label">Description <span style={{ color: 'var(--color-neutral-400)' }}>(optional)</span></label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Notes about this bag setup, like trip type or conditions..."
+                  rows={3}
+                  className="input"
+                  style={{ minHeight: '100px' }}
+                />
+              </div>
+
+              {/* Submit */}
+              <button
+                type="submit"
+                disabled={loading}
+                className="btn btn-primary w-full btn-lg"
+              >
+                {loading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Creating...
+                  </span>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                    Create Bag
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
+      ) : (
+        /* Edit Mode - Two Column Layout */
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+          {/* Left Column - Bag Info & Contents */}
+          <div className="lg:col-span-3 space-y-6">
+            {/* Bag Summary Card */}
+            <div className="card p-6">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                <div className="flex-1">
+                  <h2 className="text-heading text-xl mb-1">{bagData.name}</h2>
+                  <p className="text-caption flex items-center gap-1.5">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    {bagData.backpack_brand} {bagData.backpack_model}
+                  </p>
+                </div>
+                <div className="flex items-end gap-4">
+                  <div>
+                    <div className="text-4xl font-bold" style={{ color: weightCategory.color }}>
+                      {(bagData.total_weight_grams / 1000).toFixed(2)}
+                    </div>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-xs" style={{ color: 'var(--color-neutral-500)' }}>kg total</span>
+                      <span className="badge" style={{ 
+                        backgroundColor: `${weightCategory.color}15`,
+                        color: weightCategory.color
+                      }}>
+                        {weightCategory.label}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Weight breakdown bar */}
+              <div className="mt-6 pt-4 border-t" style={{ borderColor: 'var(--color-neutral-100)' }}>
+                <div className="flex items-center justify-between text-sm mb-2">
+                  <span style={{ color: 'var(--color-neutral-600)' }}>Weight breakdown</span>
+                  <span style={{ color: 'var(--color-neutral-500)' }}>
+                    {bagData.items?.length || 0} items + backpack
+                  </span>
+                </div>
+                <div className="h-3 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--color-neutral-100)' }}>
+                  <div 
+                    className="h-full rounded-full transition-all duration-500"
+                    style={{ 
+                      width: `${Math.min((bagData.total_weight_grams / 15000) * 100, 100)}%`,
+                      backgroundColor: weightCategory.color
+                    }}
+                  />
+                </div>
+                <div className="flex justify-between mt-1">
+                  <span className="text-xs" style={{ color: 'var(--color-neutral-400)' }}>0 kg</span>
+                  <span className="text-xs" style={{ color: 'var(--color-neutral-400)' }}>15 kg</span>
+                </div>
+              </div>
             </div>
 
+            {/* Bag Contents */}
             <BagItemList 
               items={bagData.items || []} 
               onRemove={handleRemoveItem}
             />
           </div>
 
-          <div>
-            <GearSearch onSelect={handleAddItem} />
+          {/* Right Column - Gear Search */}
+          <div className="lg:col-span-2">
+            <div className="lg:sticky lg:top-24">
+              <GearSearch onSelect={handleAddItem} />
+            </div>
           </div>
         </div>
       )}

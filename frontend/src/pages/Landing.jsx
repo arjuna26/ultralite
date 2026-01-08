@@ -1,0 +1,409 @@
+import { Link } from 'react-router-dom';
+import { useScrollReveal } from '../hooks/useScrollReveal';
+import PublicFooter from '../components/PublicFooter';
+
+// Icons as simple SVG components
+const BackpackIcon = () => (
+  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+  </svg>
+);
+
+const ScaleIcon = () => (
+  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+  </svg>
+);
+
+const DuplicateIcon = () => (
+  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+  </svg>
+);
+
+const MapIcon = () => (
+  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+  </svg>
+);
+
+const ChartIcon = () => (
+  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+  </svg>
+);
+
+const DatabaseIcon = () => (
+  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+  </svg>
+);
+
+const CheckIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+  </svg>
+);
+
+const StarIcon = ({ filled }) => (
+  <svg className="w-5 h-5" fill={filled ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+  </svg>
+);
+
+// Feature data
+const features = [
+  {
+    icon: BackpackIcon,
+    title: 'Build Your Perfect Pack',
+    description: 'Curate gear setups from our extensive catalog. Organize items by category and build bags tailored to any adventure.'
+  },
+  {
+    icon: ScaleIcon,
+    title: 'Track Every Gram',
+    description: 'Real-time weight calculations as you add or remove gear. Know exactly what your pack weighs before you hit the trail.'
+  },
+  {
+    icon: DuplicateIcon,
+    title: 'Duplicate & Iterate',
+    description: 'Found a setup that works? Duplicate it instantly. Tweak for different conditions without starting from scratch.'
+  },
+  {
+    icon: MapIcon,
+    title: 'Trip Planning',
+    description: 'Associate bags with trips. Plan multiple adventures and track which gear configuration you used for each.'
+  },
+  {
+    icon: ChartIcon,
+    title: 'Trip Stats & Insights',
+    description: 'Log miles, elevation, and nights. Record weather conditions and lessons learned for continuous improvement.'
+  },
+  {
+    icon: DatabaseIcon,
+    title: 'Extensive Gear Database',
+    description: 'Access thousands of verified gear weights from top brands. No more Googling specs—it\'s all here.'
+  }
+];
+
+// Pricing data
+const pricingPlans = [
+  {
+    name: 'Free',
+    price: '$0',
+    period: '/forever',
+    description: 'Perfect for getting started',
+    features: [
+      'Up to 3 bags',
+      'Basic gear catalog',
+      'Weight tracking',
+      '1 active trip'
+    ],
+    cta: 'Get Started',
+    highlighted: false
+  },
+  {
+    name: 'Pro',
+    price: '$5',
+    period: '/month',
+    description: 'For serious backpackers',
+    features: [
+      'Unlimited bags',
+      'Full gear catalog',
+      'Duplicate bags',
+      'Unlimited trips',
+      'Trip statistics',
+      'Export to CSV'
+    ],
+    cta: 'Start Free Trial',
+    highlighted: true
+  },
+  {
+    name: 'Team',
+    price: '$12',
+    period: '/month',
+    description: 'Share with your crew',
+    features: [
+      'Everything in Pro',
+      'Up to 5 team members',
+      'Shared bags & trips',
+      'Team analytics',
+      'Priority support'
+    ],
+    cta: 'Contact Us',
+    highlighted: false
+  }
+];
+
+// Testimonial data
+const testimonials = [
+  {
+    quote: "Finally ditched my spreadsheet! UltraLite makes it so easy to experiment with different gear setups without losing my mind.",
+    author: "Sarah K.",
+    role: "Thru-hiker, PCT '24",
+    rating: 5
+  },
+  {
+    quote: "The duplicate feature is a game-changer. I have base setups for summer, winter, and ultralight trips that I just clone and tweak.",
+    author: "Marcus T.",
+    role: "Weekend Warrior",
+    rating: 5
+  },
+  {
+    quote: "Being able to see exactly how much each item contributes to my pack weight helped me cut 3 pounds. Worth every penny.",
+    author: "Jen L.",
+    role: "Section Hiker",
+    rating: 5
+  }
+];
+
+export default function Landing() {
+  // Initialize scroll reveal
+  useScrollReveal();
+
+  return (
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--color-surface-primary)' }}>
+      {/* Navigation */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b" style={{ borderColor: 'var(--color-neutral-200)' }}>
+        <div className="container">
+          <div className="flex items-center justify-between h-16">
+            <Link to="/" className="flex items-center gap-2 hover-scale">
+                <img src="/favicon.svg" alt="UltraLite" className="w-8 h-8" />
+                <span className="text-xl font-semibold" style={{ color: 'var(--color-neutral-900)' }}>UltraLite</span>
+            </Link>
+            
+            <div className="hidden md:flex items-center gap-8">
+              <a href="#features" className="nav-link hover-underline text-sm">Features</a>
+              <a href="#pricing" className="nav-link hover-underline text-sm">Pricing</a>
+              <a href="#reviews" className="nav-link hover-underline text-sm">Reviews</a>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <Link to="/login" className="btn btn-ghost btn-sm">Log in</Link>
+              <Link to="/login" className="btn btn-primary btn-sm">Get Started</Link>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {/* Gradient accent bar */}
+      <div className="gradient-bar h-1 fixed top-16 left-0 right-0 z-40 opacity-80"></div>
+
+      {/* Hero Section */}
+      <section className="hero-gradient topo-pattern pt-32 pb-20 md:pt-40 md:pb-32">
+        <div className="container">
+          <div className="max-w-3xl mx-auto text-center">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 hover-glow" 
+                 style={{ backgroundColor: 'var(--color-primary-100)', color: 'var(--color-primary-700)' }}>
+              <span className="text-sm font-medium">Built for lightweight backpackers</span>
+            </div>
+            
+            <h1 className="text-display text-4xl md:text-5xl lg:text-6xl mb-6" 
+                style={{ color: 'var(--color-neutral-900)' }}>
+              Pack Smarter,<br /> Hike
+              <span className="text-gradient-hero"> Lighter</span>
+            </h1>
+            
+            <p className="text-body text-lg md:text-xl mb-8 max-w-2xl mx-auto">
+              The trip-centric gear management app that helps you build, track, and optimize your backpacking setups. 
+              Know exactly what you're carrying before you hit the trail.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 scroll-reveal-right">
+              <Link to="/login" className="btn btn-primary btn-lg w-full sm:w-auto">
+                Start Building Your Pack
+              </Link>
+              <a href="#features" className="btn btn-outline btn-lg w-full sm:w-auto">
+                See How It Works
+              </a>
+            </div>
+
+            {/* Stats */}
+            <div className="grid grid-cols-3 gap-8 mt-16 pt-8 border-t scroll-reveal-left" 
+                 style={{ borderColor: 'var(--color-neutral-200)' }}>
+              <div className="p-4 rounded-lg">
+                <div className="text-3xl md:text-4xl font-bold text-gradient">2,500+</div>
+                <div className="text-caption">Gear Items</div>
+              </div>
+              <div className="p-4 rounded-lg">
+                <div className="text-3xl md:text-4xl font-bold text-gradient">15K+</div>
+                <div className="text-caption">Bags Created</div>
+              </div>
+              <div className="p-4 rounded-lg">
+                <div className="text-3xl md:text-4xl font-bold text-gradient">4.9★</div>
+                <div className="text-caption">User Rating</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section id="features" className="section" style={{ backgroundColor: 'var(--color-surface-secondary)' }}>
+        <div className="container">
+          <div className="text-center mb-16 scroll-reveal">
+            <span className="badge badge-primary mb-4">Features</span>
+            <h2 className="text-display text-3xl md:text-4xl mb-4" style={{ color: 'var(--color-neutral-900)' }}>
+              Everything you need to go <span className="text-gradient">ultralight</span>
+            </h2>
+            <p className="text-body max-w-2xl mx-auto">
+              From planning to post-trip analysis, UltraLite gives you the tools to continuously improve your pack weight.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {features.map((feature, index) => (
+              <div 
+                key={index} 
+                className="card card-hover hover-glow p-6 scroll-reveal"
+                style={{ transitionDelay: `${index * 50}ms` }}
+              >
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 hover-rotate" 
+                     style={{ backgroundColor: 'var(--color-primary-100)', color: 'var(--color-primary-600)' }}>
+                  <feature.icon />
+                </div>
+                <h3 className="text-heading text-lg mb-2">{feature.title}</h3>
+                <p className="text-body text-sm">{feature.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* How it Works Section */}
+      <section className="section">
+        <div className="container">
+          <div className="text-center mb-16 scroll-reveal">
+            <span className="badge badge-secondary mb-4">How It Works</span>
+            <h2 className="text-display text-3xl md:text-4xl mb-4" style={{ color: 'var(--color-neutral-900)' }}>
+              Three steps to a lighter pack
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            {[
+              { step: '01', title: 'Build Your Bag', desc: 'Select a backpack and add gear from our catalog. Watch your weight update in real-time.' },
+              { step: '02', title: 'Plan Your Trip', desc: 'Associate your bag with an upcoming adventure. Add details like location and dates.' },
+              { step: '03', title: 'Iterate & Improve', desc: 'After your trip, log stats and duplicate your bag to tweak for next time.' }
+            ].map((item, index) => (
+              <div key={index} className="text-center p-6 rounded-xl" style={{ transitionDelay: `${index * 100}ms` }}>
+                <div className="text-6xl font-bold mb-4 text-gradient" style={{ opacity: 0.3 }}>
+                  {item.step}
+                </div>
+                <h3 className="text-heading text-xl mb-2">{item.title}</h3>
+                <p className="text-body">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section id="pricing" className="section" style={{ backgroundColor: 'var(--color-surface-secondary)' }}>
+        <div className="container">
+          <div className="text-center mb-16 scroll-reveal">
+            <span className="badge badge-accent mb-4">Pricing</span>
+            <h2 className="text-display text-3xl md:text-4xl mb-4" style={{ color: 'var(--color-neutral-900)' }}>
+              Simple, transparent pricing
+            </h2>
+            <p className="text-body max-w-2xl mx-auto">
+              Start free and upgrade when you need more. No hidden fees, cancel anytime.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {pricingPlans.map((plan, index) => (
+              <div 
+                key={index}
+                className={`card hover-glow p-6 scroll-reveal flex flex-col ${plan.highlighted ? 'card-highlighted' : ''}`}
+                style={{
+                  transitionDelay: `${index * 100}ms`,
+                  ...(plan.highlighted ? { '--tw-ring-color': 'var(--color-primary-500)' } : {})
+                }}
+              >
+                <div className="flex items-center gap-5 mb-1">
+                    <h3 className="text-heading text-xl">{plan.name}</h3>
+                    {plan.highlighted && (
+                        <div className="badge badge-primary">Most Popular</div>
+                    )}
+                </div>
+                <p className="text-caption mb-4">{plan.description}</p>
+                <div className="mb-6">
+                  <span className="text-4xl font-bold" style={{ color: 'var(--color-neutral-900)' }}>{plan.price}</span>
+                  <span className="text-caption">{plan.period}</span>
+                </div>
+                <ul className="space-y-3 mb-6">
+                  {plan.features.map((feature, fIndex) => (
+                    <li key={fIndex} className="flex items-center gap-2 text-sm" style={{ color: 'var(--color-neutral-700)' }}>
+                      <span style={{ color: 'var(--color-primary-500)' }}><CheckIcon /></span>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+                <Link to="/login" className={`btn mt-auto w-full ${plan.highlighted ? 'btn-primary' : 'btn-secondary'}`}>
+                  {plan.cta}
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section id="reviews" className="section">
+        <div className="container">
+          <div className="text-center mb-16 scroll-reveal">
+            <span className="badge badge-secondary mb-4">Reviews</span>
+            <h2 className="text-display text-3xl md:text-4xl mb-4" style={{ color: 'var(--color-neutral-900)' }}>
+              Loved by backpackers worldwide
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            {testimonials.map((testimonial, index) => (
+              <div key={index} className="card hover-lift p-6 scroll-reveal" style={{ transitionDelay: `${index * 100}ms` }}>
+                <div className="flex gap-1 mb-4" style={{ color: 'var(--color-accent-400)' }}>
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <StarIcon key={i} filled />
+                  ))}
+                </div>
+                <p className="text-body mb-6">"{testimonial.quote}"</p>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium"
+                       style={{ backgroundColor: 'var(--color-secondary-200)', color: 'var(--color-secondary-700)' }}>
+                    {testimonial.author.split(' ').map(n => n[0]).join('')}
+                  </div>
+                  <div>
+                    <div className="font-medium text-sm" style={{ color: 'var(--color-neutral-900)' }}>
+                      {testimonial.author}
+                    </div>
+                    <div className="text-caption text-xs">{testimonial.role}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="section cta-gradient scroll-reveal">
+        <div className="container">
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-display text-3xl md:text-4xl mb-4 text-white">
+              Ready to lighten your load?
+            </h2>
+            <p className="text-lg mb-8" style={{ color: 'var(--color-primary-200)' }}>
+              Join thousands of backpackers who've already discovered smarter packing.
+            </p>
+            <Link to="/login" className="btn btn-lg px-8 hover-lift" 
+                  style={{ backgroundColor: 'white', color: 'var(--color-primary-700)' }}>
+              Get Started Free
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <PublicFooter />
+    </div>
+  );
+}

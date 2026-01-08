@@ -2,6 +2,15 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getBags, deleteBag, duplicateBag } from '../api/client';
 
+// Helper to categorize weight
+const getWeightCategory = (grams) => {
+  const kg = grams / 1000;
+  if (kg < 5) return { label: 'Ultralight', color: 'var(--color-primary-600)' };
+  if (kg < 9) return { label: 'Light', color: 'var(--color-success-600)' };
+  if (kg < 13) return { label: 'Standard', color: 'var(--color-warning-600)' };
+  return { label: 'Heavy', color: 'var(--color-accent-600)' };
+};
+
 export default function BagList() {
   const [bags, setBags] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -45,76 +54,135 @@ export default function BagList() {
   };
 
   if (loading) {
-    return <div className="max-w-7xl mx-auto px-4 py-8">Loading...</div>;
+    return (
+      <div className="container py-8">
+        <div className="flex items-center justify-center py-20">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-8 h-8 rounded-lg animate-pulse" style={{ backgroundColor: 'var(--color-primary-200)' }}></div>
+            <span className="text-sm" style={{ color: 'var(--color-neutral-500)' }}>Loading bags...</span>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">My Bags</h1>
-        <Link
-          to="/bags/new"
-          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-        >
-          + New Bag
+    <div className="container py-8">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-heading text-2xl md:text-3xl mb-1">My Bags</h1>
+          <p className="text-caption">
+            {bags.length === 0 
+              ? 'Create your first gear configuration' 
+              : `${bags.length} bag${bags.length !== 1 ? 's' : ''} configured`}
+          </p>
+        </div>
+        <Link to="/bags/new" className="btn btn-primary">
+          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          New Bag
         </Link>
       </div>
 
       {bags.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-gray-500 mb-4">No bags yet. Create your first one!</p>
-          <Link
-            to="/bags/new"
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
-          >
+        /* Empty State */
+        <div className="card p-12 text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-6" 
+               style={{ backgroundColor: 'var(--color-secondary-100)' }}>
+            <svg className="w-8 h-8" style={{ color: 'var(--color-secondary-500)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+          </div>
+          <h2 className="text-heading text-xl mb-2">No bags yet</h2>
+          <p className="text-body mb-6 max-w-sm mx-auto">
+            Create your first bag to start tracking your gear weight. Each bag represents a complete pack configuration.
+          </p>
+          <Link to="/bags/new" className="btn btn-primary">
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
             Create First Bag
           </Link>
         </div>
       ) : (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {bags.map((bag) => (
-            <div key={bag.id} className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">{bag.name}</h3>
-                  <p className="text-sm text-gray-500">
-                    {bag.backpack_brand} {bag.backpack_model}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <div className="text-2xl font-bold text-blue-600">
-                    {(bag.total_weight_grams / 1000).toFixed(2)}
+        /* Bags Grid */
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {bags.map((bag, index) => {
+            const weightCategory = getWeightCategory(bag.total_weight_grams);
+            return (
+              <div 
+                key={bag.id} 
+                className="card card-hover p-6 stagger-item"
+                style={{ animationDelay: `${index * 50}ms` }}
+              >
+                {/* Header */}
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex-1 min-w-0 pr-4">
+                    <h3 className="text-heading text-lg truncate">{bag.name}</h3>
+                    <p className="text-caption text-sm flex items-center gap-1.5 mt-1">
+                      <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                      </svg>
+                      <span className="truncate">{bag.backpack_brand} {bag.backpack_model}</span>
+                    </p>
                   </div>
-                  <div className="text-xs text-gray-500">kg</div>
+                  <div className="text-right flex-shrink-0">
+                    <div className="text-2xl font-bold" style={{ color: weightCategory.color }}>
+                      {(bag.total_weight_grams / 1000).toFixed(2)}
+                    </div>
+                    <div className="text-xs" style={{ color: 'var(--color-neutral-500)' }}>kg</div>
+                  </div>
+                </div>
+                
+                {/* Weight Badge */}
+                <div className="mb-4">
+                  <span className="badge" style={{ 
+                    backgroundColor: `${weightCategory.color}15`,
+                    color: weightCategory.color
+                  }}>
+                    {weightCategory.label}
+                  </span>
+                </div>
+                
+                {bag.description && (
+                  <p className="text-body text-sm mb-4 line-clamp-2">{bag.description}</p>
+                )}
+
+                {/* Actions */}
+                <div className="flex gap-2 pt-4 border-t" style={{ borderColor: 'var(--color-neutral-100)' }}>
+                  <Link
+                    to={`/bags/${bag.id}/edit`}
+                    className="btn btn-secondary btn-sm flex-1"
+                  >
+                    <svg className="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Edit
+                  </Link>
+                  <button
+                    onClick={() => handleDuplicate(bag.id, bag.name)}
+                    className="btn btn-secondary btn-sm flex-1"
+                  >
+                    <svg className="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    Clone
+                  </button>
+                  <button
+                    onClick={() => handleDelete(bag.id)}
+                    className="btn btn-danger btn-sm px-3"
+                    title="Delete bag"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
                 </div>
               </div>
-              
-              {bag.description && (
-                <p className="text-sm text-gray-600 mb-4">{bag.description}</p>
-              )}
-
-              <div className="flex space-x-2">
-                <Link
-                  to={`/bags/${bag.id}/edit`}
-                  className="flex-1 text-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-                >
-                  Edit
-                </Link>
-                <button
-                  onClick={() => handleDuplicate(bag.id, bag.name)}
-                  className="flex-1 px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-                >
-                  Duplicate
-                </button>
-                <button
-                  onClick={() => handleDelete(bag.id)}
-                  className="px-3 py-2 border border-red-300 text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50"
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
