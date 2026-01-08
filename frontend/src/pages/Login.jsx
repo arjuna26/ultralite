@@ -58,9 +58,7 @@ export default function Login({ onLogin }) {
             <div className="text-center mb-8">
               <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4" 
                    style={{ backgroundColor: 'var(--color-primary-100)' }}>
-                <svg className="w-7 h-7" style={{ color: 'var(--color-primary-600)' }} fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
+                <img src="/favicon.svg" alt="UltraLite" className="w-8 h-8" />
               </div>
               <h1 className="text-heading text-2xl mb-2">
                 {isRegister ? 'Create your account' : 'Welcome back'}

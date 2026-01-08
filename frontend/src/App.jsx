@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useCallback } from 'react';
 import Navbar from './components/Navbar';
+import ScrollToTop from './components/ScrollToTop';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import BagList from './pages/BagList';
@@ -44,6 +45,7 @@ function AppContent({ user, setUser, loading }) {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'var(--color-surface-primary)' }}>
+      <ScrollToTop />
       {user && <Navbar user={user} onLogout={handleLogout} />}
       
       <Routes>
