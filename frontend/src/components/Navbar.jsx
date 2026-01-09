@@ -64,10 +64,10 @@ export default function Navbar({ user, onLogout }) {
             <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg" style={{ backgroundColor: 'var(--color-neutral-100)' }}>
               <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium"
                    style={{ backgroundColor: 'var(--color-primary-200)', color: 'var(--color-primary-700)' }}>
-                {user.email.charAt(0).toUpperCase()}
+                {((user.nickname && user.nickname.trim()) || user.email).charAt(0).toUpperCase()}
               </div>
               <span className="text-sm font-medium" style={{ color: 'var(--color-neutral-700)' }}>
-                {user.email.split('@')[0]}
+                {(user.nickname && user.nickname.trim()) || user.email.split('@')[0]}
               </span>
             </div>
             <button

@@ -6,6 +6,7 @@ const api = axios.create({
     baseURL: API_URL,
 });
 
+// Request interceptor - adds auth token to all requests
 api.interceptors.request.use((config) => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -14,22 +15,83 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
-// auth
-export const register = (email, password) => 
-    api.post('/auth/register', { email, password });
+// Response interceptor - handle auth errors
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        // If we get a 401/403, clear the token and redirect to login
+        if (error.response?.status === 401 || error.response?.status === 403) {
+            localStorage.removeItem('token');
+            // Don't redirect here - let the app handle it
+        }
+        return Promise.reject(error);
+    }
+);
 
-export const login = (email, password) => 
-    api.post('/auth/login', { email, password });
+// ============================================
+// AUTH FUNCTIONS
+// ============================================
 
+/**
+ * Register a new user
+ * @param {string} email 
+ * @param {string} password 
+ * @param {string} nickname - Optional, defaults to email prefix
+ */
+export const register = async (email, password, nickname) => {
+    return api.post('/auth/register', { email, password, nickname });
+};
+
+/**
+ * Login an existing user
+ * @param {string} email 
+ * @param {string} password 
+ */
+export const login = async (email, password) => {
+    return api.post('/auth/login', { email, password });
+};
+
+/**
+ * Get current authenticated user
+ */
 export const getMe = () => 
     api.get('/auth/me');
 
-// gear and bags
+/**
+ * Update current user's profile
+ * @param {Object} data - { nickname }
+ */
+export const updateProfile = (data) =>
+    api.put('/auth/me', data);
+
+/**
+ * Change password
+ * @param {string} currentPassword 
+ * @param {string} newPassword 
+ */
+export const changePassword = (currentPassword, newPassword) =>
+    api.put('/auth/me/password', { currentPassword, newPassword });
+
+/**
+ * Logout - clears local storage
+ */
+export const logout = () => {
+    localStorage.removeItem('token');
+};
+
+// ============================================
+// GEAR FUNCTIONS
+// ============================================
+
 export const getGear = (params) => 
     api.get('/gear', { params });
 
 export const getBackpacks = () => 
     api.get('/gear/backpacks');
+
+// ============================================
+// BAG FUNCTIONS
+// ============================================
 
 export const getBags = () => 
   api.get('/bags');
@@ -55,7 +117,10 @@ export const addItemToBag = (bagId, gearItemId, quantity = 1) =>
 export const removeItemFromBag = (bagId, itemId) => 
   api.delete(`/bags/${bagId}/items/${itemId}`);
 
-// trips
+// ============================================
+// TRIP FUNCTIONS
+// ============================================
+
 export const getTrips = () => 
   api.get('/trips');
 

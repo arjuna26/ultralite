@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import ScrollToTop from './components/ScrollToTop';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
+import OAuthCallback from './pages/OAuthCallback';
 import BagList from './pages/BagList';
 import BagBuilder from './pages/BagBuilder';
 import TripList from './pages/TripList';
@@ -11,7 +12,7 @@ import TripDetail from './pages/TripDetail';
 import About from './pages/About';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
-import { getMe } from './api/client';
+import { getMe, logout as apiLogout } from './api/client';
 
 // Wrapper component to access navigate within Router
 function AppContent({ user, setUser, loading }) {
@@ -23,7 +24,7 @@ function AppContent({ user, setUser, loading }) {
   }, [setUser]);
 
   const handleLogout = useCallback(() => {
-    localStorage.removeItem('token');
+    apiLogout(); // Clears localStorage
     setUser(null);
     navigate('/'); // Redirect to landing page
   }, [setUser, navigate]);
@@ -58,6 +59,12 @@ function AppContent({ user, setUser, loading }) {
         <Route 
           path="/login" 
           element={user ? <Navigate to="/bags" /> : <Login onLogin={handleLogin} />} 
+        />
+
+        {/* OAuth callback - public route */}
+        <Route 
+          path="/auth/callback" 
+          element={<OAuthCallback onLogin={handleLogin} />} 
         />
 
         {/* Public info pages */}
@@ -99,20 +106,22 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      getMe()
-        .then(res => {
+    // Check for existing token/session
+    const initAuth = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const res = await getMe();
           setUser(res.data);
-          setLoading(false);
-        })
-        .catch(() => {
+        } catch (err) {
+          console.warn('Token validation failed:', err);
           localStorage.removeItem('token');
-          setLoading(false);
-        });
-    } else {
+        }
+      }
       setLoading(false);
-    }
+    };
+
+    initAuth();
   }, []);
 
   return (
