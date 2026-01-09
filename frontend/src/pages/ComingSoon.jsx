@@ -37,7 +37,7 @@ const ComingSoon = () => {
         <h1 
           className="text-display mb-6"
           style={{
-            fontSize: 'clamp(3rem, 8vw, 6rem)',
+            fontSize: 'clamp(3rem, 8vw, 6rem)', 
             lineHeight: 1.1,
             fontWeight: 700,
             color: 'white',
