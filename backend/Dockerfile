@@ -29,8 +29,4 @@ USER nodejs
 
 EXPOSE 3000
 
-# Health check using your existing endpoint
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD node -e "fetch('https://api.ultralite.app:3000/api/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
-
 CMD ["node", "server.js"]
