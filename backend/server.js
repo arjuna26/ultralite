@@ -7,6 +7,7 @@ const authRoutes = require('./routes/auth');
 const gearRoutes = require('./routes/gear');
 const bagRoutes = require('./routes/bags');
 const tripRoutes = require('./routes/trips');
+const waitlistRoutes = require('./routes/waitlist');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -17,6 +18,12 @@ const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 10, // 10 attempts per window
   message: { error: 'Too many attempts, please try again later' }
+});
+
+const waitlistLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 5, // 5 signups per hour per IP
+  message: { error: 'Too many signup attempts, please try again later' }
 });
 
 app.use(helmet());
@@ -34,12 +41,14 @@ app.use(cors({
 
 app.use(express.json());
 
+app.use('/api/auth', authRoutes);
 app.use('/api/auth/login', authLimiter);
 app.use('/api/auth/register', authLimiter);
-app.use('/api/auth', authRoutes);
 app.use('/api/gear', gearRoutes);
 app.use('/api/bags', bagRoutes);
 app.use('/api/trips', tripRoutes);
+app.use('/api/waitlist', waitlistLimiter, waitlistRoutes);
+
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

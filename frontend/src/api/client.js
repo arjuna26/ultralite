@@ -79,6 +79,13 @@ export const logout = () => {
     localStorage.removeItem('token');
 };
 
+/**
+ * Join waitlist (public, no auth required)
+ * @param {string} email 
+ */
+export const joinWaitlist = (email) =>
+    api.post('/waitlist', { email });
+
 // ============================================
 // GEAR FUNCTIONS
 // ============================================

@@ -3,6 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Navbar from './components/Navbar';
 import ScrollToTop from './components/ScrollToTop';
 import Landing from './pages/Landing';
+import ComingSoon from './pages/ComingSoon';
 import Login from './pages/Login';
 import OAuthCallback from './pages/OAuthCallback';
 import BagList from './pages/BagList';
@@ -13,6 +14,9 @@ import About from './pages/About';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 import { getMe, logout as apiLogout } from './api/client';
+
+// Check if we should show coming soon page
+const isComingSoon = import.meta.env.VITE_COMING_SOON === 'true';
 
 // Wrapper component to access navigate within Router
 function AppContent({ user, setUser, loading }) {
@@ -106,6 +110,12 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // If coming soon mode, skip auth check
+    if (isComingSoon) {
+      setLoading(false);
+      return;
+    }
+
     // Check for existing token/session
     const initAuth = async () => {
       const token = localStorage.getItem('token');
@@ -123,6 +133,11 @@ function App() {
 
     initAuth();
   }, []);
+
+  // If coming soon mode, just show that page
+  if (isComingSoon) {
+    return <ComingSoon />;
+  }
 
   return (
     <BrowserRouter>
