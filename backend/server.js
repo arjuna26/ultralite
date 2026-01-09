@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet')
 require('dotenv').config();
 
 const authRoutes = require('./routes/auth');
@@ -10,9 +11,31 @@ const tripRoutes = require('./routes/trips');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
+const rateLimit = require('express-rate-limit');
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // 10 attempts per window
+  message: { error: 'Too many attempts, please try again later' }
+});
+
+app.use(helmet());
+
+app.use(cors({
+  origin: [
+    'http://ultralite.app',
+    'https://ultralite.app',
+    'https://www.ultralite.app',
+    'https://ultralite.vercel.app',
+    'http://localhost:5173'
+  ],
+  credentials: true
+}));
+
 app.use(express.json());
 
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/register', authLimiter);
 app.use('/api/auth', authRoutes);
 app.use('/api/gear', gearRoutes);
 app.use('/api/bags', bagRoutes);

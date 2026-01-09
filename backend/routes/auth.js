@@ -254,10 +254,11 @@ router.post('/oauth/callback', async (req, res) => {
 
     const supabase = getSupabaseAdmin();
 
-    // Get user from Supabase using the user ID
-    const { data: { user: supabaseUser }, error: userError } = await supabase.auth.admin.getUserById(user_id);
+    // Verify the access token and get the user it belongs to
+    const { data: { user: supabaseUser }, error: userError } = await supabase.auth.getUser(access_token);
 
-    if (userError || !supabaseUser) {
+    // Verify token is valid AND belongs to the claimed user_id
+    if (userError || !supabaseUser || supabaseUser.id !== user_id) {
       return res.status(401).json({ error: 'Invalid or expired OAuth session' });
     }
 
