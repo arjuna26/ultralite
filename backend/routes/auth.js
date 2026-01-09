@@ -243,4 +243,45 @@ router.put('/me/password', authenticateToken, async (req, res) => {
   }
 });
 
+// OAuth callback - exchange Supabase session for our JWT
+router.post('/oauth/callback', async (req, res) => {
+  try {
+    const { access_token, user_id } = req.body;
+
+    if (!access_token || !user_id) {
+      return res.status(400).json({ error: 'Access token and user ID are required' });
+    }
+
+    const supabase = getSupabaseAdmin();
+
+    // Get user from Supabase using the user ID
+    const { data: { user: supabaseUser }, error: userError } = await supabase.auth.admin.getUserById(user_id);
+
+    if (userError || !supabaseUser) {
+      return res.status(401).json({ error: 'Invalid or expired OAuth session' });
+    }
+
+    // Get user metadata (nickname, etc.)
+    const nickname = supabaseUser.user_metadata?.nickname || 
+                     supabaseUser.user_metadata?.full_name || 
+                     supabaseUser.email?.split('@')[0] || 
+                     'User';
+
+    // Generate our JWT for API access
+    const token = jwt.sign({ userId: supabaseUser.id }, JWT_SECRET, { expiresIn: '7d' });
+
+    res.json({
+      user: {
+        id: supabaseUser.id,
+        email: supabaseUser.email,
+        nickname: nickname
+      },
+      token
+    });
+  } catch (error) {
+    console.error('OAuth callback error:', error);
+    res.status(500).json({ error: 'Failed to complete OAuth sign in' });
+  }
+});
+
 module.exports = router;
