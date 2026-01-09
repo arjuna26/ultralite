@@ -13,7 +13,6 @@ WORKDIR /app
 RUN groupadd --gid 1001 nodejs \
     && useradd --uid 1001 --gid nodejs --shell /bin/bash --create-home nodejs
 
-ENV NODE_OPTIONS="--dns-result-order=ipv4first"
 ENV NODE_ENV=production
 
 # Copy package files and install dependencies
