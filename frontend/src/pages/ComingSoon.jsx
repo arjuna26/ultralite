@@ -31,14 +31,6 @@ const ComingSoon = () => {
         overflow: 'hidden'
       }}
     >
-      {/* Subtle pattern overlay */}
-      <div 
-        className="absolute inset-0 opacity-10"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 10 Q60 25 50 40 Q40 55 50 70 Q60 85 50 90' fill='none' stroke='%23ffffff' stroke-width='1'/%3E%3Cpath d='M30 15 Q40 30 30 45 Q20 60 30 75 Q40 90 30 95' fill='none' stroke='%23ffffff' stroke-width='1'/%3E%3Cpath d='M70 5 Q80 20 70 35 Q60 50 70 65 Q80 80 70 85' fill='none' stroke='%23ffffff' stroke-width='1'/%3E%3C/svg%3E")`,
-          backgroundSize: '200px 200px'
-        }}
-      />
 
       <div className="text-center text-white p-8 max-w-2xl mx-auto relative z-10 animate-fade-in">
         {/* Hero Title */}
