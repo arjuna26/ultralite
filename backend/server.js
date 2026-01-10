@@ -26,10 +26,7 @@ const waitlistLimiter = rateLimit({
   message: { error: 'Too many signup attempts, please try again later' }
 });
 
-app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" },
-  crossOriginEmbedderPolicy: false
-}));
+app.use(helmet());
 
 app.use(cors({
   origin: [

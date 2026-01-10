@@ -1,6 +1,5 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const { createClient } = require('@supabase/supabase-js');
 const { authenticateToken, JWT_SECRET } = require('../middleware/auth');
 const { getSupabaseAdmin } = require('../config/supabase');
 
@@ -253,36 +252,13 @@ router.post('/oauth/callback', async (req, res) => {
       return res.status(400).json({ error: 'Access token and user ID are required' });
     }
 
-    // Create anon client to verify the access token
-    // The access_token from frontend is meant for anon key, not service role
-    const SUPABASE_URL = process.env.SUPABASE_URL;
-    const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
-
-    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-      return res.status(500).json({ error: 'Supabase configuration error' });
-    }
-
-    const anonClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      }
-    });
-
-    // Verify the access token and get the user it belongs to
-    const { data: { user: verifiedUser }, error: verifyError } = await anonClient.auth.getUser(access_token);
-
-    // Verify token is valid AND belongs to the claimed user_id
-    if (verifyError || !verifiedUser || verifiedUser.id !== user_id) {
-      return res.status(401).json({ error: 'Invalid or expired OAuth session' });
-    }
-
-    // Get full user details from admin client (for metadata, etc.)
     const supabase = getSupabaseAdmin();
+
+    // Get user from Supabase using the user ID
     const { data: { user: supabaseUser }, error: userError } = await supabase.auth.admin.getUserById(user_id);
 
     if (userError || !supabaseUser) {
-      return res.status(401).json({ error: 'User not found' });
+      return res.status(401).json({ error: 'Invalid or expired OAuth session' });
     }
 
     // Get user metadata (nickname, etc.)
