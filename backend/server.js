@@ -26,14 +26,16 @@ const waitlistLimiter = rateLimit({
   message: { error: 'Too many signup attempts, please try again later' }
 });
 
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
 
 app.use(cors({
   origin: [
     'http://ultralite.app',
     'https://ultralite.app',
     'https://www.ultralite.app',
-    'https://ultralite.vercel.app',
+    /^https:\/\/ultralite.*\.vercel\.app$/,  // Match any Vercel preview deployment
     'http://localhost:5173'
   ],
   credentials: true
@@ -41,13 +43,17 @@ app.use(cors({
 
 app.use(express.json());
 
-app.use('/api/auth', authRoutes);
+// Apply rate limiters BEFORE mounting routes
 app.use('/api/auth/login', authLimiter);
 app.use('/api/auth/register', authLimiter);
+app.use('/api/waitlist', waitlistLimiter);
+
+// Mount routes
+app.use('/api/auth', authRoutes);
 app.use('/api/gear', gearRoutes);
 app.use('/api/bags', bagRoutes);
 app.use('/api/trips', tripRoutes);
-app.use('/api/waitlist', waitlistLimiter, waitlistRoutes);
+app.use('/api/waitlist', waitlistRoutes);
 
 
 app.get('/api/health', (req, res) => {
