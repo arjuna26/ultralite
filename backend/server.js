@@ -10,6 +10,7 @@ const tripRoutes = require('./routes/trips');
 const waitlistRoutes = require('./routes/waitlist');
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 3000;
 
 const rateLimit = require('express-rate-limit');
@@ -35,7 +36,7 @@ app.use(cors({
     'http://ultralite.app',
     'https://ultralite.app',
     'https://www.ultralite.app',
-    /^https:\/\/ultralite.*\.vercel\.app$/,  // Match any Vercel preview deployment
+    /^https:\/\/ultralite.*\.vercel\.app$/,
     'http://localhost:5173'
   ],
   credentials: true
