@@ -209,8 +209,6 @@ const ComingSoon = () => {
             </svg>
           </a>
         </div>
-
-
       </div>
     </div>
   );
