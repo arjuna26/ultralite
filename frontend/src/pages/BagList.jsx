@@ -119,15 +119,29 @@ export default function BagList() {
               >
                 {/* Header */}
                 <div className="flex justify-between items-start mb-4">
+                  {/* Backpack Image */}
+                  <div className="w-14 h-14 rounded-lg mr-3 flex-shrink-0 overflow-hidden flex items-center justify-center"
+                       style={{ backgroundColor: 'var(--color-neutral-100)' }}>
+                    {bag.backpack_image_url ? (
+                      <img 
+                        src={bag.backpack_image_url} 
+                        alt={`${bag.backpack_brand} ${bag.backpack_model}`}
+                        className="w-full h-full object-contain"
+                      />
+                    ) : (
+                      <svg className="w-6 h-6" style={{ color: 'var(--color-neutral-400)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                      </svg>
+                    )}
+                  </div>
+                  
                   <div className="flex-1 min-w-0 pr-4">
                     <h3 className="text-heading text-lg truncate">{bag.name}</h3>
-                    <p className="text-caption text-sm flex items-center gap-1.5 mt-1">
-                      <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                      </svg>
+                    <p className="text-caption text-sm mt-1">
                       <span className="truncate">{bag.backpack_brand} {bag.backpack_model}</span>
                     </p>
                   </div>
+                  
                   <div className="text-right flex-shrink-0">
                     <div className="text-2xl font-bold" style={{ color: weightCategory.color }}>
                       {(bag.total_weight_grams / 1000).toFixed(2)}

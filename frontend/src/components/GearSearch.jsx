@@ -87,7 +87,8 @@ export default function GearSearch({ onSelect }) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search gear by name or brand..."
-            className="input pl-10"
+            className="input"
+            style={{ paddingLeft: '2.5rem' }}
           />
         </div>
         
