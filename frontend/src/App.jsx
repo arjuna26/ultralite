@@ -5,6 +5,7 @@ import ScrollToTop from './components/ScrollToTop';
 import Landing from './pages/Landing';
 import ComingSoon from './pages/ComingSoon';
 import Login from './pages/Login';
+import ResetPassword from './pages/ResetPassword';
 import OAuthCallback from './pages/OAuthCallback';
 import BagList from './pages/BagList';
 import BagBuilder from './pages/BagBuilder';
@@ -63,6 +64,12 @@ function AppContent({ user, setUser, loading }) {
         <Route 
           path="/login" 
           element={user ? <Navigate to="/bags" /> : <Login onLogin={handleLogin} />} 
+        />
+
+        {/* Password reset - public route */}
+        <Route 
+          path="/reset-password" 
+          element={<ResetPassword />} 
         />
 
         {/* OAuth callback - public route */}
