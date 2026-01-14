@@ -313,10 +313,10 @@ export default function BagBuilder() {
                   
                   {bagData.items && bagData.items.length > 0 ? (
                     <div className="flex flex-wrap gap-2 justify-center">
-                      {bagData.items.map((item) => (
+                      {bagData.items.map((item, index) => (
                         <div 
-                          key={item.id}
-                          className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center transition-transform hover:scale-110"
+                          key={item.gear_item_id || `item-${index}`}
+                          className="w-15 h-15 rounded-lg overflow-hidden flex items-center justify-center transition-transform hover:scale-110"
                           style={{ backgroundColor: 'var(--color-neutral-100)' }}
                           title={`${item.brand} ${item.model} (${item.weight_grams}g)`}
                         >
