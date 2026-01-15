@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getBackpacks, createBag, getBag, addItemToBag, removeItemFromBag } from '../api/client';
-import GearSearch from '../components/GearSearch';
+import GearSearchModal from '../components/GearSearchModal';
 import BagItemList from '../components/BagItemList';
 
 // Helper to categorize weight
@@ -24,6 +24,7 @@ export default function BagBuilder() {
   const [description, setDescription] = useState('');
   const [bagData, setBagData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 
   useEffect(() => {
     loadBackpacks();
@@ -76,6 +77,7 @@ export default function BagBuilder() {
   const handleAddItem = async (gearItem) => {
     try {
       await addItemToBag(id, gearItem.id);
+      setIsSearchModalOpen(false);
       loadBag(); // Reload to get updated weight
     } catch (error) {
       alert('Failed to add item');
@@ -108,20 +110,58 @@ export default function BagBuilder() {
 
   return (
     <div className="container py-8">
-      {/* Back Button & Title */}
+      {/* Back Button & Weight Bar */}
       <div className="mb-6">
-        <button
-          onClick={() => navigate('/bags')}
-          className="btn btn-ghost btn-sm mb-4 -ml-2"
-        >
-          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Back to Bags
-        </button>
-        <h1 className="text-heading text-2xl md:text-3xl">
-          {isEdit ? 'Edit Bag' : 'Create New Bag'}
-        </h1>
+        <div className="flex items-center mb-4">
+          <button
+            onClick={() => navigate('/bags')}
+            className="btn btn-ghost btn-sm -ml-2"
+          >
+            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Back to Bags
+          </button>
+          
+          {/* Weight Progress Bar - centered */}
+          {isEdit && (
+            <div className="hidden md:flex flex-col items-center flex-1 max-w-xl mx-auto">
+              <span className="text-sm font-medium mb-1" style={{ color: weightCategory.color }}>
+                {weightCategory.label}
+              </span>
+              <div className="w-full h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--color-neutral-100)' }}>
+                <div 
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{ 
+                    width: `${Math.min((bagData.total_weight_grams / 15000) * 100, 100)}%`,
+                    backgroundColor: weightCategory.color
+                  }}
+                />
+              </div>
+              <div className="flex justify-between w-full mt-1">
+                <span className="text-xs" style={{ color: 'var(--color-neutral-400)' }}>0 kg</span>
+                <span className="text-xs" style={{ color: 'var(--color-neutral-400)' }}>15 kg</span>
+              </div>
+            </div>
+          )}
+        </div>
+        
+        <div className="flex items-center justify-between">
+          <h1 className="text-heading text-2xl md:text-3xl">
+            {isEdit ? 'Edit Bag' : 'Create New Bag'}
+          </h1>
+          {isEdit && (
+            <button
+              onClick={() => setIsSearchModalOpen(true)}
+              className="btn btn-primary"
+            >
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              Add Gear
+            </button>
+          )}
+        </div>
       </div>
 
       {!isEdit ? (
@@ -210,150 +250,138 @@ export default function BagBuilder() {
           </form>
         </div>
       ) : (
-        /* Edit Mode - Three Column Layout */
-        <div className="grid grid-cols-1 lg:grid-cols-6 gap-6">
-          {/* Left Column - Bag Info & Contents */}
-          <div className="lg:col-span-2 space-y-6 order-2 lg:order-1">
-            {/* Bag Summary Card */}
-            <div className="card p-6">
-              <div className="flex flex-col gap-4">
-                <div>
-                  <h2 className="text-heading text-xl mb-1">{bagData.name}</h2>
-                  {bagData.description && (
-                    <p className="text-caption text-sm mt-2">{bagData.description}</p>
-                  )}
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-3xl font-bold" style={{ color: weightCategory.color }}>
-                      {(bagData.total_weight_grams / 1000).toFixed(2)}
-                      <span className="text-sm font-normal ml-1" style={{ color: 'var(--color-neutral-500)' }}>kg</span>
-                    </div>
-                  </div>
-                  <span className="badge" style={{ 
-                    backgroundColor: `${weightCategory.color}15`,
-                    color: weightCategory.color
-                  }}>
-                    {weightCategory.label}
-                  </span>
-                </div>
-              </div>
-              
-              {/* Weight breakdown bar */}
-              <div className="mt-4 pt-4 border-t" style={{ borderColor: 'var(--color-neutral-100)' }}>
-                <div className="flex items-center justify-between text-sm mb-2">
-                  <span style={{ color: 'var(--color-neutral-600)' }}>Progress</span>
-                  <span style={{ color: 'var(--color-neutral-500)' }}>
-                    {bagData.items?.length || 0} items
-                  </span>
-                </div>
-                <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: 'var(--color-neutral-100)' }}>
-                  <div 
-                    className="h-full rounded-full transition-all duration-500"
-                    style={{ 
-                      width: `${Math.min((bagData.total_weight_grams / 15000) * 100, 100)}%`,
-                      backgroundColor: weightCategory.color
-                    }}
-                  />
-                </div>
-                <div className="flex justify-between mt-1">
-                  <span className="text-xs" style={{ color: 'var(--color-neutral-400)' }}>0 kg</span>
-                  <span className="text-xs" style={{ color: 'var(--color-neutral-400)' }}>15 kg</span>
-                </div>
-              </div>
+        /* Edit Mode - Two Column Layout */
+        <>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Left Column - Bag Contents */}
+            <div className="order-2 lg:order-1">
+              {/* Bag Contents */}
+              <BagItemList 
+                items={bagData.items || []} 
+                onRemove={handleRemoveItem}
+              />
             </div>
 
-            {/* Bag Contents */}
-            <BagItemList 
-              items={bagData.items || []} 
-              onRemove={handleRemoveItem}
-            />
-          </div>
-
-          {/* Center Column - Backpack Visual */}
-          <div className="lg:col-span-2 order-1 lg:order-2">
-            <div className="lg:sticky lg:top-24">
-              <div className="card p-6 flex flex-col items-center">
-                {/* Backpack Image */}
-                <div 
-                  className="w-48 h-48 rounded-xl overflow-hidden flex items-center justify-center mb-4"
-                  style={{ backgroundColor: 'var(--color-neutral-100)' }}
-                >
-                  {bagData.backpack_image_url ? (
-                    <img 
-                      src={bagData.backpack_image_url} 
-                      alt={`${bagData.backpack_brand} ${bagData.backpack_model}`}
-                      className="w-full h-full object-contain"
-                    />
-                  ) : (
-                    <svg className="w-16 h-16" style={{ color: 'var(--color-neutral-300)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                    </svg>
-                  )}
-                </div>
-                
-                {/* Backpack Details */}
-                <h3 className="text-heading text-lg text-center">
-                  {bagData.backpack_brand} {bagData.backpack_model}
-                </h3>
-                <p className="text-caption text-sm mt-1">
-                  {bagData.backpack_weight_grams}g
-                </p>
-                
-                {/* Packed Gear Thumbnails */}
-                <div className="w-full mt-4 pt-4 border-t" style={{ borderColor: 'var(--color-neutral-100)' }}>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-medium" style={{ color: 'var(--color-neutral-600)' }}>
-                      Packed Gear
-                    </span>
-                    <span className="text-xs" style={{ color: 'var(--color-neutral-400)' }}>
-                      {bagData.items?.length || 0} items
-                    </span>
+            {/* Right Column - Backpack Visual */}
+            <div className="order-1 lg:order-2">
+              <div className="lg:sticky lg:top-24">
+                <div className="card p-6">
+                  {/* Bag Name & Weight + Backpack Image Row */}
+                  <div className="flex items-start gap-14">
+                    {/* Left: Bag Name & Weight */}
+                    <div>
+                      <h2 className="text-heading text-xl mb-1">{bagData.name}</h2>
+                      {bagData.description && (
+                        <p className="text-caption text-sm mt-1 mb-3">{bagData.description}</p>
+                      )}
+                      <div className="text-3xl font-bold" style={{ color: weightCategory.color }}>
+                        {(bagData.total_weight_grams / 1000).toFixed(2)}
+                        <span className="text-sm font-normal ml-1" style={{ color: 'var(--color-neutral-500)' }}>kg</span>
+                      </div>
+                      
+                      {/* Mobile weight bar */}
+                      <div className="mt-4 md:hidden">
+                        <span className="text-sm font-medium" style={{ color: weightCategory.color }}>
+                          {weightCategory.label}
+                        </span>
+                        <div className="w-full h-2 rounded-full overflow-hidden mt-1" style={{ backgroundColor: 'var(--color-neutral-100)' }}>
+                          <div 
+                            className="h-full rounded-full transition-all duration-500"
+                            style={{ 
+                              width: `${Math.min((bagData.total_weight_grams / 15000) * 100, 100)}%`,
+                              backgroundColor: weightCategory.color
+                            }}
+                          />
+                        </div>
+                        <div className="flex justify-between mt-1">
+                          <span className="text-xs" style={{ color: 'var(--color-neutral-400)' }}>0 kg</span>
+                          <span className="text-xs" style={{ color: 'var(--color-neutral-400)' }}>15 kg</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Right: Backpack Image & Details */}
+                    <div className="flex flex-col items-center flex-shrink-0">
+                      <div 
+                        className="w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center mb-2"
+                        style={{ backgroundColor: 'var(--color-neutral-100)' }}
+                      >
+                        {bagData.backpack_image_url ? (
+                          <img 
+                            src={bagData.backpack_image_url} 
+                            alt={`${bagData.backpack_brand} ${bagData.backpack_model}`}
+                            className="w-full h-full object-contain"
+                          />
+                        ) : (
+                          <svg className="w-12 h-12" style={{ color: 'var(--color-neutral-300)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                          </svg>
+                        )}
+                      </div>
+                      <h3 className="text-sm font-medium text-center" style={{ color: 'var(--color-neutral-700)' }}>
+                        {bagData.backpack_brand} {bagData.backpack_model}
+                      </h3>
+                      <p className="text-xs mt-0.5" style={{ color: 'var(--color-neutral-500)' }}>
+                        {bagData.backpack_weight_grams}g
+                      </p>
+                    </div>
                   </div>
                   
-                  {bagData.items && bagData.items.length > 0 ? (
-                    <div className="flex flex-wrap gap-2 justify-center">
-                      {bagData.items.map((item, index) => (
-                        <div 
-                          key={item.gear_item_id || `item-${index}`}
-                          className="w-15 h-15 rounded-lg overflow-hidden flex items-center justify-center transition-transform hover:scale-110"
-                          style={{ backgroundColor: 'var(--color-neutral-100)' }}
-                          title={`${item.brand} ${item.model} (${item.weight_grams}g)`}
-                        >
-                          {item.image_url ? (
-                            <img 
-                              src={item.image_url} 
-                              alt={`${item.brand} ${item.model}`}
-                              className="w-full h-full object-contain"
-                            />
-                          ) : (
-                            <svg className="w-5 h-5" style={{ color: 'var(--color-neutral-400)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                            </svg>
-                          )}
-                        </div>
-                      ))}
+                  {/* Packed Gear Thumbnails */}
+                  <div className="w-full mt-4 pt-4 border-t" style={{ borderColor: 'var(--color-neutral-100)' }}>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-xs font-medium" style={{ color: 'var(--color-neutral-600)' }}>
+                        Packed Gear
+                      </span>
+                      <span className="text-xs" style={{ color: 'var(--color-neutral-400)' }}>
+                        {bagData.items?.length || 0} items
+                      </span>
                     </div>
-                  ) : (
-                    <div className="text-center py-4" style={{ color: 'var(--color-neutral-400)' }}>
-                      <svg className="w-6 h-6 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                      </svg>
-                      <p className="text-xs">No gear added yet</p>
-                    </div>
-                  )}
+                    
+                    {bagData.items && bagData.items.length > 0 ? (
+                      <div className="flex flex-wrap gap-2 justify-center">
+                        {bagData.items.map((item, index) => (
+                          <div 
+                            key={item.gear_item_id || `item-${index}`}
+                            className="w-15 h-15 rounded-lg overflow-hidden flex items-center justify-center transition-transform hover:scale-110"
+                            style={{ backgroundColor: 'var(--color-neutral-100)' }}
+                            title={`${item.brand} ${item.model} (${item.weight_grams}g)`}
+                          >
+                            {item.image_url ? (
+                              <img 
+                                src={item.image_url} 
+                                alt={`${item.brand} ${item.model}`}
+                                className="w-full h-full object-contain"
+                              />
+                            ) : (
+                              <svg className="w-5 h-5" style={{ color: 'var(--color-neutral-400)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                              </svg>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-4" style={{ color: 'var(--color-neutral-400)' }}>
+                        <svg className="w-6 h-6 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                        <p className="text-xs">No gear added yet</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Right Column - Gear Search */}
-          <div className="lg:col-span-2 order-3">
-            <div className="lg:sticky lg:top-24">
-              <GearSearch onSelect={handleAddItem} />
-            </div>
-          </div>
-        </div>
+          {/* Gear Search Modal */}
+          <GearSearchModal 
+            isOpen={isSearchModalOpen}
+            onClose={() => setIsSearchModalOpen(false)}
+            onSelect={handleAddItem}
+          />
+        </>
       )}
     </div>
   );

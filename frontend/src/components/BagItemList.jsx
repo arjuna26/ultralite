@@ -64,7 +64,7 @@ export default function BagItemList({ items, onRemove }) {
           </div>
           <p className="text-caption">No items yet</p>
           <p className="text-xs mt-1" style={{ color: 'var(--color-neutral-400)' }}>
-            Search and add gear from the panel on the right
+            Use the "Add Gear" button above to start building your bag
           </p>
         </div>
       </div>
