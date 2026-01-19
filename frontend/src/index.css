@@ -133,10 +133,7 @@
 /* ========================================
  * BASE STYLES
  * ======================================== */
-html {
-  scroll-behavior: smooth;
-}
-
+ 
 body {
   font-family: var(--font-sans);
   background-color: var(--color-surface-primary);

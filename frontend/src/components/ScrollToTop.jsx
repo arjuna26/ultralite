@@ -1,15 +1,14 @@
-import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
+import { lenis } from './SmoothScroll'
 
-/**
- * Component that scrolls to top of page on route change
- */
 export default function ScrollToTop() {
-  const { pathname } = useLocation();
+  const { pathname } = useLocation()
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
+    if (!lenis) return
+    lenis.scrollTo(0, { immediate: false })
+  }, [pathname])
 
-  return null;
+  return null
 }

@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-route
 import { useState, useEffect, useCallback } from 'react';
 import Navbar from './components/Navbar';
 import ScrollToTop from './components/ScrollToTop';
+import SmoothScroll from './components/SmoothScroll'
 import Landing from './pages/Landing';
 import ComingSoon from './pages/ComingSoon';
 import Login from './pages/Login';
@@ -148,7 +149,9 @@ function App() {
 
   return (
     <BrowserRouter>
-      <AppContent user={user} setUser={setUser} loading={loading} />
+      <SmoothScroll>
+        <AppContent user={user} setUser={setUser} loading={loading} />
+      </SmoothScroll>
     </BrowserRouter>
   );
 }
