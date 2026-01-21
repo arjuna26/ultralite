@@ -12,6 +12,7 @@ import BagList from './pages/BagList';
 import BagBuilder from './pages/BagBuilder';
 import TripList from './pages/TripList';
 import TripDetail from './pages/TripDetail';
+import GearCatalog from './pages/GearCatalog';
 import About from './pages/About';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
@@ -107,6 +108,11 @@ function AppContent({ user, setUser, loading }) {
         <Route 
           path="/trips/:id" 
           element={user ? <TripDetail /> : <Navigate to="/login" />} 
+        />
+        
+        <Route 
+          path="/gear" 
+          element={user ? <GearCatalog /> : <Navigate to="/login" />} 
         />
       </Routes>
     </div>

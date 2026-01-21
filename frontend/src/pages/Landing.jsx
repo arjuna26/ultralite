@@ -189,8 +189,23 @@ export default function Landing() {
       <div className="gradient-bar h-1 fixed top-16 left-0 right-0 z-40 opacity-80"></div>
 
       {/* Hero Section */}
-      <section className="hero-gradient topo-pattern pt-32 pb-20 md:pt-40 md:pb-32">
-        <div className="container">
+      <section className="hero-gradient pt-32 pb-20 md:pt-40 md:pb-32 relative overflow-hidden">
+        {/* Blurred image underlay */}
+        <div 
+          className="absolute inset-0 z-0"
+          style={{
+            backgroundImage: 'url(https://images.unsplash.com/photo-1659457873944-aefca308070b?q=80&w=3191&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            filter: 'blur(4px)',
+            transform: 'scale(1.1)',
+            opacity: 0.6
+          }}
+        />
+        {/* Overlay for better text contrast */}
+        <div className="absolute inset-0 z-0 bg-gradient-to-b from-white/60 via-white/40 to-white/60" />
+        
+        <div className="container relative z-10">
           <div className="max-w-3xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 hover-glow" 
                  style={{ backgroundColor: 'var(--color-primary-100)', color: 'var(--color-primary-700)' }}>
@@ -237,6 +252,34 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* How it Works Section */}
+      <section className="section topo-pattern">
+        <div className="container">
+          <div className="text-center mb-16 scroll-reveal">
+            <span className="badge badge-secondary mb-4">How It Works</span>
+            <h2 className="text-display text-3xl md:text-4xl mb-4" style={{ color: 'var(--color-neutral-900)' }}>
+              Three steps to a lighter pack
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            {[
+              { step: '01', title: 'Build Your Bag', desc: 'Select a backpack and add gear from our catalog. Watch your weight update in real-time.' },
+              { step: '02', title: 'Plan Your Trip', desc: 'Associate your bag with an upcoming adventure. Add details like location and dates.' },
+              { step: '03', title: 'Iterate & Improve', desc: 'After your trip, log stats and duplicate your bag to tweak for next time.' }
+            ].map((item, index) => (
+              <div key={index} className="text-center p-6 rounded-xl" style={{ transitionDelay: `${index * 100}ms` }}>
+                <div className="text-6xl font-bold mb-4 text-gradient" style={{ opacity: 0.3 }}>
+                  {item.step}
+                </div>
+                <h3 className="text-heading text-xl mb-2">{item.title}</h3>
+                <p className="text-body">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Features Section */}
       <section id="features" className="section" style={{ backgroundColor: 'var(--color-surface-secondary)' }}>
         <div className="container">
@@ -263,34 +306,6 @@ export default function Landing() {
                 </div>
                 <h3 className="text-heading text-lg mb-2">{feature.title}</h3>
                 <p className="text-body text-sm">{feature.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* How it Works Section */}
-      <section className="section">
-        <div className="container">
-          <div className="text-center mb-16 scroll-reveal">
-            <span className="badge badge-secondary mb-4">How It Works</span>
-            <h2 className="text-display text-3xl md:text-4xl mb-4" style={{ color: 'var(--color-neutral-900)' }}>
-              Three steps to a lighter pack
-            </h2>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            {[
-              { step: '01', title: 'Build Your Bag', desc: 'Select a backpack and add gear from our catalog. Watch your weight update in real-time.' },
-              { step: '02', title: 'Plan Your Trip', desc: 'Associate your bag with an upcoming adventure. Add details like location and dates.' },
-              { step: '03', title: 'Iterate & Improve', desc: 'After your trip, log stats and duplicate your bag to tweak for next time.' }
-            ].map((item, index) => (
-              <div key={index} className="text-center p-6 rounded-xl" style={{ transitionDelay: `${index * 100}ms` }}>
-                <div className="text-6xl font-bold mb-4 text-gradient" style={{ opacity: 0.3 }}>
-                  {item.step}
-                </div>
-                <h3 className="text-heading text-xl mb-2">{item.title}</h3>
-                <p className="text-body">{item.desc}</p>
               </div>
             ))}
           </div>
@@ -349,7 +364,7 @@ export default function Landing() {
       </section>
 
       {/* Testimonials Section */}
-      <section id="reviews" className="section">
+      <section id="reviews" className="section topo-pattern">
         <div className="container">
           <div className="text-center mb-16 scroll-reveal">
             <span className="badge badge-secondary mb-4">Reviews</span>
