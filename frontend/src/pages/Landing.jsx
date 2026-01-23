@@ -2,6 +2,8 @@ import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import PublicFooter from '../components/PublicFooter';
+import GradientBackground from '../components/GradientBackground';
+import HowItWorksStacking from '../components/HowItWorksStacking';
 
 // Icons as simple SVG components
 const BackpackIcon = () => (
@@ -230,53 +232,37 @@ export default function Landing() {
       {/* Gradient accent bar */}
       <div className="gradient-bar h-1 fixed top-16 left-0 right-0 z-40 opacity-80"></div>
 
-      {/* Hero Section */}
-      <section className="hero-gradient pt-32 pb-20 md:pt-40 md:pb-32 relative overflow-hidden">
-        {/* Blurred image underlay with parallax zoom + vertical movement */}
-        <div 
-          className="absolute inset-0 z-0"
-          style={{
-            backgroundImage: 'url(https://wxsnnnijzjyasjfqxzhc.supabase.co/storage/v1/object/public/img/IMG_0696.jpeg)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            filter: 'blur(4px)',
-            transform: `translateY(${parallaxOffset}px) scale(${parallaxScale})`,
-            opacity: 0.6,
-            willChange: 'transform'
-          }}
-        />
-        {/* Overlay for better text contrast */}
-        <div className="absolute inset-0 z-0 bg-gradient-to-b from-white/60 via-white/40 to-white/60" />
+      {/* Hero + How it Works wrapper with shared gradient background */}
+      <div className="relative" style={{ backgroundColor: 'var(--color-surface-primary)' }}>
+        <GradientBackground />
         
-        <div className="container relative z-10">
-          <div className="max-w-3xl mx-auto text-center">
+        {/* Hero Section */}
+        <section className="pt-32 pb-20 md:pt-40 md:pb-32 relative">
+
+          <div className="max-w-3xl mx-auto text-center px-4 sm:px-6">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 hover-glow" 
                  style={{ backgroundColor: 'var(--color-primary-100)', color: 'var(--color-primary-700)' }}>
               <span className="text-sm font-medium">Built for lightweight backpackers</span>
             </div>
             
-            <h1 className="text-display text-4xl md:text-5xl lg:text-6xl mb-6" 
-                style={{ color: 'var(--color-neutral-900)' }}>
+            <h1 className="text-display text-4xl md:text-5xl lg:text-6xl mb-6 text-black">
               Pack Smarter,<br /> Hike
-              <span className="text-gradient-hero"> Lighter</span>
+              <span className="text-gradient-hero font-bold"> Lighter</span>
             </h1>
             
-            <p className="text-body text-lg md:text-xl mb-8 max-w-2xl mx-auto">
+            <p className="text-body text-lg md:text-xl mb-10 max-w-2xl mx-auto px-2">
               The trip-centric gear management app that helps you build, track, and optimize your backpacking setups. 
               Know exactly what you're carrying before you hit the trail.
             </p>
             
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 scroll-reveal-right">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 scroll-reveal-right px-4 sm:px-0">
               <Link to="/login" className="btn btn-primary btn-lg w-full sm:w-auto">
                 Start Building Your Pack
               </Link>
-              <a href="#features" className="btn btn-outline btn-lg w-full sm:w-auto">
-                See How It Works
-              </a>
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-8 mt-16 pt-8 border-t scroll-reveal-left" 
+            <div className="grid-cols-3 gap-8 mt-16 pt-8 border-t scroll-reveal-left hidden md:grid" 
                  style={{ borderColor: 'var(--color-neutral-200)' }}>
               <div className="p-4 rounded-lg">
                 <div className="text-3xl md:text-4xl font-bold text-gradient">2,500+</div>
@@ -292,127 +278,85 @@ export default function Landing() {
               </div>
             </div>
           </div>
+        </section>
+        
+        {/* Desktop version - Stacking cards (shares GradientBackground with Hero) */}
+        <div id="how-it-works" className="hidden md:block">
+          <HowItWorksStacking />
         </div>
-      </section>
-
-      {/* How it Works Section */}
-      <section className="section topo-pattern">
-        <div className="container">
-          <div className="text-center mb-16 scroll-reveal">
-            <span className="badge badge-secondary mb-4">How It Works</span>
-            <h2 className="text-display text-3xl md:text-4xl mb-4" style={{ color: 'var(--color-neutral-900)' }}>
-              Three steps to a lighter pack
-            </h2>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            {[
-              { step: '01', title: 'Build Your Bag', desc: 'Select a backpack and add gear from our catalog. Watch your weight update in real-time.' },
-              { step: '02', title: 'Plan Your Trip', desc: 'Associate your bag with an upcoming adventure. Add details like location and dates.' },
-              { step: '03', title: 'Iterate & Improve', desc: 'After your trip, log stats and duplicate your bag to tweak for next time.' }
-            ].map((item, index) => (
-              <div key={index} className="text-center p-6 rounded-xl" style={{ transitionDelay: `${index * 100}ms` }}>
-                <div className="text-6xl font-bold mb-4 text-gradient" style={{ opacity: 0.3 }}>
-                  {item.step}
-                </div>
-                <h3 className="text-heading text-xl mb-2">{item.title}</h3>
-                <p className="text-body">{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section id="features" className="section" style={{ backgroundColor: 'var(--color-surface-secondary)' }}>
-        <div className="container">
-          <div className="text-center mb-16 scroll-reveal">
-            <span className="badge badge-primary mb-4">Features</span>
-            <h2 className="text-display text-3xl md:text-4xl mb-4" style={{ color: 'var(--color-neutral-900)' }}>
-              Everything you need to go <span className="text-gradient">ultralight</span>
-            </h2>
-            <p className="text-body max-w-2xl mx-auto">
-              From planning to post-trip analysis, UltraLite gives you the tools to continuously improve your pack weight.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {features.map((feature, index) => (
-              <div 
-                key={index} 
-                className="card card-hover hover-glow p-6 scroll-reveal"
-                style={{ transitionDelay: `${index * 50}ms` }}
-              >
-                <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 hover-rotate" 
-                     style={{ backgroundColor: 'var(--color-primary-100)', color: 'var(--color-primary-600)' }}>
-                  <feature.icon />
-                </div>
-                <h3 className="text-heading text-lg mb-2">{feature.title}</h3>
-                <p className="text-body text-sm">{feature.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing Section */}
-      <section id="pricing" className="section" style={{ backgroundColor: 'var(--color-surface-secondary)' }}>
-        <div className="container">
-          <div className="text-center mb-16 scroll-reveal">
-            <span className="badge badge-accent mb-4">Pricing</span>
-            <h2 className="text-display text-3xl md:text-4xl mb-4" style={{ color: 'var(--color-neutral-900)' }}>
-              Simple, transparent pricing
-            </h2>
-            <p className="text-body max-w-2xl mx-auto">
-              Start free and upgrade when you need more. No hidden fees, cancel anytime.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {pricingPlans.map((plan, index) => (
-              <div 
-                key={index}
-                className={`card hover-glow p-6 scroll-reveal flex flex-col ${plan.highlighted ? 'card-highlighted' : ''}`}
+        
+        {/* Mobile version - Simple stacked layout */}
+        <section className="pt-12 pb-16 relative md:hidden">
+          <div className="container px-4">
+            <div className="text-center mb-12 scroll-reveal">
+              <span className="badge badge-secondary mb-4">How It Works</span>
+                <h2 
+                className="text-display text-3xl md:text-5xl mb-4 text-black"
                 style={{
-                  transitionDelay: `${index * 100}ms`,
-                  ...(plan.highlighted ? { '--tw-ring-color': 'var(--color-primary-500)' } : {})
+                  textShadow: '0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3), 0 0 30px rgba(255, 255, 255, 0.2), 0 2px 4px rgba(0, 0, 0, 0.3)',
+                  filter: 'brightness(1.1)'
                 }}
-              >
-                <div className="flex items-center gap-5 mb-1">
-                    <h3 className="text-heading text-xl">{plan.name}</h3>
-                    {plan.highlighted && (
-                        <div className="badge badge-primary">Most Popular</div>
-                    )}
+                >
+                <span className='font-bold'>Three </span> steps to a lighter pack
+              </h2>
+            </div>
+
+            <div className="space-y-8">
+              {[
+                { step: '01', title: 'Build Your Bag', desc: 'Select a backpack and add gear from our catalog. Watch your weight update in real-time.' },
+                { step: '02', title: 'Plan Your Trip', desc: 'Associate your bag with an upcoming adventure. Add details like location and dates.' },
+                { step: '03', title: 'Iterate & Improve', desc: 'After your trip, log stats and duplicate your bag to tweak for next time.' }
+              ].map((item, index) => (
+                <div 
+                  key={index} 
+                  className="text-center p-6 rounded-xl"
+                  style={{ transitionDelay: `${index * 100}ms` }}
+                >
+                  <div className="text-5xl font-bold mb-3 text-gradient" style={{ opacity: 0.3 }}>
+                    {item.step}
+                  </div>
+                  <h3 className="text-heading text-lg mb-2">{item.title}</h3>
+                  <p className="text-body text-sm">{item.desc}</p>
                 </div>
-                <p className="text-caption mb-4">{plan.description}</p>
-                <div className="mb-6">
-                  <span className="text-4xl font-bold" style={{ color: 'var(--color-neutral-900)' }}>{plan.price}</span>
-                  <span className="text-caption">{plan.period}</span>
-                </div>
-                <ul className="space-y-3 mb-6">
-                  {plan.features.map((feature, fIndex) => (
-                    <li key={fIndex} className="flex items-center gap-2 text-sm" style={{ color: 'var(--color-neutral-700)' }}>
-                      <span style={{ color: 'var(--color-primary-500)' }}><CheckIcon /></span>
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-                <Link to="/login" className={`btn mt-auto w-full ${plan.highlighted ? 'btn-primary' : 'btn-secondary'}`}>
-                  {plan.cta}
-                </Link>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
+
+      {/* Features & Pricing Section with shared background */}
+      <div className="relative overflow-hidden">
+        <div 
+          className="absolute inset-0 z-0 md:block hidden"
+          style={{
+            backgroundImage: 'url(https://wxsnnnijzjyasjfqxzhc.supabase.co/storage/v1/object/public/img/20230607_141400.jpg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundAttachment: 'fixed'
+          }}
+        />
+        {/* Light overlay for text readability */}
+        <div 
+          className="absolute inset-0 z-0"
+          style={{
+            backgroundColor: 'var(--color-surface-secondary)',
+            opacity: 0.3
+          }}
+        />
 
       {/* Testimonials Section */}
-      <section id="reviews" className="section topo-pattern">
+      <section id="reviews" className="section topo-pattern mt-32">
         <div className="container">
           <div className="text-center mb-16 scroll-reveal">
             <span className="badge badge-secondary mb-4">Reviews</span>
-            <h2 className="text-display text-3xl md:text-4xl mb-4" style={{ color: 'var(--color-neutral-900)' }}>
-              Loved by backpackers worldwide
+            <h2 
+              className="text-display text-3xl md:text-5xl mb-4 text-black"
+              style={{
+                textShadow: '0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3), 0 0 30px rgba(255, 255, 255, 0.2), 0 2px 4px rgba(0, 0, 0, 0.3)',
+                filter: 'brightness(1.1)'
+              }}
+            >
+              Loved by backpackers from <span className="font-bold">all over</span> the place
             </h2>
           </div>
 
@@ -443,22 +387,98 @@ export default function Landing() {
         </div>
       </section>
 
+        {/* Pricing Section */}
+        <section id="pricing" className="section relative md:m-32">
+          <div className="container">
+            <div className="text-center mb-16 scroll-reveal">
+              <span className="badge badge-accent mb-4">Pricing</span>
+              <h2 
+                className="text-display text-3xl md:text-5xl mb-4 text-black"
+                style={{
+                  textShadow: '0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3), 0 0 30px rgba(255, 255, 255, 0.2), 0 2px 4px rgba(0, 0, 0, 0.3)',
+                  filter: 'brightness(1.1)'
+                }}
+              >
+                Simple, <span className="font-bold">transparent</span> pricing
+              </h2>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+              {pricingPlans.map((plan, index) => (
+                <div 
+                  key={index}
+                  className={`card hover-glow p-6 scroll-reveal flex flex-col ${plan.highlighted ? 'card-highlighted' : ''}`}
+                  style={{
+                    transitionDelay: `${index * 100}ms`,
+                    ...(plan.highlighted ? { '--tw-ring-color': 'var(--color-primary-500)' } : {})
+                  }}
+                >
+                  <div className="flex items-center gap-5 mb-1">
+                      <h3 className="text-heading text-xl">{plan.name}</h3>
+                      {plan.highlighted && (
+                          <div className="badge badge-primary">Most Popular</div>
+                      )}
+                  </div>
+                  <p className="text-caption mb-4">{plan.description}</p>
+                  <div className="mb-6">
+                    <span className="text-4xl font-bold" style={{ color: 'var(--color-neutral-900)' }}>{plan.price}</span>
+                    <span className="text-caption">{plan.period}</span>
+                  </div>
+                  <ul className="space-y-3 mb-6">
+                    {plan.features.map((feature, fIndex) => (
+                      <li key={fIndex} className="flex items-center gap-2 text-sm" style={{ color: 'var(--color-neutral-700)' }}>
+                        <span style={{ color: 'var(--color-primary-500)' }}><CheckIcon /></span>
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                  <Link to="/login" className={`btn mt-auto w-full ${plan.highlighted ? 'btn-primary' : 'btn-secondary'}`}>
+                    {plan.cta}
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </div>
+
+      {/* Features Section */}
+      <section id="features" className="section relative z-10 topo-pattern mt-16">
+        <div className="container">
+          <div className="text-center mb-16 scroll-reveal">
+            <span className="badge badge-primary mb-4">Features</span>
+            <h2 
+              className="text-display text-3xl md:text-5xl mb-4 text-black"
+              style={{
+                textShadow: '0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3), 0 0 30px rgba(255, 255, 255, 0.2), 0 2px 4px rgba(0, 0, 0, 0.3)',
+                filter: 'brightness(1.1)'
+              }}
+            >
+              Everything you need to go <span className="font-bold">ultralight</span>
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {features.map((feature, index) => (
+              <div 
+                key={index} 
+                className="card card-hover hover-glow p-6 scroll-reveal"
+                style={{ transitionDelay: `${index * 50}ms` }}
+              >
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 hover-rotate" 
+                      style={{ backgroundColor: 'var(--color-primary-100)', color: 'var(--color-primary-600)' }}>
+                  <feature.icon />
+                </div>
+                <h3 className="text-heading text-lg mb-2">{feature.title}</h3>
+                <p className="text-body text-sm">{feature.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="section cta-gradient scroll-reveal relative overflow-hidden">
-        {/* Background image */}
-        <div 
-          className="absolute inset-0 z-0"
-          style={{
-            backgroundImage: 'url(https://wxsnnnijzjyasjfqxzhc.supabase.co/storage/v1/object/public/img/IMG_0667.jpeg)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            filter: 'blur(2px)',
-            opacity: 0.3
-          }}
-        />
-        {/* Dark overlay for text contrast */}
-        <div className="absolute inset-0 z-0 bg-gradient-to-b from-primary-900/80 via-primary-800/80 to-secondary-900/80" />
-        
         <div className="container relative z-10">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-display text-3xl md:text-4xl mb-4 text-white">
