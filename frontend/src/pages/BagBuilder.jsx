@@ -107,6 +107,7 @@ export default function BagBuilder() {
   }
 
   const weightCategory = bagData ? getWeightCategory(bagData.total_weight_grams) : null;
+  const selectedBackpackObj = backpacks.find(bp => bp.id === selectedBackpack) || null;
 
   return (
     <div className="container py-8">
@@ -165,89 +166,115 @@ export default function BagBuilder() {
       </div>
 
       {!isEdit ? (
-        /* Create Form */
-        <div className="max-w-2xl">
-          <form onSubmit={handleCreate} className="card p-6 md:p-8">
-            <div className="space-y-6">
-              {/* Bag Name */}
-              <div>
-                <label className="label">
-                  Bag Name <span style={{ color: 'var(--color-accent-500)' }}>*</span>
-                </label>
-                <input
-                  type="text"
-                  value={bagName}
-                  onChange={(e) => setBagName(e.target.value)}
-                  placeholder="e.g., Glacier 3-Night Solo Pack"
-                  className="input"
-                  required
-                />
-                <p className="mt-1.5 text-xs" style={{ color: 'var(--color-neutral-500)' }}>
-                  Give your bag a descriptive name you'll remember
-                </p>
-              </div>
+        /* Create Form - Two Column Layout */
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Left Column - Form */}
+          <div className="order-2 lg:order-1">
+            <form onSubmit={handleCreate} className="card p-6 md:p-8">
+              <div className="space-y-6">
+                {/* Bag Name */}
+                <div>
+                  <label className="label">
+                    Bag Name <span style={{ color: 'var(--color-accent-500)' }}>*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={bagName}
+                    onChange={(e) => setBagName(e.target.value)}
+                    placeholder="e.g., Glacier 3-Night Solo Pack"
+                    className="input"
+                    required
+                  />
+                  <p className="mt-1.5 text-xs" style={{ color: 'var(--color-neutral-500)' }}>
+                    Give your bag a descriptive name you'll remember
+                  </p>
+                </div>
 
-              {/* Backpack Selection */}
-              <div>
-                <label className="label">
-                  Choose Your Backpack <span style={{ color: 'var(--color-accent-500)' }}>*</span>
-                </label>
-                <select
-                  value={selectedBackpack}
-                  onChange={(e) => setSelectedBackpack(e.target.value)}
-                  className="input"
-                  required
-                >
-                  <option value="">Select a backpack...</option>
-                  {backpacks.map((bp) => (
-                    <option key={bp.id} value={bp.id}>
-                      {bp.brand} {bp.model} ({bp.weight_grams}g)
-                    </option>
+                {/* Backpack Selection */}
+                <div>
+                  <label className="label">
+                    Choose Your Backpack <span style={{ color: 'var(--color-accent-500)' }}>*</span>
+                  </label>
+                  <select
+                    value={selectedBackpack}
+                    onChange={(e) => setSelectedBackpack(e.target.value)}
+                    className="input"
+                    required
+                  >
+                    <option value="">Select a backpack...</option>
+                    {backpacks.map((bp) => (
+                      <option key={bp.id} value={bp.id}>
+                        {bp.brand} {bp.model} ({bp.weight_grams}g)
+                      </option>
                   ))}
                 </select>
-                <p className="mt-1.5 text-xs" style={{ color: 'var(--color-neutral-500)' }}>
-                  Your backpack weight is included in the total
-                </p>
-              </div>
+                  <p className="mt-1.5 text-xs" style={{ color: 'var(--color-neutral-500)' }}>
+                    Your backpack weight is included in the total
+                  </p>
+                </div>
 
-              {/* Description */}
-              <div>
-                <label className="label">Description <span style={{ color: 'var(--color-neutral-400)' }}>(optional)</span></label>
-                <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Notes about this bag setup, like trip type or conditions..."
-                  rows={3}
-                  className="input"
-                  style={{ minHeight: '100px' }}
-                />
-              </div>
+                {/* Description */}
+                <div>
+                  <label className="label">Description <span style={{ color: 'var(--color-neutral-400)' }}>(optional)</span></label>
+                  <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Notes about this bag setup, like trip type or conditions..."
+                    rows={3}
+                    className="input"
+                    style={{ minHeight: '100px' }}
+                  />
+                </div>
 
-              {/* Submit */}
-              <button
-                type="submit"
-                disabled={loading}
-                className="btn btn-primary w-full btn-lg"
-              >
-                {loading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Creating...
-                  </span>
-                ) : (
-                  <>
-                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                    </svg>
-                    Create Bag
-                  </>
-                )}
+                {/* Submit */}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="btn btn-primary w-full btn-lg"
+                >
+                  {loading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Creating...
+                    </span>
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                      Create Bag
+                    </>
+                  )}
               </button>
             </div>
           </form>
+        </div>
+                {/* Right Column - Backpack Image */}
+                {selectedBackpackObj && (
+          <div className="order-1 lg:order-2 flex">
+            <div className="lg:sticky lg:top-24 w-full flex items-center justify-center">
+              <div 
+                className="w-full h-full rounded-lg overflow-hidden flex items-center justify-center"
+                style={{ backgroundColor: 'var(--color-neutral-100)' }}
+              >
+                {selectedBackpackObj.image_url ? (
+                  <img 
+                    src={selectedBackpackObj.image_url} 
+                    alt={`${selectedBackpackObj.brand} ${selectedBackpackObj.model}`}
+                    className="w-full h-full object-contain"
+                  />
+                ) : (
+                  <svg className="w-24 h-24" style={{ color: 'var(--color-neutral-300)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
         </div>
       ) : (
         /* Edit Mode - Two Column Layout */

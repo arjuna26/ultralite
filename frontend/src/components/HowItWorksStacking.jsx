@@ -11,19 +11,19 @@ const steps = [
     step: '01',
     title: 'Build Your Bag',
     desc: 'Select a backpack from our extensive catalog, then add your gear piece by piece. Watch your total pack weight update in real-time as you customize your loadout for any adventure.',
-    image: 'https://placehold.co/600x400/3d8b6c/ffffff?text=Bag+Builder+Demo'
+    image: 'https://wxsnnnijzjyasjfqxzhc.supabase.co/storage/v1/object/public/img/step1.png'
   },
   {
     step: '02',
     title: 'Plan Your Trip',
     desc: 'Associate your carefully curated bag with an upcoming adventure. Add trip details like location, dates, expected conditions, and notes to keep everything organized.',
-    image: 'https://placehold.co/600x400/ae9274/ffffff?text=Trip+Planner+Demo'
+    image: 'https://wxsnnnijzjyasjfqxzhc.supabase.co/storage/v1/object/public/img/step2.png'
   },
   {
     step: '03',
     title: 'Iterate & Improve',
-    desc: 'After your trip, log your stats—miles hiked, elevation gained, nights out. Record lessons learned, then duplicate your bag and tweak it for next time.',
-    image: 'https://placehold.co/600x400/e36a45/ffffff?text=Trip+Stats+Demo'
+    desc: 'After your trip, log your stats. Record lessons learned, then duplicate your bag and tweak it for next time. Explore the full gear catalog to find the best gear for your next trip.',
+    image: 'https://wxsnnnijzjyasjfqxzhc.supabase.co/storage/v1/object/public/img/step3.png'
   }
 ];
 
@@ -31,7 +31,7 @@ export default function HowItWorksStacking() {
   return (
     <section className="relative">
       {/* Section header - NOT sticky, scrolls away naturally */}
-      <div className="pt-12 pb-8 text-center">
+      <div className="pt-12 pb-16 text-center">
         <span className="badge badge-secondary mb-4">How It Works</span>
         <h2 
               className="text-display text-3xl md:text-5xl mb-4 text-black"
@@ -61,8 +61,7 @@ export default function HowItWorksStacking() {
               <div 
                 className="rounded-2xl p-8 md:p-12 backdrop-blur-md"
                 style={{ 
-                  backgroundColor: 'rgba(255, 255, 255, 0.75)',
-                  border: '1px solid rgba(255, 255, 255, 0.5)',
+                  backgroundColor: 'rgba(255, 255, 255, 0)',
                   boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
                 }}
               >
@@ -109,7 +108,7 @@ export default function HowItWorksStacking() {
                     <div 
                       className="rounded-xl overflow-hidden shadow-lg"
                       style={{ 
-                        aspectRatio: '4/3'
+                        aspectRatio: '16/10'
                       }}
                     >
                       <img

@@ -57,23 +57,6 @@ export default function GradientBackground() {
         <circle cx="250" cy="250" r="250" fill="url(#heroGradient5)" />
       </svg>
 
-      {/* Warm golden orb - top left */}
-      <svg
-        className="absolute -top-20 -left-48 w-[380px] h-[380px] md:w-[650px] md:h-[650px]"
-        viewBox="0 0 400 400"
-        fill="none"
-        style={{ filter: 'blur(55px)' }}
-      >
-        <defs>
-          <radialGradient id="heroGradient3" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="var(--color-secondary-400)" stopOpacity="0.8" />
-            <stop offset="40%" stopColor="var(--color-secondary-500)" stopOpacity="0.45" />
-            <stop offset="100%" stopColor="var(--color-secondary-600)" stopOpacity="0" />
-          </radialGradient>
-        </defs>
-        <circle cx="200" cy="200" r="200" fill="url(#heroGradient3)" />
-      </svg>
-
       {/* Extra pop - bottom right */}
       <svg
         className="absolute bottom-10 right-10 w-[280px] h-[280px] md:w-[500px] md:h-[500px]"
