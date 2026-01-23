@@ -236,7 +236,7 @@ export default function Landing() {
         <div 
           className="absolute inset-0 z-0"
           style={{
-            backgroundImage: 'url(https://wxsnnnijzjyasjfqxzhc.supabase.co/storage/v1/object/public/img/IMG_0667.jpeg)',
+            backgroundImage: 'url(https://wxsnnnijzjyasjfqxzhc.supabase.co/storage/v1/object/public/img/IMG_0696.jpeg)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             filter: 'blur(4px)',
@@ -444,8 +444,22 @@ export default function Landing() {
       </section>
 
       {/* CTA Section */}
-      <section className="section cta-gradient scroll-reveal">
-        <div className="container">
+      <section className="section cta-gradient scroll-reveal relative overflow-hidden">
+        {/* Background image */}
+        <div 
+          className="absolute inset-0 z-0"
+          style={{
+            backgroundImage: 'url(https://wxsnnnijzjyasjfqxzhc.supabase.co/storage/v1/object/public/img/IMG_0667.jpeg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            filter: 'blur(2px)',
+            opacity: 0.3
+          }}
+        />
+        {/* Dark overlay for text contrast */}
+        <div className="absolute inset-0 z-0 bg-gradient-to-b from-primary-900/80 via-primary-800/80 to-secondary-900/80" />
+        
+        <div className="container relative z-10">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-display text-3xl md:text-4xl mb-4 text-white">
               Ready to lighten your load?
