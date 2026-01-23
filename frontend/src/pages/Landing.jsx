@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import PublicFooter from '../components/PublicFooter';
 
@@ -157,8 +158,49 @@ const testimonials = [
 ];
 
 export default function Landing() {
-  // Initialize scroll reveal
+
   useScrollReveal();
+  
+  const [scrollY, setScrollY] = useState(0);
+  const [heroHeight, setHeroHeight] = useState(600);
+
+  useEffect(() => {
+    let ticking = false;
+    
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setScrollY(window.scrollY);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    const handleResize = () => {
+      const heroSection = document.querySelector('.hero-gradient');
+      if (heroSection) {
+        setHeroHeight(heroSection.offsetHeight);
+      }
+    };
+
+    handleResize();
+    const timer = setTimeout(handleResize, 100);
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  // Calculate parallax values - zoom + vertical movement
+  const heroScrollProgress = Math.min(1, scrollY / heroHeight);
+  const parallaxOffset = scrollY * 0.3; // Vertical movement (slower than scroll)
+  const parallaxScale = 1.1 + heroScrollProgress * 0.5;
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'var(--color-surface-primary)' }}>
@@ -190,16 +232,17 @@ export default function Landing() {
 
       {/* Hero Section */}
       <section className="hero-gradient pt-32 pb-20 md:pt-40 md:pb-32 relative overflow-hidden">
-        {/* Blurred image underlay */}
+        {/* Blurred image underlay with parallax zoom + vertical movement */}
         <div 
           className="absolute inset-0 z-0"
           style={{
-            backgroundImage: 'url(https://images.unsplash.com/photo-1659457873944-aefca308070b?q=80&w=3191&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)',
+            backgroundImage: 'url(https://wxsnnnijzjyasjfqxzhc.supabase.co/storage/v1/object/public/img/IMG_0667.jpeg)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             filter: 'blur(4px)',
-            transform: 'scale(1.1)',
-            opacity: 0.6
+            transform: `translateY(${parallaxOffset}px) scale(${parallaxScale})`,
+            opacity: 0.6,
+            willChange: 'transform'
           }}
         />
         {/* Overlay for better text contrast */}
