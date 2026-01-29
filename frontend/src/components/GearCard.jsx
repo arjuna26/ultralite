@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useImageBackgroundColor } from '../hooks/useImageBackgroundColor';
 
 // Category icon mapping (reused from GearSearchModal)
 const getCategoryIcon = (category) => {
@@ -54,6 +55,7 @@ const getCategoryIcon = (category) => {
 
 export default function GearCard({ item, onClick, isOwned }) {
   const [imageError, setImageError] = useState(false);
+  const imageBackgroundColor = useImageBackgroundColor(item.image_url);
 
   const formatCategory = (category) => {
     return category?.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) || 'Unknown';
@@ -64,7 +66,10 @@ export default function GearCard({ item, onClick, isOwned }) {
       type="button"
       onClick={() => onClick(item)}
       className="card card-hover p-4 text-left w-full transition-all group relative"
-      style={{ cursor: 'pointer' }}
+      style={{ 
+        cursor: 'pointer',
+        backgroundColor: imageBackgroundColor,
+      }}
     >
       {/* Owned Badge */}
       {isOwned && (
@@ -82,7 +87,7 @@ export default function GearCard({ item, onClick, isOwned }) {
       {/* Image or Placeholder */}
       <div 
         className="w-full aspect-square rounded-lg mb-3 flex items-center justify-center overflow-hidden"
-        style={{ backgroundColor: 'var(--color-neutral-100)' }}
+        style={{ backgroundColor: imageBackgroundColor }}
       >
         {item.image_url && !imageError ? (
           <img 

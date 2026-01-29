@@ -29,17 +29,17 @@
    * SECONDARY COLORS - Warm Browns/Tan
    * Used for secondary elements, backgrounds
    * ======================================== */
-  --color-secondary-50: #f0fafb;
-  --color-secondary-100: #d9f2f4;
-  --color-secondary-200: #b7e4ea;
-  --color-secondary-300: #86d0db;
-  --color-secondary-400: #6DB6BD;
-  --color-secondary-500: #3d99a3;
-  --color-secondary-600: #357b89;
-  --color-secondary-700: #316470;
-  --color-secondary-800: #2f535d;
-  --color-secondary-900: #2b464f;
-  --color-secondary-950: #192d35;
+  --color-secondary-50: #d9d9d9;
+  --color-secondary-100: #bab1b1;
+  --color-secondary-200: #897e7e;
+  --color-secondary-300: #7e7e7e  ;
+  --color-secondary-400: #6a5f5f;
+  --color-secondary-500: #544b4b;
+  --color-secondary-600: #3e3737;
+  --color-secondary-700: #342e2e;
+  --color-secondary-800: #2a2626;
+  --color-secondary-900: #201e1e;
+  --color-secondary-950: #110f0f;
 
   /* ========================================
    * ACCENT COLORS - Terracotta/Ochre

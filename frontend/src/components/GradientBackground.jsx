@@ -6,17 +6,17 @@ export default function GradientBackground() {
     <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
       {/* Large vibrant green orb - top right */}
       <svg
-        className="absolute -top-10 -right-32 w-[520px] h-[520px] md:w-[900px] md:h-[900px]"
+        className="absolute -top-10 -right-32 w-[520px] h-[520px] md:w-[100px] md:h-[100px]"
         viewBox="0 0 800 800"
         fill="none"
         style={{ filter: 'blur(60px)' }}
       >
         <defs>
           <radialGradient id="heroGradient1" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="var(--color-primary-400)" stopOpacity="0.9" />
-            <stop offset="40%" stopColor="var(--color-primary-500)" stopOpacity="0.6" />
-            <stop offset="70%" stopColor="var(--color-primary-600)" stopOpacity="0.3" />
-            <stop offset="100%" stopColor="var(--color-primary-700)" stopOpacity="0" />
+            <stop offset="0%" stopColor="var(--color-accent-400)" stopOpacity="0.7" />
+            <stop offset="40%" stopColor="var(--color-accent-500)" stopOpacity="0.5" />
+            <stop offset="70%" stopColor="var(--color-accent-600)" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="var(--color-accent-700)" stopOpacity="0" />
           </radialGradient>
         </defs>
         <circle cx="400" cy="400" r="400" fill="url(#heroGradient1)" />

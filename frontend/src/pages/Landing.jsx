@@ -237,7 +237,7 @@ export default function Landing() {
         <GradientBackground />
         
         {/* Hero Section */}
-        <section className="pt-32 pb-20 md:pt-40 md:pb-32 relative">
+        <section className="pt-32 pb-20 md:pt-40 md:pb-32 relative topo-pattern">
 
           <div className="max-w-3xl mx-auto text-center px-4 sm:px-6">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 hover-glow" 

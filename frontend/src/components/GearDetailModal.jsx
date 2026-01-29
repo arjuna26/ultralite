@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useImageBackgroundColor } from '../hooks/useImageBackgroundColor';
 
 // Category icon mapping
 const getCategoryIcon = (category) => {
@@ -54,6 +55,7 @@ const getCategoryIcon = (category) => {
 
 export default function GearDetailModal({ item, isOpen, onClose, isOwned, onToggleOwned, ownershipLoading }) {
   const [imageError, setImageError] = useState(false);
+  const imageBackgroundColor = useImageBackgroundColor(item?.image_url);
 
   // Close on Escape key
   useEffect(() => {
@@ -139,7 +141,7 @@ export default function GearDetailModal({ item, isOpen, onClose, isOwned, onTogg
           {/* Image */}
           <div 
             className="w-full aspect-video rounded-lg mb-4 flex items-center justify-center overflow-hidden"
-            style={{ backgroundColor: 'var(--color-neutral-100)' }}
+            style={{ backgroundColor: imageBackgroundColor }}
           >
             {item.image_url && !imageError ? (
               <img 

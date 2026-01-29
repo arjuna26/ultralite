@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { getGear } from '../api/client';
+import { lenis } from './SmoothScroll';
 
 const categories = [
   { value: 'tent', label: 'Tents' },
@@ -62,11 +63,19 @@ export default function GearSearchModal({ isOpen, onClose, onSelect }) {
 
   useEffect(() => {
     if (isOpen) {
+      // Pause Lenis smooth scroll when modal opens
+      if (lenis) {
+        lenis.stop();
+      }
       // Focus search input when modal opens
       setTimeout(() => {
         searchInputRef.current?.focus();
       }, 100);
     } else {
+      // Resume Lenis smooth scroll when modal closes
+      if (lenis) {
+        lenis.start();
+      }
       // Reset search when modal closes
       setSearch('');
       setCategory('');
@@ -149,15 +158,23 @@ export default function GearSearchModal({ isOpen, onClose, onSelect }) {
       className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh] px-4"
       style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
       onClick={onClose}
+      onWheel={(e) => {
+        // Prevent Lenis from intercepting scroll events anywhere in the modal
+        e.stopPropagation();
+      }}
     >
       {/* Modal Content */}
       <div 
-        className="w-full max-w-2xl animate-fade-in"
+        className="w-full max-w-2xl max-h-[85vh] animate-fade-in flex flex-col"
         onClick={(e) => e.stopPropagation()}
+        onWheel={(e) => {
+          // Prevent Lenis from intercepting scroll events on modal content
+          e.stopPropagation();
+        }}
       >
         {/* Search Container */}
         <div 
-          className="rounded-xl shadow-2xl overflow-hidden"
+          className="rounded-xl shadow-2xl overflow-hidden flex flex-col"
           style={{ 
             backgroundColor: 'var(--color-surface-elevated)',
             border: '1px solid var(--color-neutral-200)'
@@ -209,7 +226,20 @@ export default function GearSearchModal({ isOpen, onClose, onSelect }) {
           </div>
 
           {/* Results List */}
-          <div className="max-h-[50vh] overflow-y-auto">
+          <div 
+            data-lenis-prevent
+            data-scrollable
+            className="overflow-y-auto overscroll-contain" 
+            style={{ maxHeight: '50vh' }}
+            onWheel={(e) => {
+              // Prevent Lenis from intercepting scroll events inside the modal
+              e.stopPropagation();
+            }}
+            onTouchMove={(e) => {
+              // Prevent Lenis from intercepting touch scroll events
+              e.stopPropagation();
+            }}
+          >
             {!search && !category ? (
               <div className="text-center py-3">
                 <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl mb-4" 

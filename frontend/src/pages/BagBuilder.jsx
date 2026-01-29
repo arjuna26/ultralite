@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getBackpacks, createBag, getBag, addItemToBag, removeItemFromBag } from '../api/client';
 import GearSearchModal from '../components/GearSearchModal';
 import BagItemList from '../components/BagItemList';
+import { useImageBackgroundColor } from '../hooks/useImageBackgroundColor';
 
 // Helper to categorize weight
 const getWeightCategory = (grams) => {
@@ -12,6 +13,31 @@ const getWeightCategory = (grams) => {
   if (kg < 13) return { label: 'Standard', color: 'var(--color-warning-600)' };
   return { label: 'Heavy', color: 'var(--color-accent-600)' };
 };
+
+// Small thumbnail component for gear items in bag
+function GearThumbnail({ item }) {
+  const imageBackgroundColor = useImageBackgroundColor(item.image_url);
+  
+  return (
+    <div 
+      className="w-15 h-15 rounded-lg overflow-hidden flex items-center justify-center transition-transform hover:scale-110"
+      style={{ backgroundColor: imageBackgroundColor }}
+      title={`${item.brand} ${item.model} (${item.weight_grams}g)`}
+    >
+      {item.image_url ? (
+        <img 
+          src={item.image_url} 
+          alt={`${item.brand} ${item.model}`}
+          className="w-full h-full object-contain"
+        />
+      ) : (
+        <svg className="w-5 h-5" style={{ color: 'var(--color-neutral-400)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+        </svg>
+      )}
+    </div>
+  );
+}
 
 export default function BagBuilder() {
   const { id } = useParams();
@@ -368,24 +394,10 @@ export default function BagBuilder() {
                     {bagData.items && bagData.items.length > 0 ? (
                       <div className="flex flex-wrap gap-2 justify-center">
                         {bagData.items.map((item, index) => (
-                          <div 
+                          <GearThumbnail 
                             key={item.gear_item_id || `item-${index}`}
-                            className="w-15 h-15 rounded-lg overflow-hidden flex items-center justify-center transition-transform hover:scale-110"
-                            style={{ backgroundColor: 'var(--color-neutral-100)' }}
-                            title={`${item.brand} ${item.model} (${item.weight_grams}g)`}
-                          >
-                            {item.image_url ? (
-                              <img 
-                                src={item.image_url} 
-                                alt={`${item.brand} ${item.model}`}
-                                className="w-full h-full object-contain"
-                              />
-                            ) : (
-                              <svg className="w-5 h-5" style={{ color: 'var(--color-neutral-400)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                              </svg>
-                            )}
-                          </div>
+                            item={item}
+                          />
                         ))}
                       </div>
                     ) : (

@@ -26,14 +26,19 @@ router.get('/', async (req, res) => {
     }
 
     query += ' ORDER BY category, brand, model';
-    if (limit) {
-      query += ` LIMIT $${paramCount}`;
-      params.push(parseInt(limit));
-      paramCount++;
-    }
-    if (offset) {
+    
+    // Always apply limit if provided (default to reasonable limit to prevent loading all items)
+    const limitValue = limit ? parseInt(limit) : 20;
+    query += ` LIMIT $${paramCount}`;
+    params.push(limitValue);
+    paramCount++;
+    
+    // Apply offset if provided (0 is valid for first page)
+    const offsetValue = offset ? parseInt(offset) : 0;
+    if (offsetValue > 0) {
       query += ` OFFSET $${paramCount}`;
-      params.push(parseInt(offset));
+      params.push(offsetValue);
+      paramCount++;
     }
 
     const result = await pool.query(query, params);

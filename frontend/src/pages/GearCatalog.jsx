@@ -24,54 +24,59 @@ export default function GearCatalog() {
   const [category, setCategory] = useState('');
   const [viewMode, setViewMode] = useState('cards'); // 'cards' or 'table'
   const [loading, setLoading] = useState(true);
-  const [hasMore, setHasMore] = useState(false);
   const [total, setTotal] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectedItem, setSelectedItem] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [ownershipLoading, setOwnershipLoading] = useState(false);
   const searchInputRef = useRef(null);
-  const ITEMS_PER_PAGE = 24;
+  const ITEMS_PER_PAGE = 10;
 
-  // Load gear and owned gear on mount
+  // Load owned gear on mount
   useEffect(() => {
-    loadGear(true);
     loadOwnedGear();
   }, []);
 
-  // Reload gear when search or category changes
+  // Reset to page 1 when search or category changes
   useEffect(() => {
-    const timer = setTimeout(() => {
-      loadGear(true);
-    }, 300); // Debounce search
-    return () => clearTimeout(timer);
+    setCurrentPage(1);
   }, [search, category]);
 
-  const loadGear = async (reset = false) => {
+  // Reload gear when search, category, or page changes
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      loadGear();
+    }, search ? 300 : 0); // Debounce search, but load immediately on page/category change
+    return () => clearTimeout(timer);
+  }, [search, category, currentPage]);
+
+  const loadGear = async () => {
     setLoading(true);
     try {
-      const offset = reset ? 0 : gear.length;
-      const response = await getGear({ 
-        search, 
-        category: category || undefined, 
-        limit: ITEMS_PER_PAGE,
-        offset 
-      });
+      const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+      const params = { 
+        limit: String(ITEMS_PER_PAGE), // Ensure it's always sent
+        offset: String(offset) // Ensure it's always sent, even if 0
+      };
+      
+      if (search) {
+        params.search = search;
+      }
+      
+      if (category) {
+        params.category = category;
+      }
+      
+      const response = await getGear(params);
       
       const newItems = response.data.items || response.data;
       const totalCount = response.data.total || newItems.length;
       
-      if (reset) {
-        setGear(newItems);
-      } else {
-        setGear(prev => [...prev, ...newItems]);
-      }
-      
+      setGear(newItems);
       setTotal(totalCount);
-      setHasMore(offset + newItems.length < totalCount);
     } catch (error) {
       console.error('Failed to load gear:', error);
       setGear([]);
-      setHasMore(false);
       setTotal(0);
     } finally {
       setLoading(false);
@@ -88,11 +93,9 @@ export default function GearCatalog() {
     }
   };
 
-  const loadMore = () => {
-    if (!loading && hasMore) {
-      loadGear(false);
-    }
-  };
+  const totalPages = Math.ceil(total / ITEMS_PER_PAGE);
+  const startItem = total === 0 ? 0 : (currentPage - 1) * ITEMS_PER_PAGE + 1;
+  const endItem = Math.min(currentPage * ITEMS_PER_PAGE, total);
 
   const handleCardClick = (item) => {
     setSelectedItem(item);
@@ -200,7 +203,8 @@ export default function GearCatalog() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by brand or model..."
-              className="input w-full pl-10"
+              className="input w-full"
+              style={{ paddingLeft: '2.25rem' }}
             />
           </div>
 
@@ -371,35 +375,103 @@ export default function GearCatalog() {
         </div>
       )}
 
-      {/* Load More */}
-      {hasMore && (
-        <div className="flex justify-center mt-8">
-          <button
-            type="button"
-            onClick={loadMore}
-            disabled={loading}
-            className="btn btn-outline"
-          >
-            {loading ? (
-              <>
-                <svg className="animate-spin w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      {/* Pagination */}
+      {!loading && gear.length > 0 && totalPages > 1 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 pt-6 border-t" style={{ borderColor: 'var(--color-neutral-200)' }}>
+          {/* Results Info */}
+          <div className="text-sm" style={{ color: 'var(--color-neutral-500)' }}>
+            Showing {startItem.toLocaleString()} - {endItem.toLocaleString()} of {total.toLocaleString()} items
+          </div>
+
+          {/* Pagination Controls */}
+          <div className="flex items-center gap-2">
+            {/* Previous Button */}
+            <button
+              type="button"
+              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+              disabled={currentPage === 1 || loading}
+              className="px-3 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                backgroundColor: currentPage === 1 ? 'var(--color-neutral-100)' : 'var(--color-surface-elevated)',
+                color: currentPage === 1 ? 'var(--color-neutral-400)' : 'var(--color-neutral-700)',
+                border: '1px solid var(--color-neutral-200)'
+              }}
+            >
+              <span className="flex items-center gap-1">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
-                Loading...
-              </>
-            ) : (
-              `Load More (${gear.length} of ${total})`
-            )}
-          </button>
+                Previous
+              </span>
+            </button>
+
+            {/* Page Numbers */}
+            <div className="flex items-center gap-1">
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                let pageNum;
+                if (totalPages <= 5) {
+                  pageNum = i + 1;
+                } else if (currentPage <= 3) {
+                  pageNum = i + 1;
+                } else if (currentPage >= totalPages - 2) {
+                  pageNum = totalPages - 4 + i;
+                } else {
+                  pageNum = currentPage - 2 + i;
+                }
+
+                return (
+                  <button
+                    key={pageNum}
+                    type="button"
+                    onClick={() => setCurrentPage(pageNum)}
+                    disabled={loading}
+                    className="px-3 py-2 rounded-lg text-sm font-medium transition-colors min-w-[2.5rem] disabled:opacity-50"
+                    style={{
+                      backgroundColor: currentPage === pageNum 
+                        ? 'var(--color-primary-500)' 
+                        : 'var(--color-surface-elevated)',
+                      color: currentPage === pageNum 
+                        ? 'white' 
+                        : 'var(--color-neutral-700)',
+                      border: currentPage === pageNum 
+                        ? '1px solid var(--color-primary-500)' 
+                        : '1px solid var(--color-neutral-200)'
+                    }}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Next Button */}
+            <button
+              type="button"
+              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+              disabled={currentPage === totalPages || loading}
+              className="px-3 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                backgroundColor: currentPage === totalPages ? 'var(--color-neutral-100)' : 'var(--color-surface-elevated)',
+                color: currentPage === totalPages ? 'var(--color-neutral-400)' : 'var(--color-neutral-700)',
+                border: '1px solid var(--color-neutral-200)'
+              }}
+            >
+              <span className="flex items-center gap-1">
+                Next
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </span>
+            </button>
+          </div>
         </div>
       )}
 
-      {/* Results Count */}
-      {!loading && gear.length > 0 && (
+      {/* Results Count (when no pagination needed) */}
+      {!loading && gear.length > 0 && totalPages <= 1 && (
         <div className="text-center mt-6">
           <p className="text-sm" style={{ color: 'var(--color-neutral-500)' }}>
-            Showing {gear.length} of {total.toLocaleString()} items
+            Showing {total.toLocaleString()} item{total !== 1 ? 's' : ''}
           </p>
         </div>
       )}

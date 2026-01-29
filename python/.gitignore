@@ -2,3 +2,5 @@ venv/
 scrape_*.py
 *.csv
 product_images/
+image_clean.py
+processed_images/
