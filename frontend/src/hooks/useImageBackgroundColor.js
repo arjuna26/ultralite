@@ -5,10 +5,10 @@ import { useState, useEffect } from 'react';
  * Returns a CSS color string (rgb or hex) that can be used as a background.
  * 
  * @param {string} imageUrl - URL of the image to analyze
- * @param {string} fallbackColor - CSS color to use if extraction fails (default: neutral-100)
+ * @param {string} fallbackColor - CSS color to use if extraction fails (default: white)
  * @returns {string} CSS color string
  */
-export function useImageBackgroundColor(imageUrl, fallbackColor = 'var(--color-neutral-100)') {
+export function useImageBackgroundColor(imageUrl, fallbackColor = 'rgb(255, 255, 255)') {
   const [backgroundColor, setBackgroundColor] = useState(fallbackColor);
 
   useEffect(() => {
@@ -33,13 +33,16 @@ export function useImageBackgroundColor(imageUrl, fallbackColor = 'var(--color-n
         // Draw image to canvas
         ctx.drawImage(img, 0, 0);
         
-        // Sample corner pixels (typically where background color is)
-        const cornerSize = Math.min(50, Math.floor(img.width * 0.1), Math.floor(img.height * 0.1));
+        // Sample corner pixels MORE CAREFULLY to avoid edge pixels
+        // Start sampling 10% inward from edges to avoid anti-aliasing artifacts
+        const inset = Math.max(10, Math.floor(Math.min(img.width, img.height) * 0.1));
+        const cornerSize = Math.min(30, Math.floor(img.width * 0.08), Math.floor(img.height * 0.08));
+        
         const corners = [
-          { x: 0, y: 0 }, // Top-left
-          { x: img.width - cornerSize, y: 0 }, // Top-right
-          { x: 0, y: img.height - cornerSize }, // Bottom-left
-          { x: img.width - cornerSize, y: img.height - cornerSize }, // Bottom-right
+          { x: inset, y: inset }, // Top-left (inset from edges)
+          { x: img.width - cornerSize - inset, y: inset }, // Top-right
+          { x: inset, y: img.height - cornerSize - inset }, // Bottom-left
+          { x: img.width - cornerSize - inset, y: img.height - cornerSize - inset }, // Bottom-right
         ];
         
         // Collect colors from corner regions
@@ -53,14 +56,19 @@ export function useImageBackgroundColor(imageUrl, fallbackColor = 'var(--color-n
               const b = pixelData[2];
               const a = pixelData[3];
               
-              // Only include opaque pixels
-              if (a > 128) {
-                colors.push({ r, g, b });
-              }
+              // Skip fully transparent pixels
+              if (a < 10) continue;
+              
+              // Skip very dark colors (likely edge/shadow artifacts from transparent PNGs)
+              const brightness = (r + g + b) / 3;
+              if (brightness < 40) continue;
+              
+              colors.push({ r, g, b });
             }
           }
         });
         
+        // If no valid colors found, use white background (common for product images)
         if (colors.length === 0) {
           setBackgroundColor(fallbackColor);
           return;
@@ -70,8 +78,8 @@ export function useImageBackgroundColor(imageUrl, fallbackColor = 'var(--color-n
         // Group similar colors together
         const colorGroups = {};
         colors.forEach(color => {
-          // Round to nearest 10 to group similar colors
-          const key = `${Math.round(color.r / 10) * 10},${Math.round(color.g / 10) * 10},${Math.round(color.b / 10) * 10}`;
+          // Round to nearest 15 to group similar colors (increased from 10 for better grouping)
+          const key = `${Math.round(color.r / 15) * 15},${Math.round(color.g / 15) * 15},${Math.round(color.b / 15) * 15}`;
           if (!colorGroups[key]) {
             colorGroups[key] = { count: 0, r: 0, g: 0, b: 0 };
           }
@@ -96,14 +104,20 @@ export function useImageBackgroundColor(imageUrl, fallbackColor = 'var(--color-n
         });
         
         if (dominantColor) {
-          // Convert to RGB string
-          const rgb = `rgb(${dominantColor.r}, ${dominantColor.g}, ${dominantColor.b})`;
-          setBackgroundColor(rgb);
+          // If the dominant color is very light (brightness > 240), use white for cleaner look
+          const brightness = (dominantColor.r + dominantColor.g + dominantColor.b) / 3;
+          if (brightness > 240) {
+            setBackgroundColor(fallbackColor); // Use white for very light backgrounds
+          } else {
+            // Convert to RGB string
+            const rgb = `rgb(${dominantColor.r}, ${dominantColor.g}, ${dominantColor.b})`;
+            setBackgroundColor(rgb);
+          }
         } else {
           setBackgroundColor(fallbackColor);
         }
       } catch (error) {
-        // CORS or other errors - fallback to default
+        // CORS or other errors - fallback to white
         console.warn('Failed to extract image background color:', error);
         setBackgroundColor(fallbackColor);
       }

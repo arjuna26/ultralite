@@ -115,7 +115,7 @@ export default function BagItemList({ items, onRemove }) {
                     {(categoryWeight / 1000).toFixed(2)} kg
                   </span>
                   <span className="text-xs px-1.5 py-0.5 rounded" style={{ 
-                    backgroundColor: 'var(--color-neutral-100)', 
+                    backgroundColor: '#fff', 
                     color: 'var(--color-neutral-600)' 
                   }}>
                     {categoryPercent}%

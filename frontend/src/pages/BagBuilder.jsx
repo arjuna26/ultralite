@@ -284,13 +284,13 @@ export default function BagBuilder() {
             <div className="lg:sticky lg:top-24 w-full flex items-center justify-center">
               <div 
                 className="w-full h-full rounded-lg overflow-hidden flex items-center justify-center"
-                style={{ backgroundColor: 'var(--color-neutral-100)' }}
+                style={{ backgroundColor: '#fff' }}
               >
                 {selectedBackpackObj.image_url ? (
                   <img 
                     src={selectedBackpackObj.image_url} 
                     alt={`${selectedBackpackObj.brand} ${selectedBackpackObj.model}`}
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-contain max-h-[500px]"
                   />
                 ) : (
                   <svg className="w-24 h-24" style={{ color: 'var(--color-neutral-300)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -357,7 +357,7 @@ export default function BagBuilder() {
                     <div className="flex flex-col items-center flex-shrink-0">
                       <div 
                         className="w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center mb-2"
-                        style={{ backgroundColor: 'var(--color-neutral-100)' }}
+                        style={{ backgroundColor: '#ffffff' }}
                       >
                         {bagData.backpack_image_url ? (
                           <img 

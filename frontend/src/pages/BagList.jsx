@@ -114,14 +114,14 @@ export default function BagList() {
             return (
               <div 
                 key={bag.id} 
-                className="card card-hover p-6 stagger-item"
+                className="card card-hover p-6 stagger-item flex flex-col justify-between"
                 style={{ animationDelay: `${index * 50}ms` }}
               >
                 {/* Header */}
                 <div className="flex justify-between items-start mb-4">
                   {/* Backpack Image */}
                   <div className="w-14 h-14 rounded-lg mr-3 flex-shrink-0 overflow-hidden flex items-center justify-center"
-                       style={{ backgroundColor: 'var(--color-neutral-100)' }}>
+                       style={{ backgroundColor: '#ffffff' }}>
                     {bag.backpack_image_url ? (
                       <img 
                         src={bag.backpack_image_url} 
