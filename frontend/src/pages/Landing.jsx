@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import PublicFooter from '../components/PublicFooter';
-import GradientBackground from '../components/GradientBackground';
 import HowItWorksStacking from '../components/HowItWorksStacking';
 
 // Icons as simple SVG components
@@ -199,11 +198,6 @@ export default function Landing() {
     };
   }, []);
 
-  // Calculate parallax values - zoom + vertical movement
-  const heroScrollProgress = Math.min(1, scrollY / heroHeight);
-  const parallaxOffset = scrollY * 0.3; // Vertical movement (slower than scroll)
-  const parallaxScale = 1.1 + heroScrollProgress * 0.5;
-
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'var(--color-surface-primary)' }}>
       {/* Navigation */}
@@ -234,7 +228,44 @@ export default function Landing() {
 
       {/* Hero + How it Works wrapper with shared gradient background */}
       <div className="relative" style={{ backgroundColor: 'var(--color-surface-primary)' }}>
-        <GradientBackground />
+
+      <div className="relative overflow-hidden md:block hidden">
+        <div 
+          className="absolute inset-0 z-0 md:block hidden"
+          style={{
+            backgroundImage: 'url(https://wxsnnnijzjyasjfqxzhc.supabase.co/storage/v1/object/public/img/tetonsreflect.jpg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundAttachment: 'fixed'
+          }}
+        />
+        {/* Light overlay for text readability */}
+        <div 
+          className="absolute inset-0 z-0 pricing-overlay"
+          style={{
+            backgroundColor: 'var(--color-primary-300)',
+            opacity: 0.5
+          }}
+        />
+      
+      {/* CTA Section */}
+      <section className="section scroll-reveal relative overflow-hidden z-10">
+        <div className="container relative z-10">
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-display text-3xl md:text-4xl mb-4 text-white">
+              Ready to lighten your load?
+            </h2>
+            <p className="text-lg mb-8" style={{ color: 'var(--color-primary-200)' }}>
+              Join thousands of backpackers who've already discovered smarter packing.
+            </p>
+            <Link to="/login" className="btn btn-lg px-8 hover-lift" 
+                  style={{ backgroundColor: 'white', color: 'var(--color-primary-700)' }}>
+              Get Started Free
+            </Link>
+          </div>
+        </div>
+      </section>
+      </div>
         
         {/* Hero Section */}
         <section className="pt-32 pb-20 md:pt-40 md:pb-32 relative topo-pattern">
@@ -280,13 +311,13 @@ export default function Landing() {
           </div>
         </section>
         
-        {/* Desktop version - Stacking cards (shares GradientBackground with Hero) */}
-        <div id="how-it-works" className="hidden md:block">
+        {/* Desktop version - Stacking cards (shares background with Hero) */}
+        <div id="how-it-works" className="hidden md:block" style={{ backgroundColor: 'var(--color-secondary-25)' }}>
           <HowItWorksStacking />
         </div>
         
         {/* Mobile version - Simple stacked layout */}
-        <section className="pt-12 pb-16 relative md:hidden">
+        <section className="pt-12 pb-16 relative md:hidden bg-surface-primary">
           <div className="container px-4">
             <div className="text-center mb-12 scroll-reveal">
               <span className="badge badge-secondary mb-4">How It Works</span>
@@ -303,13 +334,13 @@ export default function Landing() {
 
             <div className="space-y-8">
               {[
-                { step: '01', title: 'Build Your Bag', desc: 'Select a backpack and add gear from our catalog. Watch your weight update in real-time.' },
-                { step: '02', title: 'Plan Your Trip', desc: 'Associate your bag with an upcoming adventure. Add details like location and dates.' },
-                { step: '03', title: 'Iterate & Improve', desc: 'After your trip, log stats and duplicate your bag to tweak for next time.' }
+                { step: '01', title: 'Build Your Bag', desc: 'Select a backpack and add gear from our catalog. Watch your weight update in real-time.', image: 'https://wxsnnnijzjyasjfqxzhc.supabase.co/storage/v1/object/public/img/step1.png' },
+                { step: '02', title: 'Plan Your Trip', desc: 'Associate your bag with an upcoming adventure. Add details like location and dates.', image: 'https://wxsnnnijzjyasjfqxzhc.supabase.co/storage/v1/object/public/img/step2.png' },
+                { step: '03', title: 'Iterate & Improve', desc: 'After your trip, log stats and duplicate your bag to tweak for next time.', image: 'https://wxsnnnijzjyasjfqxzhc.supabase.co/storage/v1/object/public/img/step3.png' },
               ].map((item, index) => (
                 <div 
                   key={index} 
-                  className="text-center p-6 rounded-xl"
+                  className="text-center p-6 rounded-xl flex flex-col items-center justify-center"
                   style={{ transitionDelay: `${index * 100}ms` }}
                 >
                   <div className="text-5xl font-bold mb-3 text-gradient" style={{ opacity: 0.3 }}>
@@ -317,10 +348,15 @@ export default function Landing() {
                   </div>
                   <h3 className="text-heading text-lg mb-2">{item.title}</h3>
                   <p className="text-body text-sm">{item.desc}</p>
+                  <img src={item.image} alt={item.title} className="min-w-screen pt-12" />
                 </div>
               ))}
             </div>
           </div>
+        </section>
+
+        <section>
+          <div className="container topo-pattern h-screen">hi</div>
         </section>
       </div>
 
@@ -329,7 +365,7 @@ export default function Landing() {
         <div 
           className="absolute inset-0 z-0 md:block hidden"
           style={{
-            backgroundImage: 'url(https://wxsnnnijzjyasjfqxzhc.supabase.co/storage/v1/object/public/img/20230607_141400.jpg)',
+            backgroundImage: 'url(https://wxsnnnijzjyasjfqxzhc.supabase.co/storage/v1/object/public/img/tetonsreflect.jpg)',
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundAttachment: 'fixed'
@@ -337,13 +373,13 @@ export default function Landing() {
         />
         {/* Light overlay for text readability */}
         <div 
-          className="absolute inset-0 z-0"
+          className="absolute inset-0 z-0 pricing-overlay"
           style={{
-            backgroundColor: 'var(--color-surface-secondary)',
-            opacity: 0.3
+            backgroundColor: 'var(--color-primary-300)',
+            opacity: 0.8
           }}
         />
-
+      
       {/* Testimonials Section */}
       <section id="reviews" className="section topo-pattern mt-32">
         <div className="container">
@@ -356,7 +392,7 @@ export default function Landing() {
                 filter: 'brightness(1.1)'
               }}
             >
-              Loved by backpackers from <span className="font-bold">all over</span> the place
+              Loved by backpackers from <span className="font-bold">all over</span>
             </h2>
           </div>
 
@@ -473,24 +509,6 @@ export default function Landing() {
                 <p className="text-body text-sm">{feature.description}</p>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="section cta-gradient scroll-reveal relative overflow-hidden">
-        <div className="container relative z-10">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-display text-3xl md:text-4xl mb-4 text-white">
-              Ready to lighten your load?
-            </h2>
-            <p className="text-lg mb-8" style={{ color: 'var(--color-primary-200)' }}>
-              Join thousands of backpackers who've already discovered smarter packing.
-            </p>
-            <Link to="/login" className="btn btn-lg px-8 hover-lift" 
-                  style={{ backgroundColor: 'white', color: 'var(--color-primary-700)' }}>
-              Get Started Free
-            </Link>
           </div>
         </div>
       </section>

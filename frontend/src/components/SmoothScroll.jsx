@@ -7,7 +7,7 @@ export default function SmoothScroll({ children }) {
   useEffect(() => {
     lenis = new Lenis({
       smoothWheel: true,
-      lerp: 0.09
+      lerp: 0.08
     })
 
     const raf = (time) => {
