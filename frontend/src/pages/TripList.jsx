@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { getTrips, createTrip, deleteTrip } from '../api/client';
 import ConfirmModal from '../components/ConfirmModal';
 import Toast from '../components/Toast';
+import DatePicker from '../components/DatePicker';
 
 // Format date helper
 const formatDate = (dateStr) => {
@@ -170,19 +171,17 @@ export default function TripList() {
             </div>
             <div>
               <label className="label">Start Date</label>
-              <input
-                type="date"
+              <DatePicker
                 value={newTrip.start_date}
-                onChange={(e) => setNewTrip({...newTrip, start_date: e.target.value})}
+                onChange={(date) => setNewTrip({...newTrip, start_date: date})}
                 className="input"
               />
             </div>
             <div>
               <label className="label">End Date</label>
-              <input
-                type="date"
+              <DatePicker
                 value={newTrip.end_date}
-                onChange={(e) => setNewTrip({...newTrip, end_date: e.target.value})}
+                onChange={(date) => setNewTrip({...newTrip, end_date: date})}
                 className="input"
               />
             </div>
