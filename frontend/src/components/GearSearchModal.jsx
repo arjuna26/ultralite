@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { getGear } from '../api/client';
-import { lenis } from './SmoothScroll';
+import { getLenis } from './SmoothScroll';
+
+const lenis = getLenis();
 
 const categories = [
   { value: 'tent', label: 'Tents' },

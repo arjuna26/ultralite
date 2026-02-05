@@ -1,24 +1,28 @@
 import { useEffect } from 'react'
 import Lenis from '@studio-freight/lenis'
 
-export let lenis
+let lenisInstance = null
+
+export function getLenis() {
+  return lenisInstance
+}
 
 export default function SmoothScroll({ children }) {
   useEffect(() => {
-    lenis = new Lenis({
+    lenisInstance = new Lenis({
       smoothWheel: true,
       lerp: 0.08
     })
 
     const raf = (time) => {
-      lenis.raf(time)
+      lenisInstance.raf(time)
       requestAnimationFrame(raf)
     }
     requestAnimationFrame(raf)
 
     return () => {
-      lenis.destroy()
-      lenis = null
+      lenisInstance.destroy()
+      lenisInstance = null
     }
   }, [])
 

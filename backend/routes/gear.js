@@ -20,9 +20,15 @@ router.get('/', async (req, res) => {
     }
 
     if (search) {
-      query += ` AND (brand ILIKE $${paramCount} OR model ILIKE $${paramCount})`;
-      params.push(`%${search}%`);
-      paramCount++;
+      const searchTerm = search.trim().replace(/\s+/g, ' ');
+      const searchPattern = '%' + searchTerm + '%';
+      query += ` AND (
+        search_vector @@ plainto_tsquery('english', $${paramCount})
+        OR brand ILIKE $${paramCount + 1}
+        OR model ILIKE $${paramCount + 1}
+      )`;
+      params.push(searchTerm, searchPattern);
+      paramCount += 2;
     }
 
     query += ' ORDER BY category, brand, model';
@@ -54,8 +60,15 @@ router.get('/', async (req, res) => {
     }
     
     if (search) {
-      countQuery += ` AND (brand ILIKE $${countParamNum} OR model ILIKE $${countParamNum})`;
-      countParams.push(`%${search}%`);
+      const searchTerm = search.trim().replace(/\s+/g, ' ');
+      const searchPattern = '%' + searchTerm + '%';
+      countQuery += ` AND (
+        search_vector @@ plainto_tsquery('english', $${countParamNum})
+        OR brand ILIKE $${countParamNum + 1}
+        OR model ILIKE $${countParamNum + 1}
+      )`;
+      countParams.push(searchTerm, searchPattern);
+      countParamNum += 2;
     }
     
     const countResult = await pool.query(countQuery, countParams);

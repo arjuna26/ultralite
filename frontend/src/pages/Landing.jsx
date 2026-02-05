@@ -198,7 +198,7 @@ const mockCommunityTrips = [
     backpack_model: 'Circuit',
   },
   {
-    trip_id: 'mock-3',
+    trip_id: 'mock-4',
     user_nickname: 'Arjuna H.',
     trip_name: 'Boulder Creek Lakes',
     location_text: 'Trinity Alps',
