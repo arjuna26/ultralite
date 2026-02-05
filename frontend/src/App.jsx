@@ -17,6 +17,7 @@ import About from './pages/About';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 import { getMe, logout as apiLogout } from './api/client';
+import { Analytics } from "@vercel/analytics/react"
 
 // Check if we should show coming soon page
 const isComingSoon = import.meta.env.VITE_COMING_SOON === 'true';
@@ -55,7 +56,6 @@ function AppContent({ user, setUser, loading }) {
     <div className="min-h-screen topo-pattern">
       <ScrollToTop />
       {user && <Navbar user={user} onLogout={handleLogout} />}
-      
       <Routes>
         {/* Public landing page */}
         <Route 
@@ -158,6 +158,7 @@ function App() {
       <SmoothScroll>
         <AppContent user={user} setUser={setUser} loading={loading} />
       </SmoothScroll>
+      <Analytics />
     </BrowserRouter>
   );
 }
