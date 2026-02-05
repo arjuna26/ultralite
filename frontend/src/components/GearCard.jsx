@@ -65,10 +65,10 @@ export default function GearCard({ item, onClick, isOwned }) {
     <button
       type="button"
       onClick={() => onClick(item)}
-      className="card card-hover p-4 text-left w-full transition-all group relative"
+      className="card card-hover p-3 text-left w-full transition-all group relative"
       style={{ 
         cursor: 'pointer',
-        backgroundColor: imageBackgroundColor,
+        backgroundColor: 'var(--color-surface-elevated)',
       }}
     >
       {/* Owned Badge */}
@@ -86,14 +86,14 @@ export default function GearCard({ item, onClick, isOwned }) {
 
       {/* Image or Placeholder */}
       <div 
-        className="w-full aspect-square rounded-lg mb-3 flex items-center justify-center overflow-hidden"
+        className="h-32 rounded-lg mb-3 flex items-center justify-center overflow-hidden"
         style={{ backgroundColor: imageBackgroundColor }}
       >
         {item.image_url && !imageError ? (
           <img 
             src={item.image_url} 
             alt={`${item.brand} ${item.model}`}
-            className="w-full h-full object-contain p-2"
+            className="h-full w-full object-contain p-1"
             onError={() => setImageError(true)}
           />
         ) : (

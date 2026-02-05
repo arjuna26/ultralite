@@ -376,7 +376,7 @@ export default function GearCatalog() {
       )}
 
       {/* Pagination */}
-      {!loading && gear.length > 0 && totalPages > 1 && (
+      {gear.length > 0 && totalPages > 1 && (
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 pt-6 border-t" style={{ borderColor: 'var(--color-neutral-200)' }}>
           {/* Results Info */}
           <div className="text-sm" style={{ color: 'var(--color-neutral-500)' }}>

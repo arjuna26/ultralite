@@ -52,7 +52,7 @@ function AppContent({ user, setUser, loading }) {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'var(--color-surface-primary)' }}>
+    <div className="min-h-screen topo-pattern">
       <ScrollToTop />
       {user && <Navbar user={user} onLogout={handleLogout} />}
       
