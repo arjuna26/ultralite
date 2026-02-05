@@ -87,7 +87,8 @@ export default function GearSearch({ onSelect }) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search gear by name or brand..."
-            className="input pl-10"
+            className="input"
+            style={{ paddingLeft: '2.5rem' }}
           />
         </div>
         
@@ -118,7 +119,7 @@ export default function GearSearch({ onSelect }) {
       ) : gear.length === 0 ? (
         <div className="text-center py-12">
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl mb-4" 
-               style={{ backgroundColor: 'var(--color-neutral-100)' }}>
+               style={{ backgroundColor: '#fff' }}>
             <svg className="w-6 h-6" style={{ color: 'var(--color-neutral-400)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>

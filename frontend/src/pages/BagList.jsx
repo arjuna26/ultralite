@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getBags, deleteBag, duplicateBag } from '../api/client';
+import ConfirmModal from '../components/ConfirmModal';
+import CloneModal from '../components/CloneModal';
+import Toast from '../components/Toast';
 
 // Helper to categorize weight
 const getWeightCategory = (grams) => {
@@ -14,6 +17,9 @@ const getWeightCategory = (grams) => {
 export default function BagList() {
   const [bags, setBags] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [cloneTarget, setCloneTarget] = useState(null);
+  const [toastMessage, setToastMessage] = useState(''); 
 
   useEffect(() => {
     loadBags();
@@ -30,26 +36,35 @@ export default function BagList() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm('Delete this bag?')) return;
-    
+  const handleDeleteClick = (id) => {
+    setDeleteTarget({ id });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget) return;
     try {
-      await deleteBag(id);
-      setBags(bags.filter(b => b.id !== id));
+      await deleteBag(deleteTarget.id);
+      setBags((prev) => prev.filter((b) => b.id !== deleteTarget.id));
+      setDeleteTarget(null);
     } catch (error) {
-      alert('Failed to delete bag');
+      setToastMessage("Couldn't delete bag. Try again.");
+      setDeleteTarget(null);
     }
   };
 
-  const handleDuplicate = async (id, name) => {
-    const newName = prompt('Name for duplicated bag:', `${name} (copy)`);
-    if (!newName) return;
-    
+  const handleCloneClick = (id, name) => {
+    setCloneTarget({ id, name });
+  };
+
+  const handleCloneSubmit = async (newName) => {
+    if (!cloneTarget) return;
     try {
-      const response = await duplicateBag(id, newName);
-      setBags([response.data, ...bags]);
+      const response = await duplicateBag(cloneTarget.id, newName);
+      setBags((prev) => [response.data, ...prev]);
+      setCloneTarget(null);
     } catch (error) {
-      alert('Failed to duplicate bag');
+      setToastMessage("Couldn't duplicate bag. Try again.");
+      setCloneTarget(null);
     }
   };
 
@@ -68,6 +83,25 @@ export default function BagList() {
 
   return (
     <div className="container py-8">
+      <Toast message={toastMessage} onDismiss={() => setToastMessage('')} />
+      
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        title="Delete Bag"
+        message="Are you sure you want to delete this bag? This action cannot be undone."
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setDeleteTarget(null)}
+      />
+      <CloneModal
+        isOpen={!!cloneTarget}
+        title="Name for duplicated bag"
+        message="Enter a name for the clone."
+        inputLabel="Bag name"
+        inputDefault={cloneTarget ? `${cloneTarget.name} (copy)` : ''}
+        submitLabel="Clone Bag"
+        onSubmit={handleCloneSubmit}
+        onCancel={() => setCloneTarget(null)}
+      />
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
@@ -78,7 +112,7 @@ export default function BagList() {
               : `${bags.length} bag${bags.length !== 1 ? 's' : ''} configured`}
           </p>
         </div>
-        <Link to="/bags/new" className="btn btn-primary">
+        <Link to="/bags/new" className="btn btn-primary btn-lg">
           <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
@@ -114,20 +148,34 @@ export default function BagList() {
             return (
               <div 
                 key={bag.id} 
-                className="card card-hover p-6 stagger-item"
+                className="card card-hover p-6 stagger-item flex flex-col justify-between"
                 style={{ animationDelay: `${index * 50}ms` }}
               >
                 {/* Header */}
                 <div className="flex justify-between items-start mb-4">
+                  {/* Backpack Image */}
+                  <div className="w-14 h-14 rounded-lg mr-3 flex-shrink-0 overflow-hidden flex items-center justify-center"
+                       style={{ backgroundColor: '#ffffff' }}>
+                    {bag.backpack_image_url ? (
+                      <img 
+                        src={bag.backpack_image_url} 
+                        alt={`${bag.backpack_brand} ${bag.backpack_model}`}
+                        className="w-full h-full object-contain"
+                      />
+                    ) : (
+                      <svg className="w-6 h-6" style={{ color: 'var(--color-neutral-400)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                      </svg>
+                    )}
+                  </div>
+                  
                   <div className="flex-1 min-w-0 pr-4">
                     <h3 className="text-heading text-lg truncate">{bag.name}</h3>
-                    <p className="text-caption text-sm flex items-center gap-1.5 mt-1">
-                      <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                      </svg>
+                    <p className="text-caption text-sm mt-1">
                       <span className="truncate">{bag.backpack_brand} {bag.backpack_model}</span>
                     </p>
                   </div>
+                  
                   <div className="text-right flex-shrink-0">
                     <div className="text-2xl font-bold" style={{ color: weightCategory.color }}>
                       {(bag.total_weight_grams / 1000).toFixed(2)}
@@ -162,7 +210,7 @@ export default function BagList() {
                     Edit
                   </Link>
                   <button
-                    onClick={() => handleDuplicate(bag.id, bag.name)}
+                    onClick={() => handleCloneClick(bag.id, bag.name)}
                     className="btn btn-secondary btn-sm flex-1"
                   >
                     <svg className="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -171,7 +219,7 @@ export default function BagList() {
                     Clone
                   </button>
                   <button
-                    onClick={() => handleDelete(bag.id)}
+                    onClick={() => handleDeleteClick(bag.id)}
                     className="btn btn-danger btn-sm px-3"
                     title="Delete bag"
                   >

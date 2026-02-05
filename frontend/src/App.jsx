@@ -2,18 +2,22 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-route
 import { useState, useEffect, useCallback } from 'react';
 import Navbar from './components/Navbar';
 import ScrollToTop from './components/ScrollToTop';
+import SmoothScroll from './components/SmoothScroll'
 import Landing from './pages/Landing';
 import ComingSoon from './pages/ComingSoon';
 import Login from './pages/Login';
+import ResetPassword from './pages/ResetPassword';
 import OAuthCallback from './pages/OAuthCallback';
 import BagList from './pages/BagList';
 import BagBuilder from './pages/BagBuilder';
 import TripList from './pages/TripList';
 import TripDetail from './pages/TripDetail';
+import GearCatalog from './pages/GearCatalog';
 import About from './pages/About';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 import { getMe, logout as apiLogout } from './api/client';
+import { Analytics } from "@vercel/analytics/react"
 
 // Check if we should show coming soon page
 const isComingSoon = import.meta.env.VITE_COMING_SOON === 'true';
@@ -49,10 +53,9 @@ function AppContent({ user, setUser, loading }) {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'var(--color-surface-primary)' }}>
+    <div className="min-h-screen topo-pattern">
       <ScrollToTop />
       {user && <Navbar user={user} onLogout={handleLogout} />}
-      
       <Routes>
         {/* Public landing page */}
         <Route 
@@ -63,6 +66,12 @@ function AppContent({ user, setUser, loading }) {
         <Route 
           path="/login" 
           element={user ? <Navigate to="/bags" /> : <Login onLogin={handleLogin} />} 
+        />
+
+        {/* Password reset - public route */}
+        <Route 
+          path="/reset-password" 
+          element={<ResetPassword />} 
         />
 
         {/* OAuth callback - public route */}
@@ -99,6 +108,11 @@ function AppContent({ user, setUser, loading }) {
         <Route 
           path="/trips/:id" 
           element={user ? <TripDetail /> : <Navigate to="/login" />} 
+        />
+        
+        <Route 
+          path="/gear" 
+          element={user ? <GearCatalog /> : <Navigate to="/login" />} 
         />
       </Routes>
     </div>
@@ -141,7 +155,10 @@ function App() {
 
   return (
     <BrowserRouter>
-      <AppContent user={user} setUser={setUser} loading={loading} />
+      <SmoothScroll>
+        <AppContent user={user} setUser={setUser} loading={loading} />
+      </SmoothScroll>
+      <Analytics />
     </BrowserRouter>
   );
 }

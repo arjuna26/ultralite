@@ -64,7 +64,7 @@ export default function BagItemList({ items, onRemove }) {
           </div>
           <p className="text-caption">No items yet</p>
           <p className="text-xs mt-1" style={{ color: 'var(--color-neutral-400)' }}>
-            Search and add gear from the panel on the right
+            Use the "Add Gear" button above to start building your bag
           </p>
         </div>
       </div>
@@ -115,7 +115,7 @@ export default function BagItemList({ items, onRemove }) {
                     {(categoryWeight / 1000).toFixed(2)} kg
                   </span>
                   <span className="text-xs px-1.5 py-0.5 rounded" style={{ 
-                    backgroundColor: 'var(--color-neutral-100)', 
+                    backgroundColor: '#fff', 
                     color: 'var(--color-neutral-600)' 
                   }}>
                     {categoryPercent}%

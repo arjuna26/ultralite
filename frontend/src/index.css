@@ -29,17 +29,19 @@
    * SECONDARY COLORS - Warm Browns/Tan
    * Used for secondary elements, backgrounds
    * ======================================== */
-  --color-secondary-50: #faf8f5;
-  --color-secondary-100: #f3efe8;
-  --color-secondary-200: #e6ddd0;
-  --color-secondary-300: #d4c5b0;
-  --color-secondary-400: #bfa88d;
-  --color-secondary-500: #ae9274;
-  --color-secondary-600: #a08164;
-  --color-secondary-700: #866a54;
-  --color-secondary-800: #6e5747;
-  --color-secondary-900: #5a483c;
-  --color-secondary-950: #30261f;
+  --color-secondary-25:  #f8f5f0;
+  --color-secondary-50:  #f5efe6;
+  --color-secondary-100: #e6d8c3;
+  --color-secondary-200: #d2c0a2;
+  --color-secondary-300: #bfa782;
+  --color-secondary-400: #aa8f6a;
+  --color-secondary-500: #8f7354;
+  --color-secondary-600: #735c43;
+  --color-secondary-700: #5a4734;
+  --color-secondary-800: #413326;
+  --color-secondary-900: #2b2118;
+  --color-secondary-950: #1a140e;
+
 
   /* ========================================
    * ACCENT COLORS - Terracotta/Ochre
@@ -133,10 +135,7 @@
 /* ========================================
  * BASE STYLES
  * ======================================== */
-html {
-  scroll-behavior: smooth;
-}
-
+ 
 body {
   font-family: var(--font-sans);
   background-color: var(--color-surface-primary);
@@ -482,8 +481,10 @@ body {
 
 /* Topographic pattern overlay */
 .topo-pattern {
-  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 10 Q60 25 50 40 Q40 55 50 70 Q60 85 50 90' fill='none' stroke='%233d8b6c' stroke-opacity='0.05' stroke-width='1'/%3E%3Cpath d='M30 15 Q40 30 30 45 Q20 60 30 75 Q40 90 30 95' fill='none' stroke='%233d8b6c' stroke-opacity='0.05' stroke-width='1'/%3E%3Cpath d='M70 5 Q80 20 70 35 Q60 50 70 65 Q80 80 70 85' fill='none' stroke='%233d8b6c' stroke-opacity='0.05' stroke-width='1'/%3E%3C/svg%3E");
-  background-size: 100px 100px;
+  background-image: url("/topo-pattern.svg");
+  background-repeat: no-repeat;
+  background-size: cover;      /* key */
+  background-position: center;
 }
 
 /* Navigation link active state */
@@ -732,6 +733,23 @@ body {
     transform: none;
   }
 }
+
+/* ========================================
+ * COMMUNITY TRIPS ROULETTE
+ * ======================================== */
+ @keyframes carousel {
+  from {
+    transform: translateX(5%);
+  }
+  to {
+    transform: translateX(calc(-1 * var(--loop-width)));
+  }
+}
+
+.animate-carousel {
+  animation: carousel 55s linear infinite;
+}
+
 
 /* ========================================
  * PERFORMANCE OPTIMIZATIONS

@@ -90,11 +90,28 @@ export const joinWaitlist = (email) =>
 // GEAR FUNCTIONS
 // ============================================
 
+/**
+ * Get gear items with optional filters and pagination
+ * @param {Object} params - { search, category, limit, offset }
+ */
 export const getGear = (params) => 
     api.get('/gear', { params });
 
 export const getBackpacks = () => 
     api.get('/gear/backpacks');
+
+/**
+ * Get user's owned gear items
+ */
+export const getUserOwnedGear = () =>
+    api.get('/gear/owned');
+
+/**
+ * Toggle ownership status of a gear item
+ * @param {string} gearItemId 
+ */
+export const toggleGearOwnership = (gearItemId) =>
+    api.post(`/gear/${gearItemId}/toggle-owned`);
 
 // ============================================
 // BAG FUNCTIONS

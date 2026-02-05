@@ -219,7 +219,18 @@ export default function Login({ onLogin }) {
               
               {/* Password field with show/hide toggle */}
               <div>
-                <label htmlFor="password" className="label">Password</label>
+                <div className="flex items-center justify-between">
+                  <label htmlFor="password" className="label">Password</label>
+                  {!isRegister && (
+                    <Link
+                      to="/reset-password"
+                      className="text-sm font-medium transition-colors hover:underline"
+                      style={{ color: 'var(--color-primary-600)' }}
+                    >
+                      Forgot password?
+                    </Link>
+                  )}
+                </div>
                 <div className="relative">
                   <input
                     id="password"
