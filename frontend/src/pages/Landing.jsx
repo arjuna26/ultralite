@@ -197,6 +197,18 @@ const mockCommunityTrips = [
     backpack_brand: 'ULA',
     backpack_model: 'Circuit',
   },
+  {
+    trip_id: 'mock-3',
+    user_nickname: 'Arjuna H.',
+    trip_name: 'Boulder Creek Lakes',
+    location_text: 'Trinity Alps',
+    start_date: '2025-06-10',
+    end_date: '2025-07-05',
+    backpack_image_url: 'https://www.columbia.co.th/cdn/shop/files/CO399AC605EJTH-0.jpg?v=1764214744&width=768',
+    total_weight_grams: 3100,
+    backpack_brand: 'Columbia',
+    backpack_model: 'Wildwood Heights',
+  },
 ];
 
 export default function Landing() {
@@ -242,7 +254,7 @@ export default function Landing() {
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'var(--color-surface-primary)' }}>
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b" style={{ borderColor: 'var(--color-neutral-200)' }}>
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b" style={{ borderColor: 'var(--color-neutral-200)' }}>
         <div className="container">
           <div className="flex items-center justify-between h-16">
             <Link to="/" className="flex items-center gap-2 hover-scale">
@@ -390,7 +402,7 @@ export default function Landing() {
             <h2 className="text-display text-3xl md:text-5xl mb-4 text-black text-center">Featured Trips</h2>
           </div>
           {/* Desktop */}
-          <div className="hidden md:block">
+          <div className="">
             
             <CommunityTripsStacking trips={mockCommunityTrips} />
           </div>

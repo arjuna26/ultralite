@@ -19,6 +19,7 @@ import { useEffect, useRef, useState } from 'react';
 /* ================= constants ================= */
 
 const CARD_WIDTH_PX = 420;
+const CARD_HEIGHT_PX = 280;
 const GAP_PX = 64;
 
 const BASE_SPEED_PX_PER_SEC = 80;
@@ -70,14 +71,14 @@ const BackpackPlaceholderIcon = () => (
 function TripCardContent({ trip, weightCategory, datesStr }) {
   return (
     <div
-      className="rounded-2xl p-10 backdrop-blur-md"
+      className="rounded-2xl p-10 h-full backdrop-blur-md"
       style={{
-        backgroundColor: 'rgba(255,255,255,0.04)',
-        boxShadow: '0 20px 48px rgba(0,0,0,0.15)',
+        backgroundColor: 'rgba(255, 255, 255, 0)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
       }}
     >
-      <div className="grid grid-cols-2 gap-10 items-center">
-        <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-10 items-center h-full">
+        <div className="space-y-4 flex flex-col justify-center">
           <h3 className="text-2xl font-semibold">{trip.trip_name}</h3>
           <p className="text-sm text-neutral-600">
             {trip.user_nickname}
@@ -105,9 +106,21 @@ function TripCardContent({ trip, weightCategory, datesStr }) {
           )}
         </div>
 
-        <div className="rounded-xl overflow-hidden bg-neutral-100 aspect-[16/10] flex items-center justify-center">
+        <div 
+          className="rounded-xl overflow-hidden bg-white flex items-center justify-center"
+          style={{ 
+            width: '100%',
+            height: '200px',
+            minHeight: '200px',
+            maxHeight: '200px'
+          }}
+        >
           {trip.backpack_image_url ? (
-            <img src={trip.backpack_image_url} className="object-contain w-full h-full" />
+            <img 
+              src={trip.backpack_image_url} 
+              className="object-contain max-w-full max-h-full"
+              style={{ width: 'auto', height: 'auto' }}
+            />
           ) : (
             <BackpackPlaceholderIcon />
           )}
@@ -174,27 +187,22 @@ function useMarquee({ stripWidth, hoverRef, containerRef }) {
   /* RAF loop */
   useEffect(() => {
     if (!trackRef.current) return;
-
     let rafId;
-
     const tick = (t) => {
       if (!lastTime.current) lastTime.current = t;
       const dt = (t - lastTime.current) / 1000;
       lastTime.current = t;
 
       if (!paused) {
-        offset.current =
-          (offset.current +
-            BASE_SPEED_PX_PER_SEC * speedMultiplier.current * dt) %
-          stripWidth;
-
-        trackRef.current.style.transform =
-          `translate3d(${-offset.current}px, 0, 0)`;
+        offset.current += BASE_SPEED_PX_PER_SEC * speedMultiplier.current * dt;
+        if (offset.current >= stripWidth) {
+          // wrap after one copy
+          offset.current -= stripWidth;
+        }
+        trackRef.current.style.transform = `translate3d(${-offset.current}px,0,0)`;
       }
-
       rafId = requestAnimationFrame(tick);
     };
-
     rafId = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafId);
   }, [paused, stripWidth]);
@@ -205,17 +213,33 @@ function useMarquee({ stripWidth, hoverRef, containerRef }) {
 /* ================= main ================= */
 
 export default function CommunityTripsStacking({ trips }) {
-  const loopTrips = [...trips, ...trips];
-
-  const STRIP_WIDTH =
-    trips.length * CARD_WIDTH_PX +
-    (trips.length - 1) * GAP_PX;
-
   const containerRef = useRef(null);
-  const hoverRef = useRef(null);
 
+  /* 1. Determine how many copies are needed  */
+  const [copies, setCopies] = useState(2);          // start with two
+
+  useEffect(() => {
+    const updateCopies = () => {
+      const containerW = containerRef.current?.offsetWidth ?? 0;
+      const oneCopyW = trips.length * CARD_WIDTH_PX + trips.length * GAP_PX;
+      const needed = Math.ceil(containerW / oneCopyW) + 1; // +1 for safety
+      setCopies(needed);
+    };
+    updateCopies();
+    window.addEventListener('resize', updateCopies);
+    return () => window.removeEventListener('resize', updateCopies);
+  }, [trips]);
+
+  /* 2. Build the duplicated list  */
+  const loopTrips = Array.from({ length: copies }, () => trips).flat();
+
+  /* 3. Width of ONE copy (this is what we wrap at for seamless looping)  */
+  // IMPORTANT: Add GAP_PX because there's a gap after the last card too
+  const ONE_COPY_WIDTH = trips.length * CARD_WIDTH_PX + trips.length * GAP_PX;
+
+  const hoverRef = useRef(null);
   const marqueeRef = useMarquee({
-    stripWidth: STRIP_WIDTH,
+    stripWidth: ONE_COPY_WIDTH,  // Wrap after one copy, not the full track
     hoverRef,
     containerRef,
   });
@@ -223,10 +247,7 @@ export default function CommunityTripsStacking({ trips }) {
   return (
     <>
       {/* Desktop */}
-      <div
-        ref={containerRef}
-        className="hidden md:block overflow-hidden py-24"
-      >
+      <div ref={containerRef} className="hidden md:block overflow-hidden py-24">
         <div ref={hoverRef}>
           <div
             ref={marqueeRef}
@@ -236,7 +257,12 @@ export default function CommunityTripsStacking({ trips }) {
             {loopTrips.map((trip, index) => (
               <div
                 key={`${trip.trip_id ?? index}-${index}`}
-                style={{ width: CARD_WIDTH_PX }}
+                style={{ 
+                  width: CARD_WIDTH_PX,
+                  height: CARD_HEIGHT_PX,
+                  minWidth: CARD_WIDTH_PX,
+                  minHeight: CARD_HEIGHT_PX
+                }}
                 className="flex-shrink-0"
               >
                 <TripCardContent

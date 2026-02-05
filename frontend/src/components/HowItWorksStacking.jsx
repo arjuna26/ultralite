@@ -59,7 +59,7 @@ export default function HowItWorksStacking() {
             {/* Card content - transparent/glassmorphism background */}
             <div className="container">
               <div 
-                className="rounded-2xl p-8 md:p-12 backdrop-blur-md"
+                className="rounded-2xl p-8 md:p-16 backdrop-blur-md"
                 style={{ 
                   backgroundColor: 'rgba(255, 255, 255, 0)',
                   boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
@@ -70,7 +70,7 @@ export default function HowItWorksStacking() {
                   <div className="space-y-4">
                     <div 
                       className="text-7xl md:text-8xl font-bold text-gradient"
-                      style={{ opacity: 0.4 }}
+                      style={{ opacity: .6 }}
                     >
                       {item.step}
                     </div>
