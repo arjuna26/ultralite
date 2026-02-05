@@ -403,18 +403,11 @@ export default function Landing() {
           </div>
           {/* Desktop */}
           <div className="">
-            
-            <CommunityTripsStacking trips={mockCommunityTrips} />
-          </div>
-
-          {/* Mobile */}
-          <div className="md:hidden block">
             <CommunityTripsStacking trips={mockCommunityTrips} />
           </div>
       </section>
 
       </div>
-
       {/* Features & Pricing Section with shared background */}
       <div className="relative overflow-hidden">
         <div 
