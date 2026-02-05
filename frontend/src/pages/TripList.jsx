@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getTrips, createTrip, deleteTrip } from '../api/client';
+import ConfirmModal from '../components/ConfirmModal';
+import Toast from '../components/Toast';
 
 // Format date helper
 const formatDate = (dateStr) => {
@@ -28,6 +30,8 @@ export default function TripList() {
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [toastMessage, setToastMessage] = useState(''); 
   const [newTrip, setNewTrip] = useState({
     name: '',
     location_text: '',
@@ -63,13 +67,19 @@ export default function TripList() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm('Delete this trip?')) return;
+  const handleDeleteClick = (id) => {
+    setDeleteTarget({ id });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget) return;
     try {
-      await deleteTrip(id);
-      setTrips(trips.filter(t => t.id !== id));
+      await deleteTrip(deleteTarget.id);
+      setTrips((prev) => prev.filter((t) => t.id !== deleteTarget.id));
+      setDeleteTarget(null);
     } catch (error) {
-      alert('Failed to delete trip');
+      setToastMessage("Couldn't delete trip. Try again.");
+      setDeleteTarget(null);
     }
   };
 
@@ -88,6 +98,16 @@ export default function TripList() {
 
   return (
     <div className="container py-8">
+      <Toast message={toastMessage} onDismiss={() => setToastMessage('')} />
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        title="Delete this trip?"
+        message="This cannot be undone."
+        confirmLabel="Delete"
+        variant="danger"
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setDeleteTarget(null)}
+      />
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
@@ -285,7 +305,7 @@ export default function TripList() {
                         </svg>
                       </Link>
                       <button
-                        onClick={() => handleDelete(trip.id)}
+                        onClick={() => handleDeleteClick(trip.id)}
                         className="btn btn-danger btn-sm px-3"
                         title="Delete trip"
                       >

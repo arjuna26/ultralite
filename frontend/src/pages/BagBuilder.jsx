@@ -284,7 +284,7 @@ export default function BagBuilder() {
             <div className="lg:sticky lg:top-24 w-full flex items-center justify-center">
               <div 
                 className="w-full h-full rounded-lg overflow-hidden flex items-center justify-center"
-                style={{ backgroundColor: '#fff' }}
+                style={{ backgroundColor: 'transparent' }}
               >
                 {selectedBackpackObj.image_url ? (
                   <img 
