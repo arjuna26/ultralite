@@ -43,30 +43,20 @@ export default function BagBuilder() {
   const { id } = useParams();
   const navigate = useNavigate();
   const isEdit = Boolean(id);
-
-  const [backpacks, setBackpacks] = useState([]);
   const [selectedBackpack, setSelectedBackpack] = useState('');
   const [bagName, setBagName] = useState('');
   const [description, setDescription] = useState('');
   const [bagData, setBagData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const [isBackpackModalOpen, setIsBackpackModalOpen] = useState(false);
+  const [selectedBackpackObj, setSelectedBackpackObj] = useState(null);
 
   useEffect(() => {
-    loadBackpacks();
     if (isEdit) {
       loadBag();
     }
   }, [id]);
-
-  const loadBackpacks = async () => {
-    try {
-      const response = await getBackpacks();
-      setBackpacks(response.data);
-    } catch (error) {
-      console.error('Failed to load backpacks:', error);
-    }
-  };
 
   const loadBag = async () => {
     try {
@@ -119,6 +109,12 @@ export default function BagBuilder() {
     }
   };
 
+  const handleBackpackSelect = (bp) => {
+    setSelectedBackpack(bp.id);
+    setSelectedBackpackObj(bp);
+    setIsBackpackModalOpen(false);
+  }
+
   if (isEdit && !bagData) {
     return (
       <div className="container py-8">
@@ -133,7 +129,6 @@ export default function BagBuilder() {
   }
 
   const weightCategory = bagData ? getWeightCategory(bagData.total_weight_grams) : null;
-  const selectedBackpackObj = backpacks.find(bp => bp.id === selectedBackpack) || null;
 
   return (
     <div className="container py-8">
@@ -216,28 +211,63 @@ export default function BagBuilder() {
                   </p>
                 </div>
 
-                {/* Backpack Selection */}
-                <div>
+                                {/* Backpack Selection */}
+                                <div>
                   <label className="label">
                     Choose Your Backpack <span style={{ color: 'var(--color-accent-500)' }}>*</span>
                   </label>
-                  <select
-                    value={selectedBackpack}
-                    onChange={(e) => setSelectedBackpack(e.target.value)}
-                    className="input"
-                    required
-                  >
-                    <option value="">Select a backpack...</option>
-                    {backpacks.map((bp) => (
-                      <option key={bp.id} value={bp.id}>
-                        {bp.brand} {bp.model} ({bp.weight_grams}g)
-                      </option>
-                  ))}
-                </select>
+                  {selectedBackpackObj ? (
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => setIsBackpackModalOpen(true)}
+                      onKeyDown={(e) => e.key === 'Enter' && setIsBackpackModalOpen(true)}
+                      className="flex items-center gap-3 p-3 rounded-lg border cursor-pointer"
+                      style={{ borderColor: 'var(--color-neutral-200)', backgroundColor: 'var(--color-surface-elevated)' }}
+                    >
+                      <div className="w-12 h-12 rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0" style={{ backgroundColor: 'var(--color-neutral-100)' }}>
+                        {selectedBackpackObj.image_url ? (
+                          <img src={selectedBackpackObj.image_url} alt="" className="w-full h-full object-contain" />
+                        ) : (
+                          <svg className="w-6 h-6" style={{ color: 'var(--color-neutral-400)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                          </svg>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium text-sm" style={{ color: 'var(--color-neutral-900)' }}>
+                          {selectedBackpackObj.brand} {selectedBackpackObj.model}
+                        </div>
+                        <div className="text-xs" style={{ color: 'var(--color-neutral-500)' }}>
+                          {selectedBackpackObj.weight_grams}g
+                        </div>
+                      </div>
+                      <span className="text-sm" style={{ color: 'var(--color-primary-600)' }}>Change</span>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setIsBackpackModalOpen(true)}
+                      className="input w-full text-left flex items-center gap-2"
+                    >
+                      <svg className="w-5 h-5" style={{ color: 'var(--color-neutral-400)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                      Search backpacks...
+                    </button>
+                  )}
                   <p className="mt-1.5 text-xs" style={{ color: 'var(--color-neutral-500)' }}>
                     Your backpack weight is included in the total
                   </p>
                 </div>
+
+                <GearSearchModal
+                  isOpen={isBackpackModalOpen}
+                  onClose={() => setIsBackpackModalOpen(false)}
+                  onSelect={handleBackpackSelect}
+                  restrictCategory="backpack"
+                  title="Choose backpack"
+                />
 
                 {/* Description */}
                 <div>

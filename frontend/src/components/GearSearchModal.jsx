@@ -53,7 +53,7 @@ const getCategoryIcon = (category) => {
   return icons[category] || icons.default;
 };
 
-export default function GearSearchModal({ isOpen, onClose, onSelect }) {
+export default function GearSearchModal({ isOpen, onClose, onSelect, restrictCategory='', title }) {
   const [gear, setGear] = useState([]);
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
@@ -62,6 +62,7 @@ export default function GearSearchModal({ isOpen, onClose, onSelect }) {
   const [total, setTotal] = useState(0);
   const searchInputRef = useRef(null);
   const ITEMS_PER_PAGE = 10;
+  const effectiveCategory = restrictCategory || category;
 
   useEffect(() => {
     if (isOpen) {
@@ -88,9 +89,12 @@ export default function GearSearchModal({ isOpen, onClose, onSelect }) {
   }, [isOpen]);
 
   useEffect(() => {
-    if (isOpen && (search || category)) {
-      // Only load gear if there's a search term or category selected
+    if (isOpen && (search || effectiveCategory)) {
       loadGear(true);
+    } else if (isOpen) {
+      setGear([]);
+      setHasMore(false);
+      setTotal(0);
     } else if (isOpen) {
       // Clear results if search and category are empty
       setGear([]);
@@ -116,7 +120,7 @@ export default function GearSearchModal({ isOpen, onClose, onSelect }) {
       const offset = reset ? 0 : gear.length;
       const response = await getGear({ 
         search, 
-        category, 
+        category: effectiveCategory, 
         limit: ITEMS_PER_PAGE,
         offset 
       });
@@ -199,7 +203,7 @@ export default function GearSearchModal({ isOpen, onClose, onSelect }) {
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search gear..."
+                placeholder={`Search ${restrictCategory ? 'backpacks' : 'gear'}...`}
                 className="w-full py-3 pl-12 pr-4 text-lg rounded-lg border-0 focus:outline-none focus:ring-2 focus:ring-primary-500"
                 style={{ 
                   backgroundColor: 'var(--color-surface-elevated)',
@@ -209,7 +213,8 @@ export default function GearSearchModal({ isOpen, onClose, onSelect }) {
             </div>
           </div>
 
-          {/* Category Filter Pills */}
+          {/* Category Filter Pills - hide when restricted to one category (e.g. backpack) */}
+          {!restrictCategory && (
           <div className="px-4 py-3 border-b flex items-center gap-2 overflow-x-auto" style={{ borderColor: 'var(--color-neutral-200)' }}>
             {categories.map((cat) => (
               <button
@@ -226,6 +231,7 @@ export default function GearSearchModal({ isOpen, onClose, onSelect }) {
               </button>
             ))}
           </div>
+          )}
 
           {/* Results List */}
           <div 
@@ -242,7 +248,7 @@ export default function GearSearchModal({ isOpen, onClose, onSelect }) {
               e.stopPropagation();
             }}
           >
-            {!search && !category ? (
+            {!search && !effectiveCategory ? (
               <div className="text-center py-3">
                 <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl mb-4" 
                      style={{ backgroundColor: 'var(--color-neutral-100)' }}>
@@ -250,8 +256,10 @@ export default function GearSearchModal({ isOpen, onClose, onSelect }) {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 </div>
-                <p className="text-caption">Start typing to search</p>
-                <p className="text-xs mt-1" style={{ color: 'var(--color-neutral-400)' }}>Or select a category to browse</p>
+                <p className="text-caption">{restrictCategory ? 'Start typing to search backpacks...' : 'Start typing to search gear...'}</p>
+                {!restrictCategory && (
+                  <p className="text-xs mt-1" style={{ color: 'var(--color-neutral-400)' }}>Or select a category to browse</p>
+                )}
               </div>
             ) : loading && gear.length === 0 ? (
               <div className="flex items-center justify-center py-12">
