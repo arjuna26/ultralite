@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import PublicFooter from '../components/PublicFooter';
 import HowItWorksStacking from '../components/HowItWorksStacking';
+import CommunityTripsStacking from '../components/CommunityTripsStacking';
 
 // Icons as simple SVG components
 const BackpackIcon = () => (
@@ -158,6 +159,46 @@ const testimonials = [
   }
 ];
 
+// Mock data for Community Trips stacking section; replace with getCommunityTrips() when backend is ready
+const mockCommunityTrips = [
+  {
+    trip_id: 'mock-1',
+    user_nickname: 'Sarah K.',
+    trip_name: 'PCT Section J',
+    location_text: 'Sierra Nevada, CA',
+    start_date: '2025-07-15',
+    end_date: '2025-07-22',
+    backpack_image_url: 'https://wxsnnnijzjyasjfqxzhc.supabase.co/storage/v1/object/public/img/step1.png',
+    total_weight_grams: 4200,
+    backpack_brand: 'Hyperlite',
+    backpack_model: 'Southwest 2400',
+  },
+  {
+    trip_id: 'mock-2',
+    user_nickname: 'Marcus T.',
+    trip_name: 'Wonderland Trail',
+    location_text: 'Mt. Rainier, WA',
+    start_date: '2025-08-01',
+    end_date: '2025-08-10',
+    backpack_image_url: 'https://wxsnnnijzjyasjfqxzhc.supabase.co/storage/v1/object/public/img/step2.png',
+    total_weight_grams: 5800,
+    backpack_brand: 'Zpacks',
+    backpack_model: 'Arc Blast',
+  },
+  {
+    trip_id: 'mock-3',
+    user_nickname: 'Jordan L.',
+    trip_name: 'Colorado Trail Thru',
+    location_text: 'Denver to Durango',
+    start_date: '2025-06-10',
+    end_date: '2025-07-05',
+    backpack_image_url: null,
+    total_weight_grams: 5100,
+    backpack_brand: 'ULA',
+    backpack_model: 'Circuit',
+  },
+];
+
 export default function Landing() {
 
   useScrollReveal();
@@ -213,6 +254,7 @@ export default function Landing() {
               <a href="#features" className="nav-link hover-underline text-sm">Features</a>
               <a href="#pricing" className="nav-link hover-underline text-sm">Pricing</a>
               <a href="#reviews" className="nav-link hover-underline text-sm">Reviews</a>
+              <a href="#featured" className="nav-link hover-underline text-sm">Trips</a>
             </div>
 
             <div className="flex items-center gap-3">
@@ -250,20 +292,7 @@ export default function Landing() {
       
       {/* CTA Section */}
       <section className="section scroll-reveal relative overflow-hidden z-10">
-        <div className="container relative z-10">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-display text-3xl md:text-4xl mb-4 text-white">
-              Ready to lighten your load?
-            </h2>
-            <p className="text-lg mb-8" style={{ color: 'var(--color-primary-200)' }}>
-              Join thousands of backpackers who've already discovered smarter packing.
-            </p>
-            <Link to="/login" className="btn btn-lg px-8 hover-lift" 
-                  style={{ backgroundColor: 'white', color: 'var(--color-primary-700)' }}>
-              Get Started Free
-            </Link>
-          </div>
-        </div>
+        <p className="text-xs mb-12 text-center">.</p>
       </section>
       </div>
         
@@ -276,7 +305,7 @@ export default function Landing() {
               <span className="text-sm font-medium">Built for lightweight backpackers</span>
             </div>
             
-            <h1 className="text-display text-4xl md:text-5xl lg:text-6xl mb-6 text-black">
+            <h1 className="text-display text-5xl md:text-6xl lg:text-8xl mb-6 text-black">
               Pack Smarter,<br /> Hike
               <span className="text-gradient-hero font-bold"> Lighter</span>
             </h1>
@@ -355,9 +384,23 @@ export default function Landing() {
           </div>
         </section>
 
-        <section>
-          <div className="container topo-pattern h-screen">hi</div>
-        </section>
+        <section id="featured" className="relative overflow-hidden topo-pattern py-16">
+          <div className="container scroll-reveal flex flex-col items-center justify-center">
+            <span className="badge badge-secondary mb-4">Featured</span>
+            <h2 className="text-display text-3xl md:text-5xl mb-4 text-black text-center">Featured Trips</h2>
+          </div>
+          {/* Desktop */}
+          <div className="hidden md:block">
+            
+            <CommunityTripsStacking trips={mockCommunityTrips} />
+          </div>
+
+          {/* Mobile */}
+          <div className="md:hidden block">
+            <CommunityTripsStacking trips={mockCommunityTrips} />
+          </div>
+      </section>
+
       </div>
 
       {/* Features & Pricing Section with shared background */}
@@ -376,12 +419,12 @@ export default function Landing() {
           className="absolute inset-0 z-0 pricing-overlay"
           style={{
             backgroundColor: 'var(--color-primary-300)',
-            opacity: 0.8
+            opacity: 0.5
           }}
         />
       
       {/* Testimonials Section */}
-      <section id="reviews" className="section topo-pattern mt-32">
+      <section id="reviews" className="section mt-32">
         <div className="container">
           <div className="text-center mb-16 scroll-reveal">
             <span className="badge badge-secondary mb-4">Reviews</span>
@@ -392,7 +435,7 @@ export default function Landing() {
                 filter: 'brightness(1.1)'
               }}
             >
-              Loved by backpackers from <span className="font-bold">all over</span>
+              Loved by backpackers from <span className="font-bold">everywhere</span>
             </h2>
           </div>
 
@@ -479,7 +522,7 @@ export default function Landing() {
       </div>
 
       {/* Features Section */}
-      <section id="features" className="section relative z-10 topo-pattern mt-16">
+      <section id="features" className="section relative z-10 topo-pattern py-16">
         <div className="container">
           <div className="text-center mb-16 scroll-reveal">
             <span className="badge badge-primary mb-4">Features</span>
