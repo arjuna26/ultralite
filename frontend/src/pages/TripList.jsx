@@ -32,7 +32,8 @@ export default function TripList() {
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
-  const [toastMessage, setToastMessage] = useState(''); 
+  const [toastMessage, setToastMessage] = useState('');
+  const [createError, setCreateError] = useState('');
   const [newTrip, setNewTrip] = useState({
     name: '',
     location_text: '',
@@ -58,13 +59,29 @@ export default function TripList() {
 
   const handleCreate = async (e) => {
     e.preventDefault();
+    setCreateError('');
+    const start = newTrip.start_date?.trim();
+    const end = newTrip.end_date?.trim();
+    if (!start) {
+      setCreateError('Please pick a start date.');
+      return;
+    }
+    if (!end) {
+      setCreateError('Please pick an end date.');
+      return;
+    }
     try {
-      const response = await createTrip(newTrip);
+      const payload = {
+        ...newTrip,
+        start_date: start || null,
+        end_date: end || null,
+      };
+      const response = await createTrip(payload);
       setTrips([response.data, ...trips]);
       setShowCreate(false);
       setNewTrip({ name: '', location_text: '', start_date: '', end_date: '', notes: '' });
     } catch (error) {
-      alert('Failed to create trip');
+      setToastMessage('Failed to create trip. Try again.');
     }
   };
 
@@ -145,6 +162,15 @@ export default function TripList() {
       {showCreate && (
         <form onSubmit={handleCreate} className="card p-6 mb-8 animate-fade-in">
           <h2 className="text-heading text-lg mb-6">Create New Trip</h2>
+          {createError && (
+            <div
+              className="mb-4 px-4 py-3 rounded-lg flex items-center justify-between gap-3"
+              style={{ backgroundColor: 'var(--color-error-50)', color: 'var(--color-error-700)' }}
+            >
+              <span className="text-sm">{createError}</span>
+              <button type="button" onClick={() => setCreateError('')} className="btn btn-ghost btn-sm">Dismiss</button>
+            </div>
+          )}
           <div className="grid gap-5 md:grid-cols-2">
             <div className="md:col-span-2">
               <label className="label">
@@ -170,19 +196,24 @@ export default function TripList() {
               />
             </div>
             <div>
-              <label className="label">Start Date</label>
+              <label className="label">
+                Start Date <span style={{ color: 'var(--color-accent-500)' }}>*</span>
+              </label>
               <DatePicker
                 value={newTrip.start_date}
                 onChange={(date) => setNewTrip({...newTrip, start_date: date})}
-                className="input"
+                placeholder="Select start date"
               />
             </div>
             <div>
-              <label className="label">End Date</label>
+              <label className="label">
+                End Date <span style={{ color: 'var(--color-accent-500)' }}>*</span>
+              </label>
               <DatePicker
                 value={newTrip.end_date}
                 onChange={(date) => setNewTrip({...newTrip, end_date: date})}
-                className="input"
+                placeholder="Select end date"
+                min={newTrip.start_date || undefined}
               />
             </div>
             <div className="md:col-span-2">
