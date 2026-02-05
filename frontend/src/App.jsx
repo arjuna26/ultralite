@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useCallback } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import Navbar from './components/Navbar';
 import ScrollToTop from './components/ScrollToTop';
 import Landing from './pages/Landing';
@@ -142,6 +143,7 @@ function App() {
   return (
     <BrowserRouter>
       <AppContent user={user} setUser={setUser} loading={loading} />
+      <Analytics />
     </BrowserRouter>
   );
 }
