@@ -214,9 +214,6 @@ const mockCommunityTrips = [
 export default function Landing() {
 
   useScrollReveal();
-  
-  const [scrollY, setScrollY] = useState(0);
-  const [heroHeight, setHeroHeight] = useState(600);
 
   useEffect(() => {
     let ticking = false;
@@ -231,23 +228,10 @@ export default function Landing() {
       }
     };
 
-    const handleResize = () => {
-      const heroSection = document.querySelector('.hero-gradient');
-      if (heroSection) {
-        setHeroHeight(heroSection.offsetHeight);
-      }
-    };
-
-    handleResize();
-    const timer = setTimeout(handleResize, 100);
-
     window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', handleResize);
 
     return () => {
-      clearTimeout(timer);
       window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleResize);
     };
   }, []);
 
