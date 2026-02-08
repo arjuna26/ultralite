@@ -487,6 +487,16 @@ body {
   background-position: center;
 }
 
+/* Topographic pattern overlay only on md and up (no pattern on phones) */
+@media (min-width: 768px) {
+  .topo-pattern-md {
+    background-image: url("/topo-pattern.svg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+  }
+}
+
 /* Navigation link active state */
 .nav-link {
   position: relative;

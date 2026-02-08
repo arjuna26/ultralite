@@ -172,15 +172,14 @@ export default function BagList() {
                   <div className="flex-1 min-w-0 pr-4">
                     <h3 className="text-heading text-lg truncate">{bag.name}</h3>
                     <p className="text-caption text-sm mt-1">
-                      <span className="truncate">{bag.backpack_brand} {bag.backpack_model}</span>
+                      <span className="truncate whitespace-normal">{bag.backpack_brand} {bag.backpack_model}</span>
                     </p>
                   </div>
                   
-                  <div className="text-right flex-shrink-0">
+                  <div className="text-right flex-shrink-0 flex flex-row items-center justify-end">
                     <div className="text-2xl font-bold" style={{ color: weightCategory.color }}>
-                      {(bag.total_weight_grams / 1000).toFixed(2)}
+                      {(bag.total_weight_grams / 1000).toFixed(2)} <span className="text-xs" style={{ color: 'var(--color-neutral-500)' }}>kg</span>
                     </div>
-                    <div className="text-xs" style={{ color: 'var(--color-neutral-500)' }}>kg</div>
                   </div>
                 </div>
                 

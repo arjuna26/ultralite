@@ -247,23 +247,25 @@ export default function CommunityTripsStacking({ trips }) {
   return (
     <>
       {/* Desktop */}
-      <div ref={containerRef} className="hidden md:block overflow-hidden py-24">
+      <div ref={containerRef} className="block overflow-hidden md:py-24 py-8">
         <div ref={hoverRef}>
           <div
             ref={marqueeRef}
-            className="flex will-change-transform"
+            className="flex"
             style={{ gap: `${GAP_PX}px` }}
           >
             {loopTrips.map((trip, index) => (
               <div
                 key={`${trip.trip_id ?? index}-${index}`}
-                style={{ 
+                className="flex-shrink-0 rounded-2xl h-full backdrop-blur-md"
+                style={{  
                   width: CARD_WIDTH_PX,
                   height: CARD_HEIGHT_PX,
                   minWidth: CARD_WIDTH_PX,
-                  minHeight: CARD_HEIGHT_PX
+                  minHeight: CARD_HEIGHT_PX,
+                  backgroundColor: 'rgba(255, 255, 255, 0)',
+                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
                 }}
-                className="flex-shrink-0"
               >
                 <TripCardContent
                   trip={trip}
@@ -274,19 +276,6 @@ export default function CommunityTripsStacking({ trips }) {
             ))}
           </div>
         </div>
-      </div>
-
-      {/* Mobile */}
-      <div className="md:hidden container px-4 py-8 space-y-6">
-        {trips.map((trip, index) => (
-          <div key={trip.trip_id ?? index} className="card overflow-hidden">
-            <TripCardContent
-              trip={trip}
-              weightCategory={getWeightCategory(trip.total_weight_grams)}
-              datesStr={formatTripDates(trip.start_date, trip.end_date)}
-            />
-          </div>
-        ))}
       </div>
     </>
   );
