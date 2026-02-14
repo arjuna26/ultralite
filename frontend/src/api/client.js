@@ -92,7 +92,7 @@ export const joinWaitlist = (email) =>
 
 /**
  * Get gear items with optional filters and pagination
- * @param {Object} params - { search, category, limit, offset }
+ * @param {Object} params - { search, category, limit, offset, owned? }
  */
 export const getGear = (params) => 
     api.get('/gear', { params });

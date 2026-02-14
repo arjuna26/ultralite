@@ -5,9 +5,9 @@ const { authenticateToken } = require('../middleware/auth');
 const router = express.Router();
 
 // Get all gear (with optional search and category filter)
-router.get('/', async (req, res) => {
+router.get('/', authenticateToken, async (req, res) => {
   try {
-    const { search, category, limit, offset } = req.query;
+    const { search, category, limit, offset, owned } = req.query;
     
     let query = 'SELECT * FROM gear_items WHERE 1=1';
     const params = [];
@@ -29,6 +29,12 @@ router.get('/', async (req, res) => {
       )`;
       params.push(searchTerm, searchPattern);
       paramCount += 2;
+    }
+
+    if (owned === 'true') {
+      query += ` AND id IN (SELECT gear_item_id FROM user_gear_ownership WHERE user_id = $${paramCount})`;
+      params.push(req.user.userId);
+      paramCount++;
     }
 
     query += ' ORDER BY category, brand, model';
@@ -69,6 +75,12 @@ router.get('/', async (req, res) => {
       )`;
       countParams.push(searchTerm, searchPattern);
       countParamNum += 2;
+    }
+
+    if (owned === 'true') {
+      countQuery += ` AND id IN (SELECT gear_item_id FROM user_gear_ownership WHERE user_id = $${countParamNum})`;
+      countParams.push(req.user.userId);
+      countParamNum++;
     }
     
     const countResult = await pool.query(countQuery, countParams);
