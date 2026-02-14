@@ -13,6 +13,10 @@ router.get('/', authenticateToken, async (req, res) => {
     const params = [];
     let paramCount = 1;
 
+    query += ` AND (user_id IS NULL OR user_id = $${paramCount})`;
+    params.push(req.user.userId);
+    paramCount++;
+
     if (category) {
       query += ` AND category = $${paramCount}`;
       params.push(category);
@@ -58,6 +62,10 @@ router.get('/', authenticateToken, async (req, res) => {
     let countQuery = 'SELECT COUNT(*) FROM gear_items WHERE 1=1';
     const countParams = [];
     let countParamNum = 1;
+
+    countQuery += ` AND (user_id IS NULL OR user_id = $${countParamNum})`;
+    countParams.push(req.user.userId);
+    countParamNum++;
     
     if (category) {
       countQuery += ` AND category = $${countParamNum}`;
@@ -99,10 +107,11 @@ router.get('/', authenticateToken, async (req, res) => {
 });
 
 // Get just backpacks
-router.get('/backpacks', async (req, res) => {
+router.get('/backpacks', authenticateToken, async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT * FROM gear_items WHERE category = 'backpack' ORDER BY brand, model"
+      "SELECT * FROM gear_items WHERE category = 'backpack' AND (user_id IS NULL OR user_id = $1) ORDER BY brand, model",
+      [req.user.userId]
     );
     res.json(result.rows);
   } catch (error) {
@@ -129,19 +138,91 @@ router.get('/owned', authenticateToken, async (req, res) => {
   }
 });
 
-// Get single gear item
+// Create custom gear
+router.post('/custom', authenticateToken, async (req, res) => {
+  try {
+    const { brand, model, category, weight_grams, subcategory, capacity, materials, weight_source } = req.body;
+    if (!brand || !model || !category || weight_grams == null || weight_grams < 1) {
+      return res.status(400).json({ error: 'brand, model, category, and weight_grams (positive) required' });
+    }
+    const ws = weight_source || 'estimated';
+    const result = await pool.query(
+      `INSERT INTO gear_items (
+        user_id, brand, model, category, subcategory, weight_grams, weight_source,
+        capacity, materials, image_url, source
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NULL, 'manual')
+      RETURNING *`,
+      [req.user.userId, brand, model, category, subcategory || null, weight_grams, ws, capacity || null, materials || null]
+    );
+    const newItem = result.rows[0];
+    await pool.query(
+      'INSERT INTO user_gear_ownership (user_id, gear_item_id) VALUES ($1, $2) ON CONFLICT (user_id, gear_item_id) DO NOTHING',
+      [req.user.userId, newItem.id]
+    );
+    res.status(201).json(newItem);
+  } catch (err) {
+    if (err.code === '23505') return res.status(409).json({ error: 'You already have a custom item with this brand and model' });
+    console.error(err);
+    res.status(500).json({ error: 'Failed to create custom gear' });
+  }
+});
+
+// Update custom gear (protected)
+router.put('/custom/:id', authenticateToken, async (req, res) => {
+  try {
+    const { brand, model, category, weight_grams, subcategory, capacity, materials, weight_source } = req.body;
+    const result = await pool.query(
+      `UPDATE gear_items SET
+        brand = COALESCE($2, brand), model = COALESCE($3, model), category = COALESCE($4, category),
+        weight_grams = COALESCE($5, weight_grams), subcategory = COALESCE($6, subcategory),
+        capacity = COALESCE($7, capacity), materials = COALESCE($8, materials),
+        weight_source = COALESCE($9, weight_source), updated_at = NOW()
+      WHERE id = $1 AND user_id = $10
+      RETURNING *`,
+      [req.params.id, brand, model, category, weight_grams, subcategory, capacity, materials, weight_source, req.user.userId]
+    );
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Custom gear not found' });
+    res.json(result.rows[0]);
+  } catch (err) {
+    if (err.code === '23505') return res.status(409).json({ error: 'You already have a custom item with this brand and model' });
+    console.error(err);
+    res.status(500).json({ error: 'Failed to update custom gear' });
+  }
+});
+
+// Delete custom gear (protected)
+router.delete('/custom/:id', authenticateToken, async (req, res) => {
+  try {
+    const result = await pool.query(
+      'DELETE FROM gear_items WHERE id = $1 AND user_id = $2 RETURNING id',
+      [req.params.id, req.user.userId]
+    );
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Custom gear not found' });
+    res.json({ message: 'Deleted' });
+  } catch (err) {
+    if (err.code === '23503') return res.status(400).json({ error: 'Cannot delete: gear is used in one or more bags' });
+    console.error(err);
+    res.status(500).json({ error: 'Failed to delete custom gear' });
+  }
+});
+
+// Get single gear item (404 if custom and not owner)
 router.get('/:id', async (req, res) => {
   try {
     const result = await pool.query(
       'SELECT * FROM gear_items WHERE id = $1',
       [req.params.id]
     );
-
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Gear item not found' });
     }
-
-    res.json(result.rows[0]);
+    const row = result.rows[0];
+    if (row.user_id) {
+      if (!req.user || req.user.userId !== row.user_id) {
+        return res.status(404).json({ error: 'Gear item not found' });
+      }
+    }
+    res.json(row);
   } catch (error) {
     console.error('Get gear item error:', error);
     res.status(500).json({ error: 'Failed to get gear item' });
@@ -156,11 +237,14 @@ router.post('/:id/toggle-owned', authenticateToken, async (req, res) => {
 
     // Check if gear item exists
     const gearCheck = await pool.query(
-      'SELECT id FROM gear_items WHERE id = $1',
+      'SELECT id, user_id FROM gear_items WHERE id = $1',
       [gearItemId]
     );
     if (gearCheck.rows.length === 0) {
       return res.status(404).json({ error: 'Gear item not found' });
+    }
+    if (gearCheck.rows[0].user_id) {
+      return res.status(400).json({ error: 'Cannot toggle ownership for custom gear' });
     }
 
     // Check if user already owns this gear
