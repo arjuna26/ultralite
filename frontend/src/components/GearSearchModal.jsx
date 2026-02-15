@@ -60,6 +60,7 @@ export default function GearSearchModal({ isOpen, onClose, onSelect, restrictCat
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(false);
   const [total, setTotal] = useState(0);
+  const [ownedOnly, setOwnedOnly] = useState(false);
   const searchInputRef = useRef(null);
   const ITEMS_PER_PAGE = 10;
   const effectiveCategory = restrictCategory || category;
@@ -82,6 +83,7 @@ export default function GearSearchModal({ isOpen, onClose, onSelect, restrictCat
       // Reset search when modal closes
       setSearch('');
       setCategory('');
+      setOwnedOnly(false);
       setGear([]);
       setHasMore(false);
       setTotal(0);
@@ -89,19 +91,14 @@ export default function GearSearchModal({ isOpen, onClose, onSelect, restrictCat
   }, [isOpen]);
 
   useEffect(() => {
-    if (isOpen && (search || effectiveCategory)) {
+    if (isOpen && (search || effectiveCategory || ownedOnly)) {
       loadGear(true);
     } else if (isOpen) {
       setGear([]);
       setHasMore(false);
       setTotal(0);
-    } else if (isOpen) {
-      // Clear results if search and category are empty
-      setGear([]);
-      setHasMore(false);
-      setTotal(0);
     }
-  }, [search, category, isOpen]);
+  }, [search, category, ownedOnly, isOpen]);
 
   // Close on Escape key
   useEffect(() => {
@@ -122,7 +119,8 @@ export default function GearSearchModal({ isOpen, onClose, onSelect, restrictCat
         search, 
         category: effectiveCategory, 
         limit: ITEMS_PER_PAGE,
-        offset 
+        offset,
+        ...(ownedOnly ? { owned: true } : {}),
       });
       
       const newItems = response.data.items || response.data;
@@ -216,11 +214,22 @@ export default function GearSearchModal({ isOpen, onClose, onSelect, restrictCat
           {/* Category Filter Pills - hide when restricted to one category (e.g. backpack) */}
           {!restrictCategory && (
           <div className="px-4 py-3 border-b flex items-center gap-2 overflow-x-auto" style={{ borderColor: 'var(--color-neutral-200)' }}>
+            <button
+              type="button"
+              onClick={() => setOwnedOnly((v) => !v)}
+              className="px-3 py-1.5 text-sm font-medium rounded-full whitespace-nowrap transition-all"
+              style={{
+                backgroundColor: ownedOnly ? 'var(--color-primary-500)' : 'var(--color-neutral-100)',
+                color: ownedOnly ? 'white' : 'var(--color-neutral-700)',
+              }}
+            >
+              Owned gear
+            </button>
             {categories.map((cat) => (
               <button
                 key={cat.value}
                 type="button"
-                onClick={() => setCategory(cat.value)}
+                onClick={() => setCategory(category === cat.value ? '' : cat.value)}
                 className="px-3 py-1.5 text-sm font-medium rounded-full whitespace-nowrap transition-all"
                 style={{
                   backgroundColor: category === cat.value ? 'var(--color-primary-500)' : 'var(--color-neutral-100)',
@@ -248,7 +257,7 @@ export default function GearSearchModal({ isOpen, onClose, onSelect, restrictCat
               e.stopPropagation();
             }}
           >
-            {!search && !effectiveCategory ? (
+            {!search && !effectiveCategory && !ownedOnly ? (
               <div className="text-center py-3">
                 <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl mb-4" 
                      style={{ backgroundColor: 'var(--color-neutral-100)' }}>

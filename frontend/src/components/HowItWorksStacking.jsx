@@ -34,7 +34,7 @@ export default function HowItWorksStacking() {
       <div className="pt-12 pb-16 text-center">
         <span className="badge badge-secondary mb-4">How It Works</span>
         <h2 
-              className="text-display text-3xl md:text-5xl mb-4 text-black"
+              className="text-display text-3xl md:text-5xl mb-4 text-black px-4"
               style={{
                 textShadow: '0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3), 0 0 30px rgba(255, 255, 255, 0.2), 0 2px 4px rgba(0, 0, 0, 0.3)',
                 filter: 'brightness(1.1)'
@@ -45,7 +45,7 @@ export default function HowItWorksStacking() {
       </div>
 
       {/* Stacking cards container */}
-      <div className="relative pb-32">
+      <div className="relative md:pb-16 pb-8">
         {steps.map((item, index) => (
           <div
             key={index}

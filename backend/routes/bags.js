@@ -58,8 +58,8 @@ router.post('/', async (req, res) => {
     }
 
     const backpackCheck = await pool.query(
-      "SELECT id FROM gear_items WHERE id = $1 AND category = 'backpack'",
-      [backpack_gear_item_id]
+      "SELECT id FROM gear_items WHERE id = $1 AND category = 'backpack' AND (user_id IS NULL OR user_id = $2)",
+      [backpack_gear_item_id, req.user.userId]
     );
 
     if (backpackCheck.rows.length === 0) {
@@ -84,6 +84,17 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const { name, backpack_gear_item_id, description } = req.body;
+
+    // Validate backpack before updating
+    if (backpack_gear_item_id) {
+      const bpCheck = await pool.query(
+        "SELECT id FROM gear_items WHERE id = $1 AND category = 'backpack' AND (user_id IS NULL OR user_id = $2)",
+        [backpack_gear_item_id, req.user.userId]
+      );
+      if (bpCheck.rows.length === 0) {
+        return res.status(400).json({ error: 'Invalid backpack gear item' });
+      }
+    }
 
     const result = await pool.query(
       `UPDATE bags 
@@ -191,6 +202,13 @@ router.post('/:id/items', async (req, res) => {
 
     if (bagCheck.rows.length === 0) {
       return res.status(404).json({ error: 'Bag not found' });
+    }
+    const gearCheck = await pool.query(
+      'SELECT id FROM gear_items WHERE id = $1 AND (user_id IS NULL OR user_id = $2)',
+      [gear_item_id, req.user.userId]
+    );
+    if (gearCheck.rows.length === 0) {
+      return res.status(400).json({ error: 'Gear item not found or not available' });
     }
 
     const result = await pool.query(

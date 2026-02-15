@@ -92,7 +92,7 @@ export const joinWaitlist = (email) =>
 
 /**
  * Get gear items with optional filters and pagination
- * @param {Object} params - { search, category, limit, offset }
+ * @param {Object} params - { search, category, limit, offset, owned? }
  */
 export const getGear = (params) => 
     api.get('/gear', { params });
@@ -106,12 +106,13 @@ export const getBackpacks = () =>
 export const getUserOwnedGear = () =>
     api.get('/gear/owned');
 
-/**
- * Toggle ownership status of a gear item
- * @param {string} gearItemId 
- */
-export const toggleGearOwnership = (gearItemId) =>
-    api.post(`/gear/${gearItemId}/toggle-owned`);
+/** Toggle ownership of a catalog gear item */
+export const toggleGearOwnership = (gearItemId) => api.post(`/gear/${gearItemId}/toggle-owned`);
+
+/** Custom gear CRUD (user-specific items) */
+export const createCustomGear = (payload) => api.post('/gear/custom', payload);
+export const updateCustomGear = (id, payload) => api.put(`/gear/custom/${id}`, payload);
+export const deleteCustomGear = (id) => api.delete(`/gear/custom/${id}`);
 
 // ============================================
 // BAG FUNCTIONS

@@ -168,8 +168,10 @@ body {
 }
 
 .btn-primary {
-  background-color: var(--color-primary-600);
-  color: white;
+  --btn-primary-bg: var(--color-primary-600);
+  background-color: var(--btn-primary-bg);
+  --btn-primary-color: white;
+  color: var(--btn-primary-color);
   border: none;
 }
 
@@ -189,7 +191,7 @@ body {
 }
 
 .btn-secondary {
-  background-color: var(--color-secondary-100);
+  background-color: var(--color-secondary-50);
   color: var(--color-secondary-800);
   border: 1px solid var(--color-secondary-200);
 }
@@ -485,6 +487,16 @@ body {
   background-repeat: no-repeat;
   background-size: cover;      /* key */
   background-position: center;
+}
+
+/* Topographic pattern overlay only on md and up (no pattern on phones) */
+@media (min-width: 768px) {
+  .topo-pattern-md {
+    background-image: url("/topo-pattern.svg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+  }
 }
 
 /* Navigation link active state */

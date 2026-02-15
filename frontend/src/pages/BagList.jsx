@@ -1,9 +1,22 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getBags, deleteBag, duplicateBag } from '../api/client';
+import { getBags, deleteBag, duplicateBag, createCustomGear } from '../api/client';
 import ConfirmModal from '../components/ConfirmModal';
 import CloneModal from '../components/CloneModal';
 import Toast from '../components/Toast';
+
+const gearCategories = [
+  { value: 'backpack', label: 'Backpack' },
+  { value: 'tent', label: 'Tent' },
+  { value: 'sleeping_bag', label: 'Sleeping Bag' },
+  { value: 'sleeping_pad', label: 'Sleeping Pad' },
+  { value: 'stove', label: 'Stove' },
+  { value: 'cookware', label: 'Cookware' },
+  { value: 'clothing', label: 'Clothing' },
+  { value: 'footwear', label: 'Footwear' },
+  { value: 'accessory', label: 'Accessory' },
+  { value: 'other', label: 'Other' },
+];
 
 // Helper to categorize weight
 const getWeightCategory = (grams) => {
@@ -19,7 +32,13 @@ export default function BagList() {
   const [loading, setLoading] = useState(true);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [cloneTarget, setCloneTarget] = useState(null);
-  const [toastMessage, setToastMessage] = useState(''); 
+  const [toastMessage, setToastMessage] = useState('');
+  
+  // Custom gear modal state
+  const [addCustomOpen, setAddCustomOpen] = useState(false);
+  const [customForm, setCustomForm] = useState({ brand: '', model: '', category: 'backpack', weight_grams: '' });
+  const [customSubmitLoading, setCustomSubmitLoading] = useState(false);
+  const [customError, setCustomError] = useState(''); 
 
   useEffect(() => {
     loadBags();
@@ -68,6 +87,31 @@ export default function BagList() {
     }
   };
 
+  const handleAddCustomSubmit = async (e) => {
+    e.preventDefault();
+    setCustomError('');
+    if (!customForm.brand?.trim() || !customForm.model?.trim() || !customForm.category || !customForm.weight_grams || Number(customForm.weight_grams) < 1) {
+      setCustomError('Brand, model, category, and weight (positive grams) required.');
+      return;
+    }
+    setCustomSubmitLoading(true);
+    try {
+      await createCustomGear({
+        brand: customForm.brand.trim(),
+        model: customForm.model.trim(),
+        category: customForm.category,
+        weight_grams: Number(customForm.weight_grams),
+      });
+      setAddCustomOpen(false);
+      setCustomForm({ brand: '', model: '', category: 'backpack', weight_grams: '' });
+      setToastMessage('Custom gear added! You can now use it in your bags.');
+    } catch (err) {
+      setCustomError(err.response?.data?.error || 'Failed to add custom gear');
+    } finally {
+      setCustomSubmitLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="container py-8">
@@ -112,12 +156,24 @@ export default function BagList() {
               : `${bags.length} bag${bags.length !== 1 ? 's' : ''} configured`}
           </p>
         </div>
-        <Link to="/bags/new" className="btn btn-primary btn-lg">
-          <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          New Bag
-        </Link>
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={() => setAddCustomOpen(true)}
+            className="btn btn-secondary btn-md"
+          >
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Add Your Gear
+          </button>
+          <Link to="/bags/new" className="btn btn-primary btn-md">
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            New Bag
+          </Link>
+        </div>
       </div>
 
       {bags.length === 0 ? (
@@ -172,15 +228,14 @@ export default function BagList() {
                   <div className="flex-1 min-w-0 pr-4">
                     <h3 className="text-heading text-lg truncate">{bag.name}</h3>
                     <p className="text-caption text-sm mt-1">
-                      <span className="truncate">{bag.backpack_brand} {bag.backpack_model}</span>
+                      <span className="truncate whitespace-normal">{bag.backpack_brand} {bag.backpack_model}</span>
                     </p>
                   </div>
                   
-                  <div className="text-right flex-shrink-0">
+                  <div className="text-right flex-shrink-0 flex flex-row items-center justify-end">
                     <div className="text-2xl font-bold" style={{ color: weightCategory.color }}>
-                      {(bag.total_weight_grams / 1000).toFixed(2)}
+                      {(bag.total_weight_grams / 1000).toFixed(2)} <span className="text-xs" style={{ color: 'var(--color-neutral-500)' }}>kg</span>
                     </div>
-                    <div className="text-xs" style={{ color: 'var(--color-neutral-500)' }}>kg</div>
                   </div>
                 </div>
                 
@@ -211,7 +266,7 @@ export default function BagList() {
                   </Link>
                   <button
                     onClick={() => handleCloneClick(bag.id, bag.name)}
-                    className="btn btn-secondary btn-sm flex-1"
+                    className="btn btn-secondary btn-sm flex-1 hover:bg-primary-100"
                   >
                     <svg className="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -231,6 +286,102 @@ export default function BagList() {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Add Custom Gear Modal */}
+      {addCustomOpen && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4" 
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }} 
+          onClick={() => setAddCustomOpen(false)}
+        >
+          <div 
+            className="card p-6 w-full max-w-md animate-fade-in" 
+            onClick={e => e.stopPropagation()}
+          >
+            <h2 className="text-heading text-xl mb-4">Add Your Gear</h2>
+            <p className="text-caption text-sm mb-4">
+              Add your own gear that's not in the catalog. You can use it in any of your bags.
+            </p>
+            <form onSubmit={handleAddCustomSubmit}>
+              <div className="space-y-4">
+                <div>
+                  <label className="label">Brand <span style={{ color: 'var(--color-accent-500)' }}>*</span></label>
+                  <input 
+                    type="text" 
+                    value={customForm.brand} 
+                    onChange={e => setCustomForm(f => ({ ...f, brand: e.target.value }))} 
+                    className="input w-full" 
+                    placeholder="e.g., Osprey"
+                    required 
+                  />
+                </div>
+                <div>
+                  <label className="label">Model <span style={{ color: 'var(--color-accent-500)' }}>*</span></label>
+                  <input 
+                    type="text" 
+                    value={customForm.model} 
+                    onChange={e => setCustomForm(f => ({ ...f, model: e.target.value }))} 
+                    className="input w-full" 
+                    placeholder="e.g., Exos 58"
+                    required 
+                  />
+                </div>
+                <div>
+                  <label className="label">Category <span style={{ color: 'var(--color-accent-500)' }}>*</span></label>
+                  <div className="flex flex-wrap gap-2 mt-1.5">
+                    {gearCategories.map((cat) => (
+                      <button
+                        key={cat.value}
+                        type="button"
+                        onClick={() => setCustomForm(f => ({ ...f, category: cat.value }))}
+                        className="px-3 py-1.5 text-sm font-medium rounded-full whitespace-nowrap transition-all border"
+                        style={{
+                          backgroundColor: customForm.category === cat.value ? 'var(--color-primary-500)' : 'var(--color-neutral-50)',
+                          color: customForm.category === cat.value ? 'white' : 'var(--color-neutral-700)',
+                          borderColor: customForm.category === cat.value ? 'var(--color-primary-500)' : 'var(--color-neutral-200)',
+                        }}
+                      >
+                        {cat.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="label">Weight (grams) <span style={{ color: 'var(--color-accent-500)' }}>*</span></label>
+                  <input 
+                    type="number" 
+                    min="1" 
+                    value={customForm.weight_grams} 
+                    onChange={e => setCustomForm(f => ({ ...f, weight_grams: e.target.value }))} 
+                    className="input w-full" 
+                    placeholder="e.g., 1200"
+                    required 
+                  />
+                </div>
+                {customError && (
+                  <p className="text-sm" style={{ color: 'var(--color-error-600)' }}>{customError}</p>
+                )}
+              </div>
+              <div className="flex gap-3 mt-6">
+                <button 
+                  type="button" 
+                  onClick={() => { setAddCustomOpen(false); setCustomError(''); }} 
+                  className="btn btn-ghost flex-1"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  disabled={customSubmitLoading} 
+                  className="btn btn-primary flex-1"
+                >
+                  {customSubmitLoading ? 'Saving...' : 'Add Gear'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>

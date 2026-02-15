@@ -97,7 +97,7 @@ const pricingPlans = [
     description: 'Perfect for getting started',
     features: [
       'Up to 3 bags',
-      'Basic gear catalog',
+      'Add your own gear',
       'Weight tracking',
       '1 active trip'
     ],
@@ -119,21 +119,6 @@ const pricingPlans = [
     ],
     cta: 'Start Free Trial',
     highlighted: true
-  },
-  {
-    name: 'Team',
-    price: '$12',
-    period: '/month',
-    description: 'Share with your crew',
-    features: [
-      'Everything in Pro',
-      'Up to 5 team members',
-      'Shared bags & trips',
-      'Team analytics',
-      'Priority support'
-    ],
-    cta: 'Contact Us',
-    highlighted: false
   }
 ];
 
@@ -353,50 +338,11 @@ export default function Landing() {
         </section>
         
         {/* Desktop version - Stacking cards (shares background with Hero) */}
-        <div id="how-it-works" className="hidden md:block" style={{ backgroundColor: 'var(--color-secondary-25)' }}>
+        <div id="how-it-works" className="" style={{ backgroundColor: 'var(--color-secondary-50)' }}>
           <HowItWorksStacking />
         </div>
-        
-        {/* Mobile version - Simple stacked layout */}
-        <section className="pt-12 pb-16 relative md:hidden bg-surface-primary">
-          <div className="container px-4">
-            <div className="text-center mb-12 scroll-reveal">
-              <span className="badge badge-secondary mb-4">How It Works</span>
-                <h2 
-                className="text-display text-3xl md:text-5xl mb-4 text-black"
-                style={{
-                  textShadow: '0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3), 0 0 30px rgba(255, 255, 255, 0.2), 0 2px 4px rgba(0, 0, 0, 0.3)',
-                  filter: 'brightness(1.1)'
-                }}
-                >
-                <span className='font-bold'>Three </span> steps to a lighter pack
-              </h2>
-            </div>
 
-            <div className="space-y-8">
-              {[
-                { step: '01', title: 'Build Your Bag', desc: 'Select a backpack and add gear from our catalog. Watch your weight update in real-time.', image: 'https://wxsnnnijzjyasjfqxzhc.supabase.co/storage/v1/object/public/img/step1.png' },
-                { step: '02', title: 'Plan Your Trip', desc: 'Associate your bag with an upcoming adventure. Add details like location and dates.', image: 'https://wxsnnnijzjyasjfqxzhc.supabase.co/storage/v1/object/public/img/step2.png' },
-                { step: '03', title: 'Iterate & Improve', desc: 'After your trip, log stats and duplicate your bag to tweak for next time.', image: 'https://wxsnnnijzjyasjfqxzhc.supabase.co/storage/v1/object/public/img/step3.png' },
-              ].map((item, index) => (
-                <div 
-                  key={index} 
-                  className="text-center p-6 rounded-xl flex flex-col items-center justify-center"
-                  style={{ transitionDelay: `${index * 100}ms` }}
-                >
-                  <div className="text-5xl font-bold mb-3 text-gradient" style={{ opacity: 0.3 }}>
-                    {item.step}
-                  </div>
-                  <h3 className="text-heading text-lg mb-2">{item.title}</h3>
-                  <p className="text-body text-sm">{item.desc}</p>
-                  <img src={item.image} alt={item.title} className="min-w-screen pt-12" />
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section id="featured" className="relative overflow-hidden topo-pattern py-16">
+        <section id="featured" className="relative overflow-hidden topo-pattern-md py-16">
           <div className="container scroll-reveal flex flex-col items-center justify-center">
             <span className="badge badge-secondary mb-4">Featured</span>
             <h2 className="text-display text-3xl md:text-5xl mb-4 text-black text-center">Featured Trips</h2>
@@ -421,48 +367,69 @@ export default function Landing() {
         />
         {/* Light overlay for text readability */}
         <div 
-          className="absolute inset-0 z-0 pricing-overlay"
+          className="absolute inset-0 z-0 pricing-overlay md:block hidden"
           style={{
-            backgroundColor: 'var(--color-primary-300)',
+            backgroundColor: 'var(--color-primary-400)',
             opacity: 0.5
           }}
         />
+        <div className="absolute inset-0 z-0 pricing-overlay md:hidden block topo-pattern"
+                  style={{
+                    backgroundColor: 'var(--color-secondary-50)',
+                    opacity: 0.5
+                  }}>
+          </div>
       
       {/* Testimonials Section */}
-      <section id="reviews" className="section mt-32">
+      <section id="reviews" className="section md:mt-32">
         <div className="container">
           <div className="text-center mb-16 scroll-reveal">
             <span className="badge badge-secondary mb-4">Reviews</span>
-            <h2 
-              className="text-display text-3xl md:text-5xl mb-4 text-black"
-              style={{
+            <h2
+              className="text-display text-3xl md:text-5xl mb-4 text-black md:text-white"
+            >
+              Loved by backpackers from <span className="font-bold"  style={{
                 textShadow: '0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3), 0 0 30px rgba(255, 255, 255, 0.2), 0 2px 4px rgba(0, 0, 0, 0.3)',
                 filter: 'brightness(1.1)'
-              }}
-            >
-              Loved by backpackers from <span className="font-bold">everywhere</span>
+              }}>everywhere</span>
             </h2>
           </div>
 
           <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {testimonials.map((testimonial, index) => (
-              <div key={index} className="card hover-lift p-6 scroll-reveal" style={{ transitionDelay: `${index * 100}ms` }}>
+              <div
+                key={index}
+                className="rounded-2xl p-8 md:p-8 backdrop-blur-md hover-lift scroll-reveal border border-white"
+                style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+                  transitionDelay: `${index * 100}ms`
+                }}
+              >
                 <div className="flex gap-1 mb-4" style={{ color: 'var(--color-accent-400)' }}>
                   {[...Array(testimonial.rating)].map((_, i) => (
                     <StarIcon key={i} filled />
                   ))}
                 </div>
-                <p className="text-body mb-6">"{testimonial.quote}"</p>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium"
-                       style={{ backgroundColor: 'var(--color-secondary-200)', color: 'var(--color-secondary-700)' }}>
+                <p className="mb-6 md:text-white">
+                  "{testimonial.quote}"
+                </p>
+                <div className="flex items-center gap-3 pt-2">
+                  <div
+                    className="w-11 h-11 rounded-full flex items-center justify-center text-sm font-semibold shrink-0"
+                    style={{
+                      background: 'linear-gradient(135deg, var(--color-primary-600) 0%, var(--color-primary-400) 50%, var(--color-secondary-500) 100%)',
+                      color: 'white',
+                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'
+                    }}
+                  >
                     {testimonial.author.split(' ').map(n => n[0]).join('')}
                   </div>
-                  <div>
-                    <div className="font-medium text-sm" style={{ color: 'var(--color-neutral-900)' }}>
+                  <div className="min-w-0">
+                    <div className="font-medium text-sm md:text-white">
                       {testimonial.author}
                     </div>
-                    <div className="text-caption text-xs">{testimonial.role}</div>
+                    <div className="text-xs md:text-white/90">{testimonial.role}</div>
                   </div>
                 </div>
               </div>
@@ -477,41 +444,48 @@ export default function Landing() {
             <div className="text-center mb-16 scroll-reveal">
               <span className="badge badge-accent mb-4">Pricing</span>
               <h2 
-                className="text-display text-3xl md:text-5xl mb-4 text-black"
-                style={{
-                  textShadow: '0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3), 0 0 30px rgba(255, 255, 255, 0.2), 0 2px 4px rgba(0, 0, 0, 0.3)',
-                  filter: 'brightness(1.1)'
-                }}
+                className="text-display text-3xl md:text-5xl mb-4 md:text-white"
               >
-                Simple, <span className="font-bold">transparent</span> pricing
+                Simple, <span className="font-bold"  style={{
+                textShadow: '0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3), 0 0 30px rgba(255, 255, 255, 0.2), 0 2px 4px rgba(0, 0, 0, 0.3)',
+                filter: 'brightness(1.1)'
+              }}>transparent
+              </span> pricing 
               </h2>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-6 max-w-5xl mx-auto md:text-white">
               {pricingPlans.map((plan, index) => (
                 <div 
                   key={index}
-                  className={`card hover-glow p-6 scroll-reveal flex flex-col ${plan.highlighted ? 'card-highlighted' : ''}`}
+                  className={`card hover-glow p-6 backdrop-blur-md scroll-reveal flex flex-col ${plan.highlighted ? 'card-highlighted' : ''}`}
                   style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
                     transitionDelay: `${index * 100}ms`,
                     ...(plan.highlighted ? { '--tw-ring-color': 'var(--color-primary-500)' } : {})
                   }}
                 >
                   <div className="flex items-center gap-5 mb-1">
-                      <h3 className="text-heading text-xl">{plan.name}</h3>
+                      <h3 className="font-bold text-xl">{plan.name}</h3>
                       {plan.highlighted && (
-                          <div className="badge badge-primary">Most Popular</div>
+                          <div className="badge badge-primary"
+                                style={{
+                                  background: 'linear-gradient(135deg, var(--color-primary-600) 0%, var(--color-primary-400) 50%, var(--color-secondary-500) 100%)',
+                                  color: 'white',
+                                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)'
+                                }}>Great Value</div>
                       )}
                   </div>
-                  <p className="text-caption mb-4">{plan.description}</p>
+                  <p className="md:text-white mb-4">{plan.description}</p>
                   <div className="mb-6">
-                    <span className="text-4xl font-bold" style={{ color: 'var(--color-neutral-900)' }}>{plan.price}</span>
-                    <span className="text-caption">{plan.period}</span>
+                    <span className="text-4xl font-bold">{plan.price}</span>
+                    <span className="md:text-green-400">{plan.period}</span>
                   </div>
                   <ul className="space-y-3 mb-6">
                     {plan.features.map((feature, fIndex) => (
-                      <li key={fIndex} className="flex items-center gap-2 text-sm" style={{ color: 'var(--color-neutral-700)' }}>
-                        <span style={{ color: 'var(--color-primary-500)' }}><CheckIcon /></span>
+                      <li key={fIndex} className="flex items-center gap-2 text-sm">
+                        <span style={{ color: 'var(--color-primary-300)' }}><CheckIcon /></span>
                         {feature}
                       </li>
                     ))}
@@ -527,7 +501,7 @@ export default function Landing() {
       </div>
 
       {/* Features Section */}
-      <section id="features" className="section relative z-10 topo-pattern py-16">
+      <section id="features" className="section relative z-10 py-16 md:topo-pattern" style={{ backgroundColor: 'var(--color-secondary-50)' }}>
         <div className="container">
           <div className="text-center mb-16 scroll-reveal">
             <span className="badge badge-primary mb-4">Features</span>
@@ -545,12 +519,22 @@ export default function Landing() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feature, index) => (
               <div 
-                key={index} 
-                className="card card-hover hover-glow p-6 scroll-reveal"
-                style={{ transitionDelay: `${index * 50}ms` }}
+                key={index}
+                className="rounded-2xl p-8 md:p-16 backdrop-blur-md"
+                style={{ 
+                  backgroundColor: 'rgba(255, 255, 255, 0)',
+                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+                  transitionDelay: `${index * 50}ms` 
+                }}
               >
-                <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 hover-rotate" 
-                      style={{ backgroundColor: 'var(--color-primary-100)', color: 'var(--color-primary-600)' }}>
+                <div
+                  className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 hover-rotate"
+                  style={{
+                    background: 'linear-gradient(135deg, var(--color-primary-600) 0%, var(--color-primary-400) 50%, var(--color-secondary-500) 100%)',
+                    color: 'white',
+                    boxShadow: '0 0 20px rgba(61, 139, 108, 0.35)'
+                  }}
+                >
                   <feature.icon />
                 </div>
                 <h3 className="text-heading text-lg mb-2">{feature.title}</h3>
