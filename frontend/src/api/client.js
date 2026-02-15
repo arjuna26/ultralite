@@ -106,21 +106,13 @@ export const getBackpacks = () =>
 export const getUserOwnedGear = () =>
     api.get('/gear/owned');
 
-/**
- * Toggle ownership status of a gear item, create/update/delete custom gear
- * @param {string} gearItemId 
- */
-export const toggleGearOwnership = (gearItemId) =>
-    api.post(`/gear/${gearItemId}/toggle-owned`);
+/** Toggle ownership of a catalog gear item */
+export const toggleGearOwnership = (gearItemId) => api.post(`/gear/${gearItemId}/toggle-owned`);
 
-export const createCustomGear = (payload) =>
-  api.post('/gear/custom', payload);
-
-export const updateCustomGear = (id, payload) =>
-  api.put(`/gear/custom/${id}`, payload);
-
-export const deleteCustomGear = (id) =>
-  api.delete(`/gear/custom/${id}`);
+/** Custom gear CRUD (user-specific items) */
+export const createCustomGear = (payload) => api.post('/gear/custom', payload);
+export const updateCustomGear = (id, payload) => api.put(`/gear/custom/${id}`, payload);
+export const deleteCustomGear = (id) => api.delete(`/gear/custom/${id}`);
 
 // ============================================
 // BAG FUNCTIONS

@@ -4,101 +4,57 @@ const { authenticateToken } = require('../middleware/auth');
 
 const router = express.Router();
 
-// Get all gear (with optional search and category filter)
+// Helper: build WHERE clause for gear queries
+function buildGearWhereClause(userId, { search, category, owned }) {
+  const conditions = ['(user_id IS NULL OR user_id = $1)'];
+  const params = [userId];
+  let idx = 2;
+
+  if (category) {
+    conditions.push(`category = $${idx++}`);
+    params.push(category);
+  }
+  if (search) {
+    const term = search.trim().replace(/\s+/g, ' ');
+    const pattern = `%${term}%`;
+    conditions.push(`(search_vector @@ plainto_tsquery('english', $${idx}) OR brand ILIKE $${idx + 1} OR model ILIKE $${idx + 1})`);
+    params.push(term, pattern);
+    idx += 2;
+  }
+  if (owned === 'true') {
+    conditions.push(`id IN (SELECT gear_item_id FROM user_gear_ownership WHERE user_id = $${idx++})`);
+    params.push(userId);
+  }
+  return { where: conditions.join(' AND '), params, nextIdx: idx };
+}
+
+// Get all gear (with optional search, category, owned filter)
 router.get('/', authenticateToken, async (req, res) => {
   try {
     const { search, category, limit, offset, owned } = req.query;
-    
-    let query = 'SELECT * FROM gear_items WHERE 1=1';
-    const params = [];
-    let paramCount = 1;
+    const { where, params, nextIdx } = buildGearWhereClause(req.user.userId, { search, category, owned });
 
-    query += ` AND (user_id IS NULL OR user_id = $${paramCount})`;
-    params.push(req.user.userId);
-    paramCount++;
+    let idx = nextIdx;
+    const limitVal = limit ? parseInt(limit) : 20;
+    const offsetVal = offset ? parseInt(offset) : 0;
 
-    if (category) {
-      query += ` AND category = $${paramCount}`;
-      params.push(category);
-      paramCount++;
+    let query = `SELECT * FROM gear_items WHERE ${where} ORDER BY category, brand, model LIMIT $${idx++}`;
+    params.push(limitVal);
+    if (offsetVal > 0) {
+      query += ` OFFSET $${idx++}`;
+      params.push(offsetVal);
     }
 
-    if (search) {
-      const searchTerm = search.trim().replace(/\s+/g, ' ');
-      const searchPattern = '%' + searchTerm + '%';
-      query += ` AND (
-        search_vector @@ plainto_tsquery('english', $${paramCount})
-        OR brand ILIKE $${paramCount + 1}
-        OR model ILIKE $${paramCount + 1}
-      )`;
-      params.push(searchTerm, searchPattern);
-      paramCount += 2;
-    }
+    const [result, countResult] = await Promise.all([
+      pool.query(query, params),
+      pool.query(`SELECT COUNT(*) FROM gear_items WHERE ${where}`, params.slice(0, nextIdx - 1))
+    ]);
 
-    if (owned === 'true') {
-      query += ` AND id IN (SELECT gear_item_id FROM user_gear_ownership WHERE user_id = $${paramCount})`;
-      params.push(req.user.userId);
-      paramCount++;
-    }
-
-    query += ' ORDER BY category, brand, model';
-    
-    // Always apply limit if provided (default to reasonable limit to prevent loading all items)
-    const limitValue = limit ? parseInt(limit) : 20;
-    query += ` LIMIT $${paramCount}`;
-    params.push(limitValue);
-    paramCount++;
-    
-    // Apply offset if provided (0 is valid for first page)
-    const offsetValue = offset ? parseInt(offset) : 0;
-    if (offsetValue > 0) {
-      query += ` OFFSET $${paramCount}`;
-      params.push(offsetValue);
-      paramCount++;
-    }
-
-    const result = await pool.query(query, params);
-    
-    let countQuery = 'SELECT COUNT(*) FROM gear_items WHERE 1=1';
-    const countParams = [];
-    let countParamNum = 1;
-
-    countQuery += ` AND (user_id IS NULL OR user_id = $${countParamNum})`;
-    countParams.push(req.user.userId);
-    countParamNum++;
-    
-    if (category) {
-      countQuery += ` AND category = $${countParamNum}`;
-      countParams.push(category);
-      countParamNum++;
-    }
-    
-    if (search) {
-      const searchTerm = search.trim().replace(/\s+/g, ' ');
-      const searchPattern = '%' + searchTerm + '%';
-      countQuery += ` AND (
-        search_vector @@ plainto_tsquery('english', $${countParamNum})
-        OR brand ILIKE $${countParamNum + 1}
-        OR model ILIKE $${countParamNum + 1}
-      )`;
-      countParams.push(searchTerm, searchPattern);
-      countParamNum += 2;
-    }
-
-    if (owned === 'true') {
-      countQuery += ` AND id IN (SELECT gear_item_id FROM user_gear_ownership WHERE user_id = $${countParamNum})`;
-      countParams.push(req.user.userId);
-      countParamNum++;
-    }
-    
-    const countResult = await pool.query(countQuery, countParams);
-    const total = parseInt(countResult.rows[0].count);
-    
     res.json({
       items: result.rows,
-      total,
+      total: parseInt(countResult.rows[0].count),
       limit: limit ? parseInt(limit) : null,
-      offset: offset ? parseInt(offset) : 0
+      offset: offsetVal
     });
   } catch (error) {
     console.error('Get gear error:', error);

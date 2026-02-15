@@ -97,7 +97,7 @@ const pricingPlans = [
     description: 'Perfect for getting started',
     features: [
       'Up to 3 bags',
-      'Basic gear catalog',
+      'Add your own gear',
       'Weight tracking',
       '1 active trip'
     ],
