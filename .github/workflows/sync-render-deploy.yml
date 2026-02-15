@@ -1,0 +1,35 @@
+# When main is updated, merge main into render-deploy and push.
+# Keeps backend/server.js and backend/Dockerfile from render-deploy (Render-specific).
+name: Sync main into render-deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Merge main into render-deploy
+        run: |
+          git fetch origin render-deploy
+          git checkout render-deploy
+          RENDER_REF=$(git rev-parse HEAD)
+          git merge origin/main -m "Merge main into render-deploy" || true
+          git checkout "$RENDER_REF" -- backend/server.js backend/Dockerfile backend/config/database.js
+          git add -A
+          git diff --cached --quiet || git commit -m "merge main into render-deploy, keep Render-specific server.js, database.js and Dockerfile"
+          git push origin render-deploy
