@@ -170,7 +170,7 @@ const mockCommunityGear = [
   {
     gear_id: 'mock-4',
     brand: 'NEMO',
-    model: 'Tensor',
+    model: 'Tensor Regular Wide',
     weight_grams: 620,
     image_url: 'https://wxsnnnijzjyasjfqxzhc.supabase.co/storage/v1/object/public/gear/nemo_tensor_reg_wide.webp',
   },
