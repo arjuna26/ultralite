@@ -28,4 +28,8 @@ USER nodejs
 
 EXPOSE 3000
 
+# Health check uses PORT so it works when Render injects PORT at runtime (e.g. 10000)
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD node -e "const p = process.env.PORT || 3000; require('http').get('http://127.0.0.1:'+p+'/api/health', (r) => { let b=''; r.on('data', c=>b+=c); r.on('end', ()=> process.exit(r.statusCode===200 ? 0 : 1)); }).on('error', ()=> process.exit(1));"
+
 CMD ["node", "server.js"]
