@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet')
+const database = require('./config/database');
 require('dotenv').config();
 
 const authRoutes = require('./routes/auth');
@@ -61,6 +62,9 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-app.listen(PORT, () => {
-  console.log(`UltraLite API running on http://localhost:${PORT}`);
-});
+(async () => {
+  await database.initPool();
+  app.listen(PORT, () => {
+    console.log(`UltraLite API running on http://localhost:${PORT}`);
+  });
+})();
