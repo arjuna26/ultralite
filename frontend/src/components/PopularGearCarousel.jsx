@@ -1,5 +1,5 @@
 /**
- * CommunityTripsStacking
+ * PopularGearCarousel
  *
  * Desktop:
  * - GPU-perfect marquee carousel
@@ -68,63 +68,42 @@ const BackpackPlaceholderIcon = () => (
 
 /* ================= card ================= */
 
-function TripCardContent({ trip, weightCategory, datesStr }) {
+function GearCardContent({ gear, weightCategory }) {
   return (
-    <div
-      className="rounded-2xl p-10 h-full backdrop-blur-md"
-      style={{
-        backgroundColor: 'rgba(255, 255, 255, 0)',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
-      }}
-    >
-      <div className="grid grid-cols-2 gap-10 items-center h-full">
-        <div className="space-y-4 flex flex-col justify-center">
-          <h3 className="text-2xl font-semibold">{trip.trip_name}</h3>
-          <p className="text-sm text-neutral-600">
-            {trip.user_nickname}
-            {trip.location_text && ` · ${trip.location_text}`}
-          </p>
-          {datesStr && <p className="text-xs text-neutral-500">{datesStr}</p>}
-
-          {trip.total_weight_grams != null && weightCategory && (
-            <div className="pt-2">
-              <div className="flex items-center gap-2">
-                <span className="font-semibold" style={{ color: weightCategory.color }}>
-                  {(trip.total_weight_grams / 1000).toFixed(2)} kg
-                </span>
-                <span
-                  className="badge"
-                  style={{
-                    backgroundColor: `${weightCategory.color}20`,
-                    color: weightCategory.color,
-                  }}
-                >
-                  {weightCategory.label}
-                </span>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div 
-          className="rounded-xl overflow-hidden bg-white flex items-center justify-center"
-          style={{ 
-            width: '100%',
-            height: '200px',
-            minHeight: '200px',
-            maxHeight: '200px'
-          }}
-        >
-          {trip.backpack_image_url ? (
-            <img 
-              src={trip.backpack_image_url} 
-              className="object-contain max-w-full max-h-full"
-              style={{ width: 'auto', height: 'auto' }}
-            />
-          ) : (
+    <div className="flex flex-col gap-4 items-center h-full w-full">
+      {/* Image floats with subtle shadow */}
+      <div
+        className="rounded-xl overflow-hidden flex items-center justify-center flex-shrink-0"
+        style={{
+          width: '100%',
+          height: 300,
+          minHeight: 300
+        }}
+      >
+        {gear.image_url ? (
+          <img
+            src={gear.image_url}
+            alt=""
+            className="object-contain max-w-full max-h-full w-auto h-auto"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: 'var(--color-neutral-100)' }}>
             <BackpackPlaceholderIcon />
-          )}
-        </div>
+          </div>
+        )}
+      </div>
+      {/* Brand / model and weight float below */}
+      <div className="flex flex-col items-center text-center min-w-0">
+        <h3 className="text-xl font-semibold truncate max-w-full" style={{ color: 'var(--color-neutral-900)' }}>
+          {gear.brand} {gear.model}
+        </h3>
+        {gear.weight_grams != null && weightCategory && (
+          <div className="flex items-center gap-2 mt-1">
+            <span className="font-semibold text-sm" style={{ color: weightCategory.color }}>
+              {gear.weight_grams}g
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -212,71 +191,70 @@ function useMarquee({ stripWidth, hoverRef, containerRef }) {
 
 /* ================= main ================= */
 
-export default function CommunityTripsStacking({ trips }) {
+export default function PopularGearCarousel({ gear = [] }) {
   const containerRef = useRef(null);
 
   /* 1. Determine how many copies are needed  */
-  const [copies, setCopies] = useState(2);          // start with two
+  const [copies, setCopies] = useState(2);
 
   useEffect(() => {
+    if (!gear.length) return;
     const updateCopies = () => {
       const containerW = containerRef.current?.offsetWidth ?? 0;
-      const oneCopyW = trips.length * CARD_WIDTH_PX + trips.length * GAP_PX;
-      const needed = Math.ceil(containerW / oneCopyW) + 1; // +1 for safety
+      const oneCopyW = gear.length * CARD_WIDTH_PX + gear.length * GAP_PX;
+      const needed = Math.ceil(containerW / oneCopyW) + 1;
       setCopies(needed);
     };
     updateCopies();
     window.addEventListener('resize', updateCopies);
     return () => window.removeEventListener('resize', updateCopies);
-  }, [trips]);
+  }, [gear]);
 
   /* 2. Build the duplicated list  */
-  const loopTrips = Array.from({ length: copies }, () => trips).flat();
+  const loopGearItems = Array.from({ length: copies }, () => gear).flat();
 
   /* 3. Width of ONE copy (this is what we wrap at for seamless looping)  */
-  // IMPORTANT: Add GAP_PX because there's a gap after the last card too
-  const ONE_COPY_WIDTH = trips.length * CARD_WIDTH_PX + trips.length * GAP_PX;
+  const ONE_COPY_WIDTH = gear.length * CARD_WIDTH_PX + gear.length * GAP_PX;
 
   const hoverRef = useRef(null);
   const marqueeRef = useMarquee({
-    stripWidth: ONE_COPY_WIDTH,  // Wrap after one copy, not the full track
+    stripWidth: ONE_COPY_WIDTH,
     hoverRef,
     containerRef,
   });
 
+  if (!gear.length) {
+    return null;
+  }
+
   return (
-    <>
-      {/* Desktop */}
-      <div ref={containerRef} className="block overflow-hidden md:py-24 py-8">
-        <div ref={hoverRef}>
-          <div
-            ref={marqueeRef}
-            className="flex"
-            style={{ gap: `${GAP_PX}px` }}
-          >
-            {loopTrips.map((trip, index) => (
-              <div
-                key={`${trip.trip_id ?? index}-${index}`}
-                className="flex-shrink-0 rounded-2xl h-full backdrop-blur-md"
-                style={{  
-                  width: CARD_WIDTH_PX,
-                  height: CARD_HEIGHT_PX,
-                  minWidth: CARD_WIDTH_PX,
-                  minHeight: CARD_HEIGHT_PX,
-                  backgroundColor: 'rgba(255, 255, 255, 0)',
-                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
-                }}
-              >
-                <TripCardContent
-                  trip={trip}
-                  weightCategory={getWeightCategory(trip.total_weight_grams)}
-                  datesStr={formatTripDates(trip.start_date, trip.end_date)}
-                />
-              </div>
-            ))}
-          </div>
+    <div ref={containerRef} className="block overflow-hidden md:py-24 py-8">
+      <div ref={hoverRef}>
+        <div
+          ref={marqueeRef}
+          className="flex"
+          style={{ gap: `${GAP_PX}px` }}
+        >
+          {loopGearItems.map((item, index) => (
+            <div
+              key={`${item.gear_id ?? item.id ?? index}-${index}`}
+              className="flex-shrink-0 rounded-2xl h-full"
+              style={{
+                width: CARD_WIDTH_PX,
+                height: CARD_HEIGHT_PX,
+                minWidth: CARD_WIDTH_PX,
+                minHeight: CARD_HEIGHT_PX,
+                backgroundColor: 'transparent'
+              }}
+            >
+              <GearCardContent
+                gear={item}
+                weightCategory={getWeightCategory(item.weight_grams)}
+              />
+            </div>
+          ))}
         </div>
       </div>
-    </>
+    </div>
   );
 }

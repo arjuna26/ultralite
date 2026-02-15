@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import PublicFooter from '../components/PublicFooter';
 import HowItWorksStacking from '../components/HowItWorksStacking';
-import CommunityTripsStacking from '../components/CommunityTripsStacking';
+import PopularGearCarousel from '../components/PopularGearCarousel';
 
 // Icons as simple SVG components
 const BackpackIcon = () => (
@@ -145,55 +145,36 @@ const testimonials = [
 ];
 
 // Mock data for Community Trips stacking section; replace with getCommunityTrips() when backend is ready
-const mockCommunityTrips = [
+const mockCommunityGear = [
   {
-    trip_id: 'mock-1',
-    user_nickname: 'Sarah K.',
-    trip_name: 'PCT Section J',
-    location_text: 'Sierra Nevada, CA',
-    start_date: '2025-07-15',
-    end_date: '2025-07-22',
-    backpack_image_url: 'https://wxsnnnijzjyasjfqxzhc.supabase.co/storage/v1/object/public/img/step1.png',
-    total_weight_grams: 4200,
-    backpack_brand: 'Hyperlite',
-    backpack_model: 'Southwest 2400',
+    gear_id: 'mock-1',
+    brand: 'Columbia',
+    model: 'Wildwood Heights',
+    weight_grams: 1540,
+    image_url: 'https://wxsnnnijzjyasjfqxzhc.supabase.co/storage/v1/object/public/gear/columbia_wildwood_heights.png',
   },
   {
-    trip_id: 'mock-2',
-    user_nickname: 'Marcus T.',
-    trip_name: 'Wonderland Trail',
-    location_text: 'Mt. Rainier, WA',
-    start_date: '2025-08-01',
-    end_date: '2025-08-10',
-    backpack_image_url: 'https://wxsnnnijzjyasjfqxzhc.supabase.co/storage/v1/object/public/img/step2.png',
-    total_weight_grams: 5800,
-    backpack_brand: 'Zpacks',
-    backpack_model: 'Arc Blast',
+    gear_id: 'mock-2',
+    brand: 'Big Agnes',
+    model: 'Copper Spur mtnGlo 2',
+    weight_grams: 1247,
+    image_url: 'https://wxsnnnijzjyasjfqxzhc.supabase.co/storage/v1/object/public/gear/Copper_Spur_mtnGLO_2_Tent.png',
   },
   {
-    trip_id: 'mock-3',
-    user_nickname: 'Jordan L.',
-    trip_name: 'Colorado Trail Thru',
-    location_text: 'Denver to Durango',
-    start_date: '2025-06-10',
-    end_date: '2025-07-05',
-    backpack_image_url: null,
-    total_weight_grams: 5100,
-    backpack_brand: 'ULA',
-    backpack_model: 'Circuit',
+    gear_id: 'mock-3',
+    brand: 'Jetboil',
+    model: 'Flash 1.0 L Fast Boil System',
+    weight_grams: 371,
+    image_url: 'https://wxsnnnijzjyasjfqxzhc.supabase.co/storage/v1/object/public/gear/Flash_1.0_L_Fast_Boil_System.png',
   },
   {
-    trip_id: 'mock-4',
-    user_nickname: 'Arjuna H.',
-    trip_name: 'Boulder Creek Lakes',
-    location_text: 'Trinity Alps',
-    start_date: '2025-06-10',
-    end_date: '2025-07-05',
-    backpack_image_url: 'https://www.columbia.co.th/cdn/shop/files/CO399AC605EJTH-0.jpg?v=1764214744&width=768',
-    total_weight_grams: 3100,
-    backpack_brand: 'Columbia',
-    backpack_model: 'Wildwood Heights',
+    gear_id: 'mock-4',
+    brand: 'NEMO',
+    model: 'Tensor',
+    weight_grams: 620,
+    image_url: 'https://wxsnnnijzjyasjfqxzhc.supabase.co/storage/v1/object/public/gear/nemo_tensor_reg_wide.webp',
   },
+
 ];
 
 export default function Landing() {
@@ -251,7 +232,7 @@ export default function Landing() {
               <a href="#features" className="nav-link hover-underline text-sm">Features</a>
               <a href="#pricing" className="nav-link hover-underline text-sm">Pricing</a>
               <a href="#reviews" className="nav-link hover-underline text-sm">Reviews</a>
-              <a href="#featured" className="nav-link hover-underline text-sm">Trips</a>
+              <a href="#featured" className="nav-link hover-underline text-sm">Gear</a>
             </div>
 
             <div className="flex items-center gap-3">
@@ -293,64 +274,64 @@ export default function Landing() {
       </section>
       </div>
         
-        {/* Hero Section */}
-        <section className="pt-32 pb-20 md:pt-40 md:pb-32 relative topo-pattern">
+      {/* Hero Section */}
+      <section className="pt-32 pb-20 md:pt-40 md:pb-32 relative topo-pattern">
 
-          <div className="max-w-3xl mx-auto text-center px-4 sm:px-6">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 hover-glow" 
-                 style={{ backgroundColor: 'var(--color-primary-100)', color: 'var(--color-primary-700)' }}>
-              <span className="text-sm font-medium">Built for lightweight backpackers</span>
-            </div>
-            
-            <h1 className="text-display text-5xl md:text-6xl lg:text-8xl mb-6 text-black">
-              Pack Smarter,<br /> Hike
-              <span className="text-gradient-hero font-bold"> Lighter</span>
-            </h1>
-            
-            <p className="text-body text-lg md:text-xl mb-10 max-w-2xl mx-auto px-2">
-              The trip-centric gear management app that helps you build, track, and optimize your backpacking setups. 
-              Know exactly what you're carrying before you hit the trail.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 scroll-reveal-right px-4 sm:px-0">
-              <Link to="/login" className="btn btn-primary btn-lg w-full sm:w-auto">
-                Start Building Your Pack
-              </Link>
-            </div>
+        <div className="max-w-3xl mx-auto text-center px-4 sm:px-6">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 hover-glow" 
+                style={{ backgroundColor: 'var(--color-primary-100)', color: 'var(--color-primary-700)' }}>
+            <span className="text-sm font-medium">Built for lightweight backpackers</span>
+          </div>
+          
+          <h1 className="text-display text-5xl md:text-6xl lg:text-8xl mb-6 text-black">
+            Pack Smarter,<br /> Hike
+            <span className="text-gradient-hero font-bold"> Lighter</span>
+          </h1>
+          
+          <p className="text-body text-lg md:text-xl mb-10 max-w-2xl mx-auto px-2">
+            The trip-centric gear management app that helps you build, track, and optimize your backpacking setups. 
+            Know exactly what you're carrying before you hit the trail.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 scroll-reveal-right px-4 sm:px-0">
+            <Link to="/login" className="btn btn-primary btn-lg w-full sm:w-auto">
+              Start Building Your Pack
+            </Link>
+          </div>
 
-            {/* Stats */}
-            <div className="grid-cols-3 gap-8 mt-16 pt-8 border-t scroll-reveal-left hidden md:grid" 
-                 style={{ borderColor: 'var(--color-neutral-200)' }}>
-              <div className="p-4 rounded-lg">
-                <div className="text-3xl md:text-4xl font-bold text-gradient">2,500+</div>
-                <div className="text-caption">Gear Items</div>
-              </div>
-              <div className="p-4 rounded-lg">
-                <div className="text-3xl md:text-4xl font-bold text-gradient">15K+</div>
-                <div className="text-caption">Bags Created</div>
-              </div>
-              <div className="p-4 rounded-lg">
-                <div className="text-3xl md:text-4xl font-bold text-gradient">4.9★</div>
-                <div className="text-caption">User Rating</div>
-              </div>
+          {/* Stats */}
+          <div className="grid-cols-3 gap-8 mt-16 pt-8 border-t scroll-reveal-left hidden md:grid" 
+                style={{ borderColor: 'var(--color-neutral-200)' }}>
+            <div className="p-4 rounded-lg">
+              <div className="text-3xl md:text-4xl font-bold text-gradient">2,500+</div>
+              <div className="text-caption">Gear Items</div>
+            </div>
+            <div className="p-4 rounded-lg">
+              <div className="text-3xl md:text-4xl font-bold text-gradient">15K+</div>
+              <div className="text-caption">Bags Created</div>
+            </div>
+            <div className="p-4 rounded-lg">
+              <div className="text-3xl md:text-4xl font-bold text-gradient">4.9★</div>
+              <div className="text-caption">User Rating</div>
             </div>
           </div>
-        </section>
-        
-        {/* Desktop version - Stacking cards (shares background with Hero) */}
-        <div id="how-it-works" className="" style={{ backgroundColor: 'var(--color-secondary-50)' }}>
-          <HowItWorksStacking />
         </div>
+      </section>
+      
+      {/* Desktop version - Stacking cards (shares background with Hero) */}
+      <div id="how-it-works" className="" style={{ backgroundColor: 'var(--color-secondary-50)' }}>
+        <HowItWorksStacking />
+      </div>
 
-        <section id="featured" className="relative overflow-hidden topo-pattern-md py-16">
-          <div className="container scroll-reveal flex flex-col items-center justify-center">
-            <span className="badge badge-secondary mb-4">Featured</span>
-            <h2 className="text-display text-3xl md:text-5xl mb-4 text-black text-center">Featured Trips</h2>
-          </div>
-          {/* Desktop */}
-          <div className="">
-            <CommunityTripsStacking trips={mockCommunityTrips} />
-          </div>
+      <section id="featured" className="relative overflow-hidden topo-pattern-md py-16">
+        <div className="container scroll-reveal flex flex-col items-center justify-center">
+          <span className="badge badge-secondary mb-4">Gear</span>
+          <h2 className="text-display text-3xl md:text-5xl mb-4 text-black text-center">Popular Gear</h2>
+        </div>
+        {/* Desktop */}
+        <div className="">
+          <PopularGearCarousel gear={mockCommunityGear} />
+        </div>
       </section>
 
       </div>
