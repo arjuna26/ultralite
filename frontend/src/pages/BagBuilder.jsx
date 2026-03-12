@@ -1,9 +1,23 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getBackpacks, createBag, getBag, addItemToBag, removeItemFromBag } from '../api/client';
+import { getBackpacks, createBag, getBag, addItemToBag, removeItemFromBag, createCustomGear } from '../api/client';
 import GearSearchModal from '../components/GearSearchModal';
 import BagItemList from '../components/BagItemList';
+import Toast from '../components/Toast';
 import { useImageBackgroundColor } from '../hooks/useImageBackgroundColor';
+
+const gearCategories = [
+  { value: 'backpack', label: 'Backpack' },
+  { value: 'tent', label: 'Tent' },
+  { value: 'sleeping_bag', label: 'Sleeping Bag' },
+  { value: 'sleeping_pad', label: 'Sleeping Pad' },
+  { value: 'stove', label: 'Stove' },
+  { value: 'cookware', label: 'Cookware' },
+  { value: 'clothing', label: 'Clothing' },
+  { value: 'footwear', label: 'Footwear' },
+  { value: 'accessory', label: 'Accessory' },
+  { value: 'other', label: 'Other' },
+];
 
 // Helper to categorize weight
 const getWeightCategory = (grams) => {
@@ -51,6 +65,17 @@ export default function BagBuilder() {
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [isBackpackModalOpen, setIsBackpackModalOpen] = useState(false);
   const [selectedBackpackObj, setSelectedBackpackObj] = useState(null);
+  const [toastMessage, setToastMessage] = useState('');
+
+  const [addCustomOpen, setAddCustomOpen] = useState(false);
+  const [customForm, setCustomForm] = useState({
+    brand: '',
+    model: '',
+    category: 'backpack',
+    weight_grams: '',
+  });
+  const [customSubmitLoading, setCustomSubmitLoading] = useState(false);
+  const [customError, setCustomError] = useState('');
 
   useEffect(() => {
     if (isEdit) {
@@ -115,6 +140,37 @@ export default function BagBuilder() {
     setIsBackpackModalOpen(false);
   }
 
+  const handleAddCustomSubmit = async (e) => {
+    e.preventDefault();
+    setCustomError('');
+    if (
+      !customForm.brand?.trim() ||
+      !customForm.model?.trim() ||
+      !customForm.category ||
+      !customForm.weight_grams ||
+      Number(customForm.weight_grams) < 1
+    ) {
+      setCustomError('Brand, model, category, and weight (positive grams) required.');
+      return;
+    }
+    setCustomSubmitLoading(true);
+    try {
+      await createCustomGear({
+        brand: customForm.brand.trim(),
+        model: customForm.model.trim(),
+        category: customForm.category,
+        weight_grams: Number(customForm.weight_grams),
+      });
+      setAddCustomOpen(false);
+      setCustomForm({ brand: '', model: '', category: 'backpack', weight_grams: '' });
+      setToastMessage('Custom gear added! You can now use it in this and other bags.');
+    } catch (err) {
+      setCustomError(err.response?.data?.error || 'Failed to add custom gear');
+    } finally {
+      setCustomSubmitLoading(false);
+    }
+  };
+
   if (isEdit && !bagData) {
     return (
       <div className="container py-8">
@@ -132,6 +188,8 @@ export default function BagBuilder() {
 
   return (
     <div className="container py-8">
+      <Toast message={toastMessage} onDismiss={() => setToastMessage('')} />
+
       {/* Back Button & Weight Bar */}
       <div className="mb-6">
         <div className="flex items-center mb-4">
@@ -173,15 +231,27 @@ export default function BagBuilder() {
             {isEdit ? 'Edit Bag' : 'Create New Bag'}
           </h1>
           {isEdit && (
-            <button
-              onClick={() => setIsSearchModalOpen(true)}
-              className="btn btn-primary"
-            >
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              Add Gear
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setIsSearchModalOpen(true)}
+                className="btn btn-primary"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Add Gear
+              </button>
+              <button
+                type="button"
+                onClick={() => setAddCustomOpen(true)}
+                className="btn btn-secondary"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                Add Your Gear
+              </button>
+            </div>
           )}
         </div>
       </div>
@@ -450,6 +520,139 @@ export default function BagBuilder() {
             onClose={() => setIsSearchModalOpen(false)}
             onSelect={handleAddItem}
           />
+
+          {/* Add Custom Gear Modal */}
+          {addCustomOpen && (
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center p-4"
+              style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+              onClick={() => setAddCustomOpen(false)}
+            >
+              <div
+                className="card p-6 w-full max-w-md animate-fade-in"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <h2 className="text-heading text-xl mb-4">Add Your Gear</h2>
+                <p className="text-caption text-sm mb-4">
+                  Add your own gear that&apos;s not in the catalog. You can use it in this bag and others.
+                </p>
+                <form onSubmit={handleAddCustomSubmit}>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="label">
+                        Brand <span style={{ color: 'var(--color-accent-500)' }}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={customForm.brand}
+                        onChange={(e) =>
+                          setCustomForm((f) => ({ ...f, brand: e.target.value }))
+                        }
+                        className="input w-full"
+                        placeholder="e.g., Osprey"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="label">
+                        Model <span style={{ color: 'var(--color-accent-500)' }}>*</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={customForm.model}
+                        onChange={(e) =>
+                          setCustomForm((f) => ({ ...f, model: e.target.value }))
+                        }
+                        className="input w-full"
+                        placeholder="e.g., Exos 58"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="label">
+                        Category <span style={{ color: 'var(--color-accent-500)' }}>*</span>
+                      </label>
+                      <div className="flex flex-wrap gap-2 mt-1.5">
+                        {gearCategories.map((cat) => (
+                          <button
+                            key={cat.value}
+                            type="button"
+                            onClick={() =>
+                              setCustomForm((f) => ({ ...f, category: cat.value }))
+                            }
+                            className="px-3 py-1.5 text-sm font-medium rounded-full whitespace-nowrap transition-all border"
+                            style={{
+                              backgroundColor:
+                                customForm.category === cat.value
+                                  ? 'var(--color-primary-500)'
+                                  : 'var(--color-neutral-50)',
+                              color:
+                                customForm.category === cat.value
+                                  ? 'white'
+                                  : 'var(--color-neutral-700)',
+                              borderColor:
+                                customForm.category === cat.value
+                                  ? 'var(--color-primary-500)'
+                                  : 'var(--color-neutral-200)',
+                            }}
+                          >
+                            {cat.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="label">
+                        Weight (grams){' '}
+                        <span style={{ color: 'var(--color-accent-500)' }}>*</span>
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        value={customForm.weight_grams}
+                        onChange={(e) =>
+                          setCustomForm((f) => ({
+                            ...f,
+                            weight_grams: e.target.value,
+                          }))
+                        }
+                        className="input w-full"
+                        placeholder="e.g., 1200"
+                        required
+                      />
+                    </div>
+                    {customError && (
+                      <p
+                        className="text-sm"
+                        style={{ color: 'var(--color-error-600)' }}
+                      >
+                        {customError}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex gap-3 mt-6">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAddCustomOpen(false);
+                        setCustomError('');
+                      }}
+                      className="btn btn-ghost flex-1"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={customSubmitLoading}
+                      className="btn btn-primary flex-1"
+                    >
+                      {customSubmitLoading ? 'Saving...' : 'Add Gear'}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
         </>
       )}
     </div>
