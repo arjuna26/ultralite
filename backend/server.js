@@ -9,7 +9,6 @@ const gearRoutes = require('./routes/gear');
 const bagRoutes = require('./routes/bags');
 const tripRoutes = require('./routes/trips');
 const waitlistRoutes = require('./routes/waitlist');
-const feedbackRoutes = require('./routes/feedback');
 
 const app = express();
 app.set('trust proxy', 1);
@@ -38,8 +37,8 @@ app.use(cors({
     'http://ultralite.app',
     'https://ultralite.app',
     'https://www.ultralite.app',
-    // /^https:\/\/ultralite.*\.vercel\.app$/,
-    // 'http://localhost:5173'
+    /^https:\/\/ultralite.*\.vercel\.app$/,
+    'http://localhost:5173'
   ],
   credentials: true
 }));
@@ -50,7 +49,6 @@ app.use(express.json());
 app.use('/api/auth/login', authLimiter);
 app.use('/api/auth/register', authLimiter);
 app.use('/api/waitlist', waitlistLimiter);
-app.use('/api/feedback', waitlistLimiter);
 
 // Mount routes
 app.use('/api/auth', authRoutes);
@@ -58,7 +56,6 @@ app.use('/api/gear', gearRoutes);
 app.use('/api/bags', bagRoutes);
 app.use('/api/trips', tripRoutes);
 app.use('/api/waitlist', waitlistRoutes);
-app.use('/api/feedback', feedbackRoutes);
 
 
 app.get('/api/health', (req, res) => {
