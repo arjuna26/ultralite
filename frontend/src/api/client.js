@@ -86,6 +86,13 @@ export const logout = () => {
 export const joinWaitlist = (email) =>
     api.post('/waitlist', { email });
 
+/**
+ * Submit product feedback (public, no auth required)
+ * @param {{ feedback_type?: 'feature'|'gear'|'other', message: string, email?: string }} payload
+ */
+export const submitFeedback = (payload) =>
+    api.post('/feedback', payload);
+
 // ============================================
 // GEAR FUNCTIONS
 // ============================================
