@@ -4,7 +4,6 @@ import Navbar from './components/Navbar';
 import ScrollToTop from './components/ScrollToTop';
 import SmoothScroll from './components/SmoothScroll'
 import Landing from './pages/Landing';
-import ComingSoon from './pages/ComingSoon';
 import Login from './pages/Login';
 import ResetPassword from './pages/ResetPassword';
 import OAuthCallback from './pages/OAuthCallback';
@@ -19,7 +18,7 @@ import Terms from './pages/Terms';
 import { getMe, logout as apiLogout } from './api/client';
 import { Analytics } from "@vercel/analytics/react"
 
-// Check if we should show coming soon page
+// Feature flag: currently used to gate Gear Catalog only
 const isComingSoon = import.meta.env.VITE_COMING_SOON === 'true';
 
 // Wrapper component to access navigate within Router
@@ -55,7 +54,7 @@ function AppContent({ user, setUser, loading }) {
   return (
     <div className="min-h-screen topo-pattern">
       <ScrollToTop />
-      {user && <Navbar user={user} onLogout={handleLogout} />}
+      {user && <Navbar user={user} onLogout={handleLogout} gearDisabled={isComingSoon} />}
       <Routes>
         {/* Public landing page */}
         <Route 
@@ -112,7 +111,13 @@ function AppContent({ user, setUser, loading }) {
         
         <Route 
           path="/gear" 
-          element={user ? <GearCatalog /> : <Navigate to="/login" />} 
+          element={
+            !user
+              ? <Navigate to="/login" />
+              : isComingSoon
+                ? <Navigate to="/bags" />
+                : <GearCatalog />
+          } 
         />
       </Routes>
     </div>
@@ -124,12 +129,6 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // If coming soon mode, skip auth check
-    if (isComingSoon) {
-      setLoading(false);
-      return;
-    }
-
     // Check for existing token/session
     const initAuth = async () => {
       const token = localStorage.getItem('token');
@@ -147,11 +146,6 @@ function App() {
 
     initAuth();
   }, []);
-
-  // If coming soon mode, just show that page
-  if (isComingSoon) {
-    return <ComingSoon />;
-  }
 
   return (
     <BrowserRouter>

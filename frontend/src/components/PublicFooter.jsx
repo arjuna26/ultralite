@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-export default function PublicFooter() {
+export default function PublicFooter({ onOpenFeedback }) {
   return (
     <footer className="section-sm" style={{ backgroundColor: 'var(--color-neutral-950)' }}>
       <div className="container">
@@ -14,22 +14,71 @@ export default function PublicFooter() {
               Pack smarter, hike lighter. The gear management app for outdoor enthusiasts.
             </p>
           </div>
-
           <div>
-            <h4 className="text-sm font-semibold text-white mb-4">Product</h4>
-            <ul className="space-y-2">
-              <li><Link to="/#features" className="text-sm hover:text-white transition-colors" style={{ color: 'var(--color-neutral-400)' }}>Features</Link></li>
-              <li><Link to="/#pricing" className="text-sm hover:text-white transition-colors" style={{ color: 'var(--color-neutral-400)' }}>Pricing</Link></li>
-              <li><Link to="/#reviews" className="text-sm hover:text-white transition-colors" style={{ color: 'var(--color-neutral-400)' }}>Reviews</Link></li>
-            </ul>
           </div>
-
           <div>
             <h4 className="text-sm font-semibold text-white mb-4">Resources</h4>
             <ul className="space-y-2">
-              <li><a href="#" className="text-sm hover:text-white transition-colors" style={{ color: 'var(--color-neutral-400)' }}>Gear Guide</a></li>
-              <li><a href="#" className="text-sm hover:text-white transition-colors" style={{ color: 'var(--color-neutral-400)' }}>Ultralight Tips</a></li>
-              <li><a href="#" className="text-sm hover:text-white transition-colors" style={{ color: 'var(--color-neutral-400)' }}>Community</a></li>
+            <li>
+              {onOpenFeedback ? (
+                <button
+                  type="button"
+                  className="text-sm hover:text-white transition-colors"
+                  style={{ color: 'var(--color-neutral-400)' }}
+                  onClick={onOpenFeedback}
+                >
+                  Gear Guide
+                </button>
+              ) : (
+                <a
+                  href="#"
+                  className="text-sm hover:text-white transition-colors"
+                  style={{ color: 'var(--color-neutral-400)' }}
+                >
+                  Gear Guide
+                </a>
+              )}
+            </li>
+            <li>
+              {onOpenFeedback ? (
+                <button
+                  type="button"
+                  className="text-sm hover:text-white transition-colors"
+                  style={{ color: 'var(--color-neutral-400)' }}
+                  onClick={onOpenFeedback}
+                >
+                  Ultralight Tips
+                </button>
+              ) : (
+                <a
+                  href="#"
+                  className="text-sm hover:text-white transition-colors"
+                  style={{ color: 'var(--color-neutral-400)' }}
+                >
+                  Ultralight Tips
+                </a>
+              )}
+            </li>
+            <li>
+              {onOpenFeedback ? (
+                <button
+                  type="button"
+                  className="text-sm hover:text-white transition-colors"
+                  style={{ color: 'var(--color-neutral-400)' }}
+                  onClick={onOpenFeedback}
+                >
+                  Community
+                </button>
+              ) : (
+                <a
+                  href="#"
+                  className="text-sm hover:text-white transition-colors"
+                  style={{ color: 'var(--color-neutral-400)' }}
+                >
+                  Community
+                </a>
+              )}
+            </li>
             </ul>
           </div>
 
