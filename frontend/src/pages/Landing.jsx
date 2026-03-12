@@ -4,6 +4,7 @@ import { useScrollReveal } from '../hooks/useScrollReveal';
 import PublicFooter from '../components/PublicFooter';
 import HowItWorksStacking from '../components/HowItWorksStacking';
 import PopularGearCarousel from '../components/PopularGearCarousel';
+import FeedbackModal from '../components/FeedbackModal';
 
 // Icons as simple SVG components
 const BackpackIcon = () => (
@@ -183,6 +184,7 @@ export default function Landing() {
   
   const [scrollY, setScrollY] = useState(0);
   const [heroHeight, setHeroHeight] = useState(600);
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
 
   useEffect(() => {
     let ticking = false;
@@ -297,10 +299,17 @@ export default function Landing() {
             <Link to="/login" className="btn btn-primary btn-lg w-full sm:w-auto">
               Start Building Your Pack
             </Link>
+            <button
+              type="button"
+              className="btn btn-outline btn-lg w-full sm:w-auto"
+              onClick={() => setIsFeedbackOpen(true)}
+            >
+              Got Suggestions?
+            </button>
           </div>
 
           {/* Stats */}
-          <div className="grid-cols-3 gap-8 mt-16 pt-8 border-t scroll-reveal-left hidden md:grid" 
+          <div className="grid-cols-3 gap-8 mt-16 pt-8 border-t scroll-reveal-left hidden" 
                 style={{ borderColor: 'var(--color-neutral-200)' }}>
             <div className="p-4 rounded-lg">
               <div className="text-3xl md:text-4xl font-bold text-gradient">2,500+</div>
@@ -471,9 +480,19 @@ export default function Landing() {
                       </li>
                     ))}
                   </ul>
-                  <Link to="/login" className={`btn mt-auto w-full ${plan.highlighted ? 'btn-primary' : 'btn-secondary'}`}>
-                    {plan.cta}
-                  </Link>
+                  {plan.highlighted ? (
+                    <button
+                      type="button"
+                      className="btn btn-primary mt-auto w-full"
+                      onClick={() => setIsFeedbackOpen(true)}
+                    >
+                      {plan.cta}
+                    </button>
+                  ) : (
+                    <Link to="/login" className="btn btn-secondary mt-auto w-full">
+                      {plan.cta}
+                    </Link>
+                  )}
                 </div>
               ))}
             </div>
@@ -526,7 +545,12 @@ export default function Landing() {
         </div>
       </section>
 
-      <PublicFooter />
+      <FeedbackModal
+        isOpen={isFeedbackOpen}
+        onClose={() => setIsFeedbackOpen(false)}
+      />
+
+      <PublicFooter onOpenFeedback={() => setIsFeedbackOpen(true)} />
     </div>
   );
 }
