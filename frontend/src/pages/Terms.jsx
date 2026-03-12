@@ -13,9 +13,9 @@ export default function Terms() {
               <h1 className="text-display text-4xl mb-2 animate-fade-in" style={{ color: 'var(--color-neutral-900)' }}>
                 Terms of Service
               </h1>
-              <p className="text-caption mb-8 animate-fade-in animate-delay-100">Last updated: January 2026</p>
+              <p className="text-caption mb-8 animate-fade-in animate-delay-100">Last updated: March 2026</p>
 
-              <div className="card p-8 scroll-reveal">
+              <div className="card p-8">
                 <div className="prose-custom space-y-6">
                   <section>
                     <h2 className="text-heading text-xl mb-3">Acceptance of Terms</h2>
@@ -52,24 +52,28 @@ export default function Terms() {
                       <li>Interfere with the proper functioning of the service</li>
                       <li>Upload malicious code or content</li>
                       <li>Impersonate another person or entity</li>
+                      <li>Scrape, harvest, or bulk export data from the service</li>
+                      <li>Reverse engineer, decompile, or copy the service or its features</li>
+                      <li>Use the service to create or improve a competing product using our data or UI</li>
                     </ul>
                   </section>
 
                   <section>
                     <h2 className="text-heading text-xl mb-3">Intellectual Property</h2>
                     <p className="text-body">
-                      The service and its original content, features, and functionality are owned by 
-                      UltraLite and are protected by international copyright, trademark, and other 
-                      intellectual property laws.
+                      The service and its original content, features, and functionality are owned by
+                      UltraLite and are protected by intellectual property laws. These terms do not grant
+                      you any right to use our brand, logos, designs, or app concept outside of normal
+                      use of the service.
                     </p>
                   </section>
 
                   <section>
                     <h2 className="text-heading text-xl mb-3">User Content</h2>
                     <p className="text-body">
-                      You retain ownership of any content you create using our service, including gear 
-                      configurations and trip data. By using our service, you grant us a license to 
-                      store and display your content as necessary to provide the service.
+                      You retain ownership of the content you create. You grant us a limited license to
+                      store, process, and display your content solely to provide the service to you.
+                      We do not sell your content or use it for advertising.
                     </p>
                   </section>
 
@@ -93,19 +97,8 @@ export default function Terms() {
                   <section>
                     <h2 className="text-heading text-xl mb-3">Changes to Terms</h2>
                     <p className="text-body">
-                      We reserve the right to modify these terms at any time. We will notify users of 
-                      significant changes via email or through the service. Continued use of the service 
-                      after changes constitutes acceptance of the new terms.
-                    </p>
-                  </section>
-
-                  <section>
-                    <h2 className="text-heading text-xl mb-3">Contact</h2>
-                    <p className="text-body">
-                      Questions about these terms? Contact us at{' '}
-                      <a href="mailto:legal@ultralite.app" className="font-medium" style={{ color: 'var(--color-primary-600)' }}>
-                        legal@ultralite.app
-                      </a>
+                      We may update these terms. We will post updates here and update the "Last updated"
+                      date. Your continued use of the service means you accept the updated terms.
                     </p>
                   </section>
                 </div>
