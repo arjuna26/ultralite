@@ -73,8 +73,8 @@ export default function TripList() {
     try {
       const payload = {
         ...newTrip,
-        start_date: start || null,
-        end_date: end || null,
+        start_date: newTrip.start_date?.trim() || null,
+        end_date: newTrip.end_date?.trim() || null,
       };
       const response = await createTrip(payload);
       setTrips([response.data, ...trips]);
