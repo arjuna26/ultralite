@@ -226,19 +226,6 @@ export default function Landing() {
         <title>UltraLite | Pack Smarter, Hike Lighter</title>
         <meta name="description" content="Build, track, and optimize your backpacking gear. Know exactly what your pack weighs before you hit the trail. Free gear planner for ultralight hikers." />
         <meta name="keywords" content="ultralight backpacking, gear list, pack weight tracker, backpacking planner" />
-        
-        {/* Open Graph (for link previews) */}
-        <meta property="og:title" content="UltraLite | Pack Smarter, Hike Lighter" />
-        <meta property="og:description" content="Trip-centric gear management for backpackers. Track every gram." />
-        <meta property="og:image" content="https://wxsnnnijzjyasjfqxzhc.supabase.co/storage/v1/object/public/img/step1.png" />
-        <meta property="og:url" content="https://ultralite.app" />
-        <meta property="og:type" content="website" />
-
-        {/* Twitter card */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="UltraLite | Pack Smarter, Hike Lighter" />
-        <meta name="twitter:image" content="https://wxsnnnijzjyasjfqxzhc.supabase.co/storage/v1/object/public/img/step1.png" />
-
         <link rel="canonical" href="https://ultralite.app" />
       </Helmet>
       {/* Navigation */}
