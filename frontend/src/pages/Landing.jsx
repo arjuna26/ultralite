@@ -314,23 +314,6 @@ export default function Landing() {
               Got Suggestions?
             </button>
           </div>
-
-          {/* Stats */}
-          <div className="grid-cols-3 gap-8 mt-16 pt-8 border-t scroll-reveal-left hidden" 
-                style={{ borderColor: 'var(--color-neutral-200)' }}>
-            <div className="p-4 rounded-lg">
-              <div className="text-3xl md:text-4xl font-bold text-gradient">2,500+</div>
-              <div className="text-caption">Gear Items</div>
-            </div>
-            <div className="p-4 rounded-lg">
-              <div className="text-3xl md:text-4xl font-bold text-gradient">15K+</div>
-              <div className="text-caption">Bags Created</div>
-            </div>
-            <div className="p-4 rounded-lg">
-              <div className="text-3xl md:text-4xl font-bold text-gradient">4.9★</div>
-              <div className="text-caption">User Rating</div>
-            </div>
-          </div>
         </div>
       </section>
       
