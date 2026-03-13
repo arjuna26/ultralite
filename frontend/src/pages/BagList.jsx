@@ -257,7 +257,7 @@ export default function BagList() {
                 <div className="flex gap-2 pt-4 border-t" style={{ borderColor: 'var(--color-neutral-100)' }}>
                   <Link
                     to={`/bags/${bag.id}/edit`}
-                    className="btn btn-secondary btn-sm flex-1 hidden sm:flex justify-center"
+                    className="btn btn-secondary btn-sm px-3 hidden sm:flex justify-center"
                   >
                     <svg className="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -266,7 +266,7 @@ export default function BagList() {
                   </Link>
                   <button
                     onClick={() => handleCloneClick(bag.id, bag.name)}
-                    className="btn btn-outline btn-sm flex-1 hover:bg-primary-100"
+                    className="btn btn-outline btn-sm px-3 hover:bg-primary-100"
                   >
                     <svg className="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -275,7 +275,7 @@ export default function BagList() {
                   </button>
                   <button
                     onClick={() => handleDeleteClick(bag.id)}
-                    className="btn btn-danger flex-1 btn-sm"
+                    className="btn btn-danger px-3 btn-sm"
                     title="Delete bag"
                   >
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
