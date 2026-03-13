@@ -455,7 +455,7 @@ export default function BagBuilder() {
                     {/* Right: Backpack Image & Details */}
                     <div className="flex flex-col items-center flex-shrink-0">
                       <div 
-                        className="w-64 h-64 rounded-xl overflow-hidden flex items-center justify-center mb-2"
+                        className="md:w-64 md:h-64 h-32 w-32 rounded-xl overflow-hidden flex items-center justify-center mb-2"
                         style={{ backgroundColor: '#ffffff' }}
                       >
                         {bagData.backpack_image_url ? (
