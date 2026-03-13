@@ -280,7 +280,6 @@ export default function BagBuilder() {
                     Give your bag a descriptive name you'll remember
                   </p>
                 </div>
-
                                 {/* Backpack Selection */}
                                 <div>
                   <label className="label">
@@ -418,7 +417,7 @@ export default function BagBuilder() {
             {/* Right Column - Backpack Visual */}
             <div className="order-1 lg:order-2">
               <div className="lg:sticky lg:top-24">
-                <div className="card p-6">
+                <div className="card p-6 overflow-hidden">
                   {/* Bag Name & Weight + Backpack Image Row */}
                   <div className="flex items-start gap-14">
                     {/* Left: Bag Name & Weight */}

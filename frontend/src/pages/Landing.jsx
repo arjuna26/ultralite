@@ -409,7 +409,7 @@ export default function Landing() {
       </section>
 
         {/* Pricing Section */}
-        <section id="pricing" className="section relative md:m-32">
+        <section id="pricing" className="section relative md:m-16">
           <div className="container">
             <div className="text-center mb-16 scroll-reveal">
               <span className="badge badge-accent mb-4">Pricing</span>
