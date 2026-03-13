@@ -31,7 +31,7 @@ export default function HowItWorksStacking() {
   return (
     <section className="relative">
       {/* Section header - NOT sticky, scrolls away naturally */}
-      <div className="pt-12 pb-16 text-center">
+      <div className="pt-12 pb-16 text-left md:ml-32 ml-16">
         <span className="badge badge-secondary mb-4">How It Works</span>
         <h2 
               className="text-display text-3xl md:text-5xl mb-4 text-black px-4"

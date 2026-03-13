@@ -312,7 +312,7 @@ export default function Landing() {
         <HowItWorksStacking />
       </div>
 
-      <section id="featured" className="relative overflow-hidden topo-pattern-md md:py-20 py-8">
+      <section id="featured" className="relative overflow-hidden topo-pattern-md md:pt-20 py-8">
         <div className="container scroll-reveal flex flex-col items-center justify-center">
           <span className="badge badge-secondary mb-4">Gear</span>
           <h2 className="text-display text-3xl md:text-5xl mb-4 text-black text-center">Popular Gear</h2>
