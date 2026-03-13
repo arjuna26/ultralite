@@ -229,9 +229,9 @@ export default function Landing() {
         <link rel="canonical" href="https://ultralite.app" />
       </Helmet>
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b" style={{ borderColor: 'var(--color-neutral-200)' }}>
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/10 backdrop-blur-md">
         <div className="container">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-18">
             <Link to="/" className="flex items-center gap-2 hover-scale">
                 <img src="/favicon.svg" alt="UltraLite" className="w-8 h-8" />
                 <span className="text-xl font-semibold" style={{ color: 'var(--color-neutral-900)' }}>UltraLite</span>
@@ -258,7 +258,7 @@ export default function Landing() {
       {/* Hero + How it Works wrapper with shared gradient background */}
       <div className="relative" style={{ backgroundColor: 'var(--color-surface-primary)' }}>
 
-      <div className="relative overflow-hidden md:block hidden">
+      <div className="relative md:block hidden mt-16">
         <div 
           className="absolute inset-0 z-0 md:block hidden"
           style={{
@@ -277,30 +277,17 @@ export default function Landing() {
           }}
         />
       
-      {/* CTA Section */}
-      <section className="section scroll-reveal relative overflow-hidden z-10">
-        <p className="text-xs mb-12 text-center">.</p>
-      </section>
+        {/* CTA Section */}
+        <section className="section scroll-reveal relative overflow-hidden z-10 md:h-[300px]">
+        </section>
       </div>
         
       {/* Hero Section */}
-      <section className="pt-32 pb-20 md:pt-40 md:pb-32 relative topo-pattern">
-
+      <section className="pt-32 md:pt-16 pb-20 relative topo-pattern">
         <div className="max-w-3xl mx-auto text-center px-4 sm:px-6">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 hover-glow" 
-                style={{ backgroundColor: 'var(--color-primary-100)', color: 'var(--color-primary-700)' }}>
-            <span className="text-sm font-medium">Built for lightweight backpackers</span>
-          </div>
-          
-          <h1 className="text-display text-5xl md:text-5xl lg:text-7xl mb-6 text-black">
+          <h1 className="text-display text-5xl md:text-5xl lg:text-7xl mb-10 text-black">
             Pack Smarter, Hike <span className="text-gradient-hero font-bold"> Lighter</span>
           </h1>
-          
-          <p className="text-body text-lg md:text-xl mb-10 max-w-2xl mx-auto px-2">
-            The trip-centric gear management app that helps you build, track, and optimize your backpacking setups. 
-            Know exactly what you're carrying before you hit the trail.
-          </p>
-          
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 scroll-reveal-right px-4 sm:px-0">
             <Link to="/login" className="btn btn-primary btn-lg w-full sm:w-auto">
               Start Building Your Pack
@@ -313,6 +300,10 @@ export default function Landing() {
               Got Suggestions?
             </button>
           </div>
+          <p className="text-body text-lg md:text-xl mt-6 max-w-2xl mx-auto px-2">
+            The trip-centric gear management app that helps you build, track, and optimize your backpacking setups. 
+            Know exactly what you're carrying before you hit the trail.
+          </p>
         </div>
       </section>
       
@@ -321,7 +312,7 @@ export default function Landing() {
         <HowItWorksStacking />
       </div>
 
-      <section id="featured" className="relative overflow-hidden topo-pattern-md py-16">
+      <section id="featured" className="relative overflow-hidden topo-pattern-md md:py-20 py-8">
         <div className="container scroll-reveal flex flex-col items-center justify-center">
           <span className="badge badge-secondary mb-4">Gear</span>
           <h2 className="text-display text-3xl md:text-5xl mb-4 text-black text-center">Popular Gear</h2>
