@@ -275,7 +275,7 @@ export default function BagList() {
                   </button>
                   <button
                     onClick={() => handleDeleteClick(bag.id)}
-                    className="btn btn-danger btn-sm px-3"
+                    className="btn btn-danger flex-1 btn-sm"
                     title="Delete bag"
                   >
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
