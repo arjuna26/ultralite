@@ -292,9 +292,8 @@ export default function Landing() {
             <span className="text-sm font-medium">Built for lightweight backpackers</span>
           </div>
           
-          <h1 className="text-display text-5xl md:text-6xl lg:text-8xl mb-6 text-black">
-            Pack Smarter,<br /> Hike
-            <span className="text-gradient-hero font-bold"> Lighter</span>
+          <h1 className="text-display text-5xl md:text-5xl lg:text-7xl mb-6 text-black">
+            Pack Smarter, Hike <span className="text-gradient-hero font-bold"> Lighter</span>
           </h1>
           
           <p className="text-body text-lg md:text-xl mb-10 max-w-2xl mx-auto px-2">

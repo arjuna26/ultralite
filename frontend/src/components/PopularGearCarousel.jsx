@@ -73,11 +73,11 @@ function GearCardContent({ gear, weightCategory }) {
     <div className="flex flex-col gap-4 items-center h-full w-full">
       {/* Image floats with subtle shadow */}
       <div
-        className="rounded-xl overflow-hidden flex items-center justify-center flex-shrink-0"
+        className="rounded-xl flex items-center justify-center flex-shrink-0"
         style={{
           width: '100%',
-          height: 300,
-          minHeight: 300
+          height: 250,
+          minHeight: 250
         }}
       >
         {gear.image_url ? (
@@ -228,7 +228,7 @@ export default function PopularGearCarousel({ gear = [] }) {
   }
 
   return (
-    <div ref={containerRef} className="block overflow-hidden md:py-24 py-8">
+    <div ref={containerRef} className="block md:py-24 py-8">
       <div ref={hoverRef}>
         <div
           ref={marqueeRef}

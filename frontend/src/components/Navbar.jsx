@@ -6,7 +6,7 @@ export default function Navbar({ user, onLogout, gearDisabled = false }) {
   const isActive = (path) => location.pathname.startsWith(path);
   
   return (
-    <nav className="sticky top-0 z-50 bg-white/25 backdrop-blur-xl border-b" style={{ borderColor: 'var(--color-neutral-200)' }}>
+    <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b" style={{ borderColor: 'var(--color-neutral-200)' }}>
       <div className="container">
         <div className="flex justify-between items-center h-16">
           {/* Logo and Nav Links */}
