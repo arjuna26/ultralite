@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { useState, useEffect, useCallback } from 'react';
 import { HelmetProvider } from 'react-helmet-async';
 import Navbar from './components/Navbar';
@@ -155,6 +156,7 @@ function App() {
           <AppContent user={user} setUser={setUser} loading={loading} />
         </SmoothScroll>
         <Analytics />
+        <SpeedInsights />
       </BrowserRouter>
     </HelmetProvider>
   );
