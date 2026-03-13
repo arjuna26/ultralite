@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useCallback } from 'react';
+import { HelmetProvider } from 'react-helmet-async';
 import Navbar from './components/Navbar';
 import ScrollToTop from './components/ScrollToTop';
 import SmoothScroll from './components/SmoothScroll'
@@ -148,12 +149,14 @@ function App() {
   }, []);
 
   return (
-    <BrowserRouter>
-      <SmoothScroll>
-        <AppContent user={user} setUser={setUser} loading={loading} />
-      </SmoothScroll>
-      <Analytics />
-    </BrowserRouter>
+    <HelmetProvider>
+      <BrowserRouter>
+        <SmoothScroll>
+          <AppContent user={user} setUser={setUser} loading={loading} />
+        </SmoothScroll>
+        <Analytics />
+      </BrowserRouter>
+    </HelmetProvider>
   );
 }
 

@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://ultralite.app/sitemap.xml

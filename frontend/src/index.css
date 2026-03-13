@@ -103,8 +103,8 @@
   /* ========================================
    * TYPOGRAPHY
    * ======================================== */
-  --font-sans: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
-  --font-display: 'Fraunces', Georgia, serif;
+  --font-sans: 'Iosevka Charon Mono', monospace;
+  --font-display: 'Iosevka Charon Mono', monospace;
 
   /* ========================================
    * SHADOWS
