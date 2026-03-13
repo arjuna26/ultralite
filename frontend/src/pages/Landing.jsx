@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { useState, useEffect } from 'react';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import PublicFooter from '../components/PublicFooter';
@@ -221,6 +222,25 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'var(--color-surface-primary)' }}>
+      <Helmet>
+        <title>UltraLite – Ultralight Backpacking Gear Planner</title>
+        <meta name="description" content="Build, track, and optimize your backpacking gear. Know exactly what your pack weighs before you hit the trail. Free gear planner for ultralight hikers." />
+        <meta name="keywords" content="ultralight backpacking, gear list, pack weight tracker, backpacking planner" />
+        
+        {/* Open Graph (for link previews) */}
+        <meta property="og:title" content="UltraLite – Pack Smarter, Hike Lighter" />
+        <meta property="og:description" content="Trip-centric gear management for backpackers. Track every gram." />
+        <meta property="og:image" content="https://wxsnnnijzjyasjfqxzhc.supabase.co/storage/v1/object/public/img/step1.png" />
+        <meta property="og:url" content="https://ultralite.app" />
+        <meta property="og:type" content="website" />
+
+        {/* Twitter card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="UltraLite – Pack Smarter, Hike Lighter" />
+        <meta name="twitter:image" content="https://wxsnnnijzjyasjfqxzhc.supabase.co/storage/v1/object/public/img/step1.png" />
+
+        <link rel="canonical" href="https://ultralite.app" />
+      </Helmet>
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b" style={{ borderColor: 'var(--color-neutral-200)' }}>
         <div className="container">
